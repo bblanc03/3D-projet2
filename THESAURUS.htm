@@ -196,10 +196,47 @@
             var fltXPrime = intDirection * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
             var fltZPrime = intDirection * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
 
-            setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
-            setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
-            setPositionCameraX(getPositionCameraX(camera) + fltXPrime, camera);
-            setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+            // Positions de la caméra
+            var fltXCamera = getPositionX(camera) + fltXPrime;
+            var fltZCamera = getPositionZ(camera) + fltZPrime;
+
+            // Limites du mur
+            var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2 + 0.1;
+            var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2 - 0.1;
+            var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2 + 0.1;
+            var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2 - 0.1;
+            var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
+                                     (fltZCamera > fltLimiteNord) && (fltZCamera < fltLimiteSud);
+
+            // Déplacer la caméra s'il n'y a pas de collision
+            if (binAucuneCollision) {
+                setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
+                setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
+                setPositionCameraX(getPositionCameraX(camera) + fltXPrime, camera);
+                setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+            }
+            else { // Pour longer les murs s'il y a une collision
+                if (fltXCamera <= fltLimiteOuest || fltXCamera >= fltLimiteEst) {
+                    // On longe le mur ouest ou est 
+                    fltZPrime = 0.2 * ((fltZ < 0) ? -1 : 1); fltXPrime = 0.0;
+                }
+                else { // On longe le mur sud ou nord
+                    fltXPrime = 0.2 * ((fltX < 0) ? -1 : 1); fltZPrime = 0.0;
+                }
+
+                // Nouvelles positions de la caméra
+                fltXCamera = getPositionX(camera) + fltXPrime;
+                fltZCamera = getPositionZ(camera) + fltZPrime;
+                var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
+                                         (fltZCamera > fltLimiteNord) && (fltZCamera < fltLimiteSud);
+                // Longer le mur s'il ne rencontre pas un nouveau mur
+                if (binAucuneCollision) {
+                    setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
+                    setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
+                    setPositionCameraX(getPositionCameraX(camera) + fltXPrime, camera);
+                    setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+                }
+            }
         }
 
         effacerCanevas(objgl);
