@@ -13,6 +13,7 @@ function creerObj3DSol(objgl, intNoTexture) {
     obj3DSol.transformations = creerTransformations();
     return obj3DSol;
 }
+// just a teest
 
 function creerVertexSol(objgl, fltLargeur, fltProfondeur) {
     var tabVertex = [
