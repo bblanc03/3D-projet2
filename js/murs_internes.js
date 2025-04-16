@@ -17,15 +17,16 @@ function creerObj3DMursInternes(objgl, intNoTexture) {
 function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
         // Mur nord'
-        15, 0, 15, // 0
-        16, 0, 15, // 1
-        15, fltHauteur, 15, // 2
-        16, fltHauteur, 15, // 3
-        15, 0, 16, // 0
-        16, 0, 16, // 1
-        15, fltHauteur, 16, // 2
-        16, fltHauteur, 16 // 3
-        
+        1, 0, 1, // 0
+        2, 0, 1, // 1
+        1, fltHauteur, 1, // 2
+        2, fltHauteur, 1, // 3
+
+        // Mur sud
+        1, 0, 2, // 4
+        2, 0, 2, // 5
+        1, fltHauteur, 2, // 6
+        2, fltHauteur, 2 // 7
         
     ];
 
@@ -55,6 +56,12 @@ function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, i
         0.0, 0.0,
         fltProfondeur, 0.0,
         0.0, fltHauteur,
+        fltProfondeur, fltHauteur,
+
+        // Mur sud
+        0.0, 0.0,
+        fltProfondeur, 0.0,
+        0.0, fltHauteur,
         fltProfondeur, fltHauteur
     ];
 
@@ -62,7 +69,7 @@ function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, i
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
 
-    objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 0.0;
+    objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 1.0;
 
     return objTexelsMurs;
 }
@@ -75,6 +82,10 @@ function creerMaillageMursInterne(objgl) {
             // Les 2 triangles du mur sud
             4, 5, 6,
             5, 6, 7,
+            // Les 2 triangles du mur est
+            0, 4, 2,
+            2, 6, 4
+
         ];
 
     var objMaillageMurs = objgl.createBuffer();
@@ -82,7 +93,7 @@ function creerMaillageMursInterne(objgl) {
     objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
     // Le nombre de triangles
-    objMaillageMurs.intNbTriangles = 4;
+    objMaillageMurs.intNbTriangles = 6;
     // Le nombre de droites
     objMaillageMurs.intNbDroites = 0;
 
