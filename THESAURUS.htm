@@ -247,6 +247,18 @@
             }
         }
 
+        if (event.keyCode == 33) //page up mode aerienne
+        {
+            setPositionsCameraXYZ([15.5, 55,15.5], camera);
+            setCiblesCameraXYZ([15,0,15], camera)
+            //setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+            console.log("page up mode aerienne");
+        } 
+        if (event.keyCode == 34) // page down mode joueur
+        {
+
+}
+
         effacerCanevas(objgl);
         dessiner(objgl, objProgShaders, objScene3D);
     }
