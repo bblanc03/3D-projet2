@@ -109,7 +109,7 @@
   - Télé-récepteurs : Augmentent de 1 à chaque niveau
 
 ## 7. Le déroulement d’un niveau
-- **Durée** : 60 secondes par niveau
+- [x] **Durée** : 60 secondes par niveau
 - **Conditions de réinitialisation** :
   - Si le temps expire sans trouver le trésor, le niveau recommence sans redéfinir la position des objets (sauf réinitialisation de l’état des murs ouverts et du nombre d’ouvreurs)
 - **Transition** : Passage automatique au niveau suivant dès que le trésor est trouvé
