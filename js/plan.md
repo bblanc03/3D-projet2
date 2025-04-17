@@ -86,7 +86,7 @@
 - **Représentation** : La caméra
 - **Position de départ** : Centre du dédale (dans l’enclos), regardant vers le nord (sortie de l’enclos)
 - **Déplacements** :
-  - Avec le clavier (flèches directionnelles)
+  - [x] Avec le clavier (flèches directionnelles)
   - Avec la souris (roulette pour avancer/reculer, bouton pour tourner)
 - **Limitation** : Une fois sorti de l’enclos, le joueur ne peut plus y retourner
 - **Interaction** : Possibilité d’ouvrir un mur avec la touche espace (ou bouton du milieu)
