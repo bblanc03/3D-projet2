@@ -13,11 +13,13 @@
     <script type="text/javascript" src="js/Murs.js"></script>
     <script type="text/javascript" src="js/murs_internes.js"></script>
     <script type="text/javascript" src="js/Textures.js"></script>
+    <script type="text/javascript" src="js/timer.js"></script>
     <script type="text/javascript">
         // all the code goes here
         var objgl = null;
         var objProgShaders = null;
         var objScene3D = null;
+        var objCycleAnimation = null;
 
         var OBJ3D_SOL = 0;
         var OBJ3D_MURS = 1;
@@ -30,6 +32,9 @@
         var tabCibleJoueur;
         var largeurJeux = 31;
 
+        var startTime = createDate();
+        setTimerMax(60); // secondes
+
         async function demarrer() {
             var objCanvas = document.getElementById('monCanvas');
             objgl = initWebGL(objCanvas);  // Initialise le contexte WebGL
@@ -38,6 +43,26 @@
 
             effacerCanevas(objgl);
             dessiner(objgl, objProgShaders, objScene3D);
+            animer();
+        }
+
+        // Un cycle d'animation	
+        function animer() {
+            // Requête pour le prochain cycle
+            objCycleAnimation = requestAnimationFrame(animer);
+
+            // Le cycle d'animation
+            effacerCanevas(objgl);
+            mettreAjourAnimation();
+            dessiner(objgl, objProgShaders, objScene3D);
+        }
+
+        // Pour mettre à jour l'animation
+        function mettreAjourAnimation() {
+            var time = createDate();
+            showTime(time, startTime);
+            startTime = time;
+            //console.log(1);
         }
 
         async function initScene3D(objgl) {
@@ -254,7 +279,7 @@
             {
                 tabPosJoueur = getPositionsCameraXYZ(camera);
                 tabCibleJoueur = getCiblesCameraXYZ(camera);
-                setPositionsCameraXYZ([largeurJeux/2, 55, largeurJeux/2], camera);
+                setPositionsCameraXYZ([largeurJeux / 2, 55, largeurJeux / 2], camera);
                 setCiblesCameraXYZ([15, 0, 15], camera);
                 //setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
                 console.log("page up mode aerienne");
@@ -277,6 +302,7 @@
     <canvas id="monCanvas" width="640" height="640" tabIndex="1" , onkeydown="deplacerCamera(); return false">
         Votre navigateur ne supporte pas la balise canvas
     </canvas>
+    <div id="timer"></div>
 </body>
 
 </html>
