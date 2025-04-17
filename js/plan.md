@@ -92,12 +92,12 @@
 - **Interaction** : Possibilité d’ouvrir un mur avec la touche espace (ou bouton du milieu)
 
 ## 5. La vue aérienne du dédale
-- **Activation** : Touche Page Up
+- [x] **Activation** : Touche Page Up
 - **Effets** :
-  - Vue du dédale complet depuis le haut (seulement plancher et murs visibles)
+  - [x] Vue du dédale complet depuis le haut (seulement plancher et murs visibles)
   - Affichage d’un indicateur (objet plat) pour la position et la direction du joueur
 - **Mode triche** : CTRL+SHIFT+ESPACE pour rendre visibles tous les objets (sauf le plafond)
-- **Retour** : Touche Page Down, avec conservation de la position et direction du joueur
+- [x] **Retour** : Touche Page Down, avec conservation de la position et direction du joueur
 
 ## 6. Le déroulement du jeu Thesaurus
 - **Nombre de niveaux** : 10 niveaux
