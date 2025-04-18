@@ -24,6 +24,8 @@
         var OBJ3D_SOL = 0;
         var OBJ3D_MURS = 1;
 
+        var binAriel = false;
+
         var tabImages = ['images/Transparent.gif', 'images/Sol.jpg', 'images/Mur.jpg'];
         var TEX_TRANSPARENT = 0;
         var TEX_SOL = 1;
@@ -275,20 +277,21 @@
                     }
                 }
 
-            if (event.keyCode == 33) //page up mode aerienne
+            if (event.keyCode == 33 && !binAriel) //page up mode aerienne
             {
                 tabPosJoueur = getPositionsCameraXYZ(camera);
                 tabCibleJoueur = getCiblesCameraXYZ(camera);
                 setPositionsCameraXYZ([largeurJeux / 2, 55, largeurJeux / 2], camera);
                 setCiblesCameraXYZ([15, 0, 15], camera);
-                //setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+                binAriel = true;
                 console.log("page up mode aerienne");
             }
-            if (event.keyCode == 34) // page down mode joueur
+            if (event.keyCode == 34 && binAriel) // page down mode joueur
             {
                 setPositionsCameraXYZ(tabPosJoueur, camera);
                 setCiblesCameraXYZ(tabCibleJoueur, camera);
                 console.log("page down mode joueur");
+                binAriel = false;
             }
 
             effacerCanevas(objgl);
