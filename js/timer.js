@@ -31,13 +31,7 @@ function resetSeconds(){
     secounds = 0;
 }
 
-/**
- * 
- * @param {*} timer current time
- * @param {*} timer2 previous time
- */
-function showTime(timer, timer2) {
-
+function nextSecond(timer, timer2){
     var tempsEcoule = timer - timer2;
     timer = timer2;
     miliPasse += tempsEcoule;
@@ -45,10 +39,22 @@ function showTime(timer, timer2) {
 
     milisecounds += miliPasse - last;
     last = miliPasse;
+
     if (milisecounds > 999) {
         milisecounds = 0;
         secounds++;
     }
+    return secounds;
+}
+
+/**
+ * 
+ * @param {*} timer current time
+ * @param {*} timer2 previous time
+ */
+function showTime() {
+    //nextSecond(timer, timer2);
+    
     if (intTimerMax - secounds > 0) {
         let secs = intTimerMax - secounds;
         document.getElementById("timer").innerHTML = "Time: " + secs;

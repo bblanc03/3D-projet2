@@ -1,4 +1,5 @@
 var point = 0;
+var lastSec = 0;
 
 /**
  * 
