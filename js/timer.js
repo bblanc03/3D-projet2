@@ -19,6 +19,9 @@ function getSeconds(time) {
 function setTimerMax(intMax) {
     intTimerMax = intMax;
 }
+function resetSeconds(){
+    secounds = 0;
+}
 
 function showTime(timer, timer2) {
 
