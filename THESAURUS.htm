@@ -93,7 +93,7 @@
 
             // La caméra
             var camera = creerCamera();
-            setPositionsCameraXYZ([0, 0.5, obj3DMurs.fltProfondeur / 2 - 0.1], camera);
+            setPositionsCameraXYZ([obj3DMurs.fltProfondeur/2, 0.5, obj3DMurs.fltProfondeur/2], camera);  // midle of the map
             setCiblesCameraXYZ([0, 0.5, 0], camera);
             setOrientationsXYZ([0, 1, 0], camera);
             objScene3D.camera = camera;
@@ -238,9 +238,9 @@
                     var fltZCamera = getPositionZ(camera) + fltZPrime;
 
                     // Limites du mur
-                    var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur + 0.1;
+                    var fltLimiteOuest = 0;
                     var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur - 0.1;
-                    var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1; // -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1;
+                    var fltLimiteNord = 0; // -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1;
                     var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur - 0.1;
                     var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
                         (fltZCamera > fltLimiteNord) && (fltZCamera < fltLimiteSud);
