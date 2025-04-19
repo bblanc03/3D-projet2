@@ -32,7 +32,7 @@
   - [x] Différencier par couleur ou texture avec le plancher de l’enclos
 
 ### 3.3 Le plafond
-- **Dimensions** : Rectangle 31×31
+- [x] **Dimensions** : Rectangle 31×31
 - **Localisation** : Sur le plan Y = hauteur, juste au-dessus du plancher
 - **Possibilités** : Utilisation d’un "ciel" comme texture
 
@@ -84,7 +84,7 @@
 
 ## 4. Le joueur
 - **Représentation** : La caméra
-- **Position de départ** : Centre du dédale (dans l’enclos), regardant vers le nord (sortie de l’enclos)
+- [x] **Position de départ** : Centre du dédale (dans l’enclos), regardant vers le nord (sortie de l’enclos)
 - **Déplacements** :
   - [x] Avec le clavier (flèches directionnelles)
   - Avec la souris (roulette pour avancer/reculer, bouton pour tourner)
