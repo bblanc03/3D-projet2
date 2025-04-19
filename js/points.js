@@ -1,0 +1,20 @@
+var point = 0;
+function setPoint(number) {
+    point = number;
+}
+/**
+ * 
+ * @param {*} binAdd true for (+) false for (-)
+ * @param {*} number number to modifie points with
+ */
+function updatePoint(binAdd, number) {
+    if (binAdd) {
+        point += number;
+    } else {
+        point -= number;
+    }
+}
+
+function showPoints(){
+    document.getElementById("points").innerHTML = "Points: " + point;
+}

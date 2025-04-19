@@ -37,7 +37,8 @@ function showTime(timer, timer2) {
         secounds++;
     }
     if (intTimerMax - secounds > 0) {
-        document.getElementById("timer").innerHTML = intTimerMax - secounds;
+        let secs = intTimerMax - secounds;
+        document.getElementById("timer").innerHTML = "Time: " + secs;
     } else {
         document.getElementById("timer").innerHTML = 0;
     }

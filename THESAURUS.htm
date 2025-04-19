@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/murs_internes.js"></script>
     <script type="text/javascript" src="js/Textures.js"></script>
     <script type="text/javascript" src="js/timer.js"></script>
+    <script type="text/javascript" src="js/points.js"></script>
     <script type="text/javascript">
         // all the code goes here
         var objgl = null;
@@ -35,8 +36,10 @@
         var largeurJeux = 31;
 
         var startTime = createDate();
-        setTimerMax(10); // secondes
+        setTimerMax(60); // Sets the timer in secounds for the length of the game
         var binTimeOut = false
+
+        setPoint(300); 
 
         async function demarrer() {
             var objCanvas = document.getElementById('monCanvas');
@@ -64,6 +67,7 @@
         function mettreAjourAnimation() {
             var time = createDate();
             showTime(time, startTime);
+            showPoints();
             startTime = time;
 
             // checks to see if time has run out. If true reset everything and the timer
@@ -72,7 +76,9 @@
                 demarrer();
                 setTimerMax(10);
                 resetSeconds();
+                updatePoint(false, 200)
             }
+
         }
 
         async function initScene3D(objgl) {
@@ -311,7 +317,8 @@
     <canvas id="monCanvas" width="640" height="640" tabIndex="1" , onkeydown="deplacerCamera(); return false">
         Votre navigateur ne supporte pas la balise canvas
     </canvas>
-    <div id="timer"></div>
+    <div id="timer"></div> <!--temporary. just here to test visibility of timer-->
+    <div id="points"></div> <!--temporary. just here to test visibility of points-->
 </body>
 
 </html>
