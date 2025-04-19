@@ -1,7 +1,13 @@
 var point = 0;
+
+/**
+ * 
+ * @param {*} number the number used to set the initial points
+ */
 function setPoint(number) {
     point = number;
 }
+
 /**
  * 
  * @param {*} binAdd true for (+) false for (-)
@@ -15,6 +21,9 @@ function updatePoint(binAdd, number) {
     }
 }
 
+/**
+ * Displays the ramaining points
+ */
 function showPoints(){
     document.getElementById("points").innerHTML = "Points: " + point;
 }

@@ -36,7 +36,8 @@
         var largeurJeux = 31;
 
         var startTime = createDate();
-        setTimerMax(60); // Sets the timer in secounds for the length of the game
+        var timerLength = 60;
+        setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
         var binTimeOut = false
 
         setPoint(300); 
@@ -74,7 +75,7 @@
             binTimeOut = timeOut();
             if(binTimeOut){
                 demarrer();
-                setTimerMax(10);
+                setTimerMax(timerLength);
                 resetSeconds();
                 updatePoint(false, 200)
             }

@@ -16,13 +16,26 @@ function getSeconds(time) {
     return ss;
 }
 
+/**
+ * 
+ * @param {*} intMax set the round timer
+ */
 function setTimerMax(intMax) {
     intTimerMax = intMax;
 }
+
+/**
+ * reset time to 0
+ */
 function resetSeconds(){
     secounds = 0;
 }
 
+/**
+ * 
+ * @param {*} timer current time
+ * @param {*} timer2 previous time
+ */
 function showTime(timer, timer2) {
 
     var tempsEcoule = timer - timer2;
@@ -46,6 +59,10 @@ function showTime(timer, timer2) {
 
 }
 
+/**
+ * 
+ * @returns  checks to see if timer has hit 0
+ */
 function timeOut() {
     return intTimerMax - secounds <= 0;
 }
