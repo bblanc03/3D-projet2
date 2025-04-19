@@ -35,7 +35,8 @@
         var largeurJeux = 31;
 
         var startTime = createDate();
-        setTimerMax(60); // secondes
+        setTimerMax(10); // secondes
+        var binTimeOut = false
 
         async function demarrer() {
             var objCanvas = document.getElementById('monCanvas');
@@ -64,7 +65,13 @@
             var time = createDate();
             showTime(time, startTime);
             startTime = time;
-            //console.log(1);
+
+            // checks to see if time has run out. If true reset everything and the timer
+            binTimeOut = timeOut();
+            if(binTimeOut){
+                demarrer();
+                setTimerMax(10);
+            }
         }
 
         async function initScene3D(objgl) {
@@ -284,13 +291,11 @@
                 setPositionsCameraXYZ([largeurJeux / 2, 55, largeurJeux / 2], camera);
                 setCiblesCameraXYZ([15, 0, 15], camera);
                 binAriel = true;
-                console.log("page up mode aerienne");
             }
             if (event.keyCode == 34 && binAriel) // page down mode joueur
             {
                 setPositionsCameraXYZ(tabPosJoueur, camera);
                 setCiblesCameraXYZ(tabCibleJoueur, camera);
-                console.log("page down mode joueur");
                 binAriel = false;
             }
 

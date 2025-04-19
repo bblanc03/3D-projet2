@@ -29,18 +29,19 @@ function showTime(timer, timer2) {
 
     milisecounds += miliPasse - last;
     last = miliPasse;
-    console.log(milisecounds);
-
     if (milisecounds > 999) {
         milisecounds = 0;
-        secounds++
+        secounds++;
     }
-    console.log(secounds);
-        if(intTimerMax - secounds > 0) {
-            document.getElementById("timer").innerHTML = intTimerMax - secounds;
-        } else{
-            document.getElementById("timer").innerHTML = 0;
-        }
-    
+    if (intTimerMax - secounds > 0) {
+        document.getElementById("timer").innerHTML = intTimerMax - secounds;
+    } else {
+        document.getElementById("timer").innerHTML = 0;
+    }
 
+
+}
+
+function timeOut() {
+    return intTimerMax - secounds <= 0;
 }
