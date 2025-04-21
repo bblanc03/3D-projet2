@@ -59,36 +59,36 @@ function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
             if (tabMurs[x][y] == 1) {
-                tabVertex.push(x);
+                tabVertex.push(x);  // bottom front left -- 0
                 tabVertex.push(0);
                 tabVertex.push(y);
 
-                tabVertex.push(x + 1);
+                tabVertex.push(x + 1); // bottom front right -- 1
                 tabVertex.push(0);
                 tabVertex.push(y);
 
-                tabVertex.push(x);
+                tabVertex.push(x); // top front left -- 2
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y);
 
-                tabVertex.push(x + 1);
+                tabVertex.push(x + 1); // top front right -- 3
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y);
 
 
-                tabVertex.push(x);
+                tabVertex.push(x); // bottom back left -- 4
                 tabVertex.push(0);
                 tabVertex.push(y + 1);
 
-                tabVertex.push(x + 1);
+                tabVertex.push(x + 1); // bottom back right -- 5
                 tabVertex.push(0);
                 tabVertex.push(y + 1);
 
-                tabVertex.push(x);
+                tabVertex.push(x); // top front left -- 6
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y + 1);
 
-                tabVertex.push(x + 1);
+                tabVertex.push(x + 1); //  top front right -- 7
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y + 1);
                 nbTriangles += 10;
@@ -119,19 +119,53 @@ function creerCouleursMursInternes(objgl, tabCouleur) {
 
 function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
     var tabTexels = [
-        // Mur nord
 
-        0.0, 0.0,
-        fltProfondeur, 0.0,
-        0.0, fltHauteur,
-        fltProfondeur, fltHauteur,
 
-        // Mur sud
-        0.0, 0.0,
-        fltProfondeur, 0.0,
-        0.0, fltHauteur,
-        fltProfondeur, fltHauteur
     ];
+    for (let x = 0; x < tabMurs.length; x++) {
+        for (let y = 0; y < tabMurs[x].length; y++) {
+            tabTexels.push(0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, fltHauteur,
+                0.0, 0.0,
+                fltProfondeur, fltHauteur,
+                fltProfondeur, 0.0,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, fltHauteur,
+                0.0, 0.0,
+                fltProfondeur, fltHauteur,
+                fltProfondeur, 0.0,
+            );
+        }
+    }
 
     var objTexelsMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsMurs);
@@ -161,13 +195,13 @@ function creerMaillageMursInterne(objgl) {
             // Les 2 triangles du dessus
             3, 6, 7,
             2, 6, 3,
-
+ 
 */
 
         ];
     let ecart = -8;
 
-    for (let x = 0; x < tabMurs.length; x++){
+    for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
             ecart += 8;
             tabMaillage.push(0 + ecart);
@@ -185,11 +219,11 @@ function creerMaillageMursInterne(objgl) {
             tabMaillage.push(7 + ecart);
 
             tabMaillage.push(0 + ecart);
+            tabMaillage.push(2 + ecart);
             tabMaillage.push(4 + ecart);
             tabMaillage.push(2 + ecart);
-            tabMaillage.push(2 + ecart);
+            tabMaillage.push(4 + ecart);
             tabMaillage.push(6 + ecart);
-            tabMaillage.push(4 + ecart);
 
             tabMaillage.push(1 + ecart);
             tabMaillage.push(5 + ecart);
@@ -201,9 +235,9 @@ function creerMaillageMursInterne(objgl) {
             tabMaillage.push(3 + ecart);
             tabMaillage.push(6 + ecart);
             tabMaillage.push(7 + ecart);
-            tabMaillage.push(2 + ecart);
             tabMaillage.push(6 + ecart);
-            tabMaillage.push(3 + ecart);
+            tabMaillage.push(7 + ecart);
+            tabMaillage.push(2 + ecart);
 
 
         }
