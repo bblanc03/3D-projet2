@@ -52,14 +52,12 @@ function creerObj3DMursInternes(objgl, intNoTexture) {
 
 function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
-
-
     ];
     nbTriangles = 0;
     for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
             if (tabMurs[x][y] == 1) {
-                tabVertex.push(x);  // bottom front left -- 0
+                tabVertex.push(x); // bottom front left -- 0
                 tabVertex.push(0);
                 tabVertex.push(y);
 
