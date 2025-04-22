@@ -41,7 +41,6 @@
       var startTime = createDate();
       var timerLength = 60;
       setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
-      var binTimeOut = false;
       var lastSec = 0;
 
       setPoint(300);
@@ -86,8 +85,8 @@
         startTime = time;
 
         // checks to see if time has run out. If true reset everything and the timer
-        binTimeOut = timeOut();
-        if (binTimeOut) {
+
+        if (timeOut()) {
           demarrer();
           setTimerMax(timerLength);
           resetSeconds();

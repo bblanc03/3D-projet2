@@ -1,3 +1,39 @@
+const tabMurs =
+    [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+        [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1],
+        [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 2, 2, 0, 2, 2, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+        [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 2, 0, 0, 0, 2, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ];
+
+let binBas = false;
+let nbTriangles = 6;
+
 
 function creerObj3DMursInternes(objgl, intNoTexture) {
     var obj3DMurs = new Object();
@@ -16,20 +52,50 @@ function creerObj3DMursInternes(objgl, intNoTexture) {
 
 function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     var tabVertex = [
-        // Mur nord'
-        1, 0, 1, // 0
-        2, 0, 1, // 1
-        1, fltHauteur, 1, // 2
-        2, fltHauteur, 1, // 3
-
-        // Mur sud
-        1, 0, 2, // 4
-        2, 0, 2, // 5
-        1, fltHauteur, 2, // 6
-        2, fltHauteur, 2 // 7
-        
     ];
+    nbTriangles = 0;
+    for (let x = 0; x < tabMurs.length; x++) {
+        for (let y = 0; y < tabMurs[x].length; y++) {
+            if (tabMurs[x][y] == 1) {
+                tabVertex.push(x); // bottom front left -- 0
+                tabVertex.push(0);
+                tabVertex.push(y);
 
+                tabVertex.push(x + 1); // bottom front right -- 1
+                tabVertex.push(0);
+                tabVertex.push(y);
+
+                tabVertex.push(x); // top front left -- 2
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y);
+
+                tabVertex.push(x + 1); // top front right -- 3
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y);
+
+
+                tabVertex.push(x); // bottom back left -- 4
+                tabVertex.push(0);
+                tabVertex.push(y + 1);
+
+                tabVertex.push(x + 1); // bottom back right -- 5
+                tabVertex.push(0);
+                tabVertex.push(y + 1);
+
+                tabVertex.push(x); // top front left -- 6
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y + 1);
+
+                tabVertex.push(x + 1); //  top front right -- 7
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y + 1);
+                nbTriangles += 10;
+            }
+        }
+
+
+    }
+    console.log(nbTriangles);
     var objMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
@@ -51,19 +117,53 @@ function creerCouleursMursInternes(objgl, tabCouleur) {
 
 function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
     var tabTexels = [
-        // Mur nord
-        		 
-        0.0, 0.0,
-        fltProfondeur, 0.0,
-        0.0, fltHauteur,
-        fltProfondeur, fltHauteur,
 
-        // Mur sud
-        0.0, 0.0,
-        fltProfondeur, 0.0,
-        0.0, fltHauteur,
-        fltProfondeur, fltHauteur
+
     ];
+    for (let x = 0; x < tabMurs.length; x++) {
+        for (let y = 0; y < tabMurs[x].length; y++) {
+            tabTexels.push(0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, fltHauteur,
+                0.0, 0.0,
+                fltProfondeur, fltHauteur,
+                fltProfondeur, 0.0,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, 0.0,
+                fltProfondeur, 0.0,
+                0.0, fltHauteur,
+                fltProfondeur, fltHauteur,
+
+                0.0, fltHauteur,
+                0.0, 0.0,
+                fltProfondeur, fltHauteur,
+                fltProfondeur, 0.0,
+            );
+        }
+    }
 
     var objTexelsMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsMurs);
@@ -76,24 +176,78 @@ function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, i
 
 function creerMaillageMursInterne(objgl) {
     var tabMaillage =
-        [ // Les 2 triangles du mur nord
+        [ // Les 2 triangles du gauche
+
+            /*
             0, 1, 2,
             1, 2, 3,
-            // Les 2 triangles du mur sud
+            // Les 2 triangles du droit
             4, 5, 6,
             5, 6, 7,
-            // Les 2 triangles du mur est
+            // Les 2 triangles du avant
             0, 4, 2,
-            2, 6, 4
+            2, 6, 4,
+            // Les 2 triangles du arriere
+            1, 5, 7,
+            7, 3, 1,
+            // Les 2 triangles du dessus
+            3, 6, 7,
+            2, 6, 3,
+ 
+*/
 
         ];
+    let ecart = -8;
+
+    for (let x = 0; x < tabMurs.length; x++) {
+        for (let y = 0; y < tabMurs[x].length; y++) {
+            ecart += 8;
+            tabMaillage.push(0 + ecart);
+            tabMaillage.push(1 + ecart);
+            tabMaillage.push(2 + ecart);
+            tabMaillage.push(1 + ecart);
+            tabMaillage.push(2 + ecart);
+            tabMaillage.push(3 + ecart);
+
+            tabMaillage.push(4 + ecart);
+            tabMaillage.push(5 + ecart);
+            tabMaillage.push(6 + ecart);
+            tabMaillage.push(5 + ecart);
+            tabMaillage.push(6 + ecart);
+            tabMaillage.push(7 + ecart);
+
+            tabMaillage.push(0 + ecart);
+            tabMaillage.push(2 + ecart);
+            tabMaillage.push(4 + ecart);
+            tabMaillage.push(2 + ecart);
+            tabMaillage.push(4 + ecart);
+            tabMaillage.push(6 + ecart);
+
+            tabMaillage.push(1 + ecart);
+            tabMaillage.push(5 + ecart);
+            tabMaillage.push(7 + ecart);
+            tabMaillage.push(7 + ecart);
+            tabMaillage.push(3 + ecart);
+            tabMaillage.push(1 + ecart);
+
+            tabMaillage.push(3 + ecart);
+            tabMaillage.push(6 + ecart);
+            tabMaillage.push(7 + ecart);
+            tabMaillage.push(6 + ecart);
+            tabMaillage.push(7 + ecart);
+            tabMaillage.push(2 + ecart);
+
+
+        }
+    }
+
 
     var objMaillageMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageMurs);
     objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
     // Le nombre de triangles
-    objMaillageMurs.intNbTriangles = 6;
+    objMaillageMurs.intNbTriangles = nbTriangles;
     // Le nombre de droites
     objMaillageMurs.intNbDroites = 0;
 
