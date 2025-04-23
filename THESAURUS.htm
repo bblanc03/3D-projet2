@@ -111,15 +111,22 @@
       var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
       tabObjets3D.push(obj3DMurs);
 
-      // Creer le tresors
+      // Creer le tresor
       
       var obj3DTornade = creerObj3DTornade(objgl, obj3DMurs, TEX_TRANSPARENT);
-      tabObjets3D.push(obj3DTornade);
-      console.log(positionValideTresor().x);
-      console.log(positionValideTresor().z);
+      var position = positionValideTresor();
+      var z = position.z;
+      var x = position.x;
 
-      setPositionX(positionValideTresor().x, obj3DTornade.transformations);
-      setPositionZ(positionValideTresor().z, obj3DTornade.transformations);
+      tabObjets3D.push(obj3DTornade);
+      
+      setPositionZ(position.z, obj3DTornade.transformations);
+      setPositionX(position.x, obj3DTornade.transformations);
+      
+      console.log("z : " + position.z);
+      console.log("x : " + position.x);
+      
+
 
 
 

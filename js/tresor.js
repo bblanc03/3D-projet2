@@ -1,4 +1,3 @@
-
 function creerObj3DTornade(objgl, obj3DMurs, intNoTexture) {
     var obj3DTornade = new Object();  
     obj3DTornade.fltProfondeur = 0.6;
@@ -126,17 +125,24 @@ function positionValideTresor() {
     let tableauMur = getTabMap();
     let validLocation = false;
     let x, z;
+    
+    const GRID_SIZE = 29;
 
     while (!validLocation) {
-        x = Math.floor(Math.random() * (tableauMur.length));
-        z = Math.floor(Math.random() * (tableauMur.length));
+        x = Math.floor(Math.random() * GRID_SIZE);  // x is row 
+        z = Math.floor(Math.random() * GRID_SIZE);  // z is column 
 
-        // Ensure the guard spawns on a brick (1) and not on concrete (3), ladder (4), rope (5), or gold (6)
-        // Also ensure there is a solid surface (brick or concrete) directly below the guard
-        if (tableauMur[x][z] === 0 && tableauMur[x][z] !== 1 && tableauMur[x][z] !== 2) {
-                validLocation = true;
-                //console.log("googoo");
+  
+
+        // Check if position is a valid empty space 
+        if (tableauMur[x][z] === 0) {
+            validLocation = true;
         }
     }
-    return { x: x, z: z };
+
+    // Return the position with offset to center in grid cell
+    return { 
+        x: x + 0.5,  
+        z: z + 0.5 
+    };
 }
