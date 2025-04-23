@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/Textures.js"></script>
     <script type="text/javascript" src="js/timer.js"></script>
     <script type="text/javascript" src="js/points.js"></script>
+    <script type="text/javascript" src="js/Teleportor.js"></script>
     <script type="text/javascript">
       // all the code goes here
       var objgl = null;
@@ -30,10 +31,12 @@
         "images/Transparent.gif",
         "images/Sol.jpg",
         "images/Mur.jpg",
+        "images/teleporter.jpg"
       ];
       var TEX_TRANSPARENT = 0;
       var TEX_SOL = 1;
       var TEX_MUR = 2;
+      var TEX_TELEPORTEUR = 3
       var tabPosJoueur;
       var tabCibleJoueur;
       var largeurJeux = 31;
@@ -108,6 +111,9 @@
         // Créer les murs
         var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
         tabObjets3D.push(obj3DMurs);
+
+        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR);
+        tabObjets3D.push(obj3DTeleporteurs);
 
         var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
         tabObjets3D.push(obj3DMurInterne);
