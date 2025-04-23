@@ -126,21 +126,20 @@ function positionValideTresor() {
     let validLocation = false;
     let x, z;
     
-    const GRID_SIZE = 29;
+    const GRANDEUR_GRID = 29;
 
     while (!validLocation) {
-        x = Math.floor(Math.random() * GRID_SIZE);  // x is row 
-        z = Math.floor(Math.random() * GRID_SIZE);  // z is column 
+        x = Math.floor(Math.random() * GRANDEUR_GRID);  // rangees
+        z = Math.floor(Math.random() * GRANDEUR_GRID);  // colonnes
 
-  
-
-        // Check if position is a valid empty space 
+        // Checker si le coord est vide
         if (tableauMur[x][z] === 0) {
             validLocation = true;
         }
+        //Eventuellement rajouter aussi pour ne pas spawn dans le milieu et dans les autres objects
     }
 
-    // Return the position with offset to center in grid cell
+    // Retourne les coords (+0.5 pour centrer)
     return { 
         x: x + 0.5,  
         z: z + 0.5 
