@@ -1,7 +1,7 @@
-// Librairie sur la caméra
+// Librairie sur la camï¿½ra
 
-    // Pour créer une caméra
-    // Au point de départ, le transformations sont neutres.
+    // Pour crï¿½er une camï¿½ra
+    // Au point de dï¿½part, le transformations sont neutres.
     function creerCamera() {
       var tabCamera = [0, 0, 1, 0, 0, 0, 0, 1, 0];
       return tabCamera;
@@ -27,22 +27,22 @@
       return tabCamera[2];
   }
 
-  // Pour aller chercher les position ciblées 
+  // Pour aller chercher les position ciblï¿½es 
   function getCiblesCameraXYZ(tabCamera) {
       return tabCamera.slice(3, 6);
   }
 
- // Pour aller chercher la position ciblée en X 
+ // Pour aller chercher la position ciblï¿½e en X 
   function getCibleCameraX(tabCamera) {
       return tabCamera[3];
   }
 
-  // Pour aller chercher la position ciblée en X
+  // Pour aller chercher la position ciblï¿½e en X
   function getCibleCameraY(tabCamera) {
     return tabCamera[4];
   }
 
-  // Pour aller chercher la position ciblée en X
+  // Pour aller chercher la position ciblï¿½e en X
   function getCibleCameraZ(tabCamera) {
     return tabCamera[5];
  }
@@ -87,22 +87,22 @@
       tabCamera[2] = fltZ;
   }
 
-  // Pour modifier les positions ciblées 
+  // Pour modifier les positions ciblï¿½es 
   function setCiblesCameraXYZ(tabXYZ, tabCamera) {
       tabCamera.splice(3, 3, tabXYZ[0], tabXYZ[1], tabXYZ[2]);
   }
 
-  // Pour modifier la position ciblée en X 
+  // Pour modifier la position ciblï¿½e en X 
   function setCibleCameraX(fltX, tabCamera) {
       tabCamera[3] = fltX;
   }
 
-  // Pour modifier la position ciblée en Y 
+  // Pour modifier la position ciblï¿½e en Y 
   function setCibleCameraY(fltY, tabCamera) {
       tabCamera[4] = fltY;  
     }
 
-  // Pour modifier la position ciblée en Z
+  // Pour modifier la position ciblï¿½e en Z
   function setCibleCameraZ(fltZ, tabCamera) {
       tabCamera[5] = fltZ;
   }
