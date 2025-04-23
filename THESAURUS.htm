@@ -46,6 +46,7 @@
 
     var vueAerienne = false;
 
+
     var startTime = createDate();
     var timerLength = 60;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
@@ -333,6 +334,7 @@
       }
 
 
+
       if (binAriel) {
         objgl.uniform1i(objProgShaders.noTexture, 0);
         objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
@@ -347,6 +349,7 @@
 
         objgl.drawArrays(objgl.TRIANGLES, 0, obj3DJoueur.nbrVertex);
       }
+
     }
 
     function effacerCanevas(objgl) {
@@ -467,7 +470,6 @@
       if (tabMurs[gridX][gridZ] === 1) {
         return true; // Collision with an inner wall
       }
-
       // No collision
       return false;
     }

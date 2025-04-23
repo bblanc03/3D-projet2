@@ -32,7 +32,7 @@
   - [x] Différencier par couleur ou texture avec le plancher de l’enclos
 
 ### 3.3 Le plafond
-- **Dimensions** : Rectangle 31×31
+- [x] **Dimensions** : Rectangle 31×31
 - **Localisation** : Sur le plan Y = hauteur, juste au-dessus du plancher
 - **Possibilités** : Utilisation d’un "ciel" comme texture
 
@@ -84,20 +84,20 @@
 
 ## 4. Le joueur
 - **Représentation** : La caméra
-- **Position de départ** : Centre du dédale (dans l’enclos), regardant vers le nord (sortie de l’enclos)
+- [x] **Position de départ** : Centre du dédale (dans l’enclos), regardant vers le nord (sortie de l’enclos)
 - **Déplacements** :
-  - Avec le clavier (flèches directionnelles)
+  - [x] Avec le clavier (flèches directionnelles)
   - Avec la souris (roulette pour avancer/reculer, bouton pour tourner)
 - **Limitation** : Une fois sorti de l’enclos, le joueur ne peut plus y retourner
 - **Interaction** : Possibilité d’ouvrir un mur avec la touche espace (ou bouton du milieu)
 
 ## 5. La vue aérienne du dédale
-- **Activation** : Touche Page Up
+- [x] **Activation** : Touche Page Up
 - **Effets** :
-  - Vue du dédale complet depuis le haut (seulement plancher et murs visibles)
+  - [x] Vue du dédale complet depuis le haut (seulement plancher et murs visibles)
   - Affichage d’un indicateur (objet plat) pour la position et la direction du joueur
 - **Mode triche** : CTRL+SHIFT+ESPACE pour rendre visibles tous les objets (sauf le plafond)
-- **Retour** : Touche Page Down, avec conservation de la position et direction du joueur
+- [x] **Retour** : Touche Page Down, avec conservation de la position et direction du joueur
 
 ## 6. Le déroulement du jeu Thesaurus
 - **Nombre de niveaux** : 10 niveaux
@@ -109,9 +109,9 @@
   - Télé-récepteurs : Augmentent de 1 à chaque niveau
 
 ## 7. Le déroulement d’un niveau
-- **Durée** : 60 secondes par niveau
+- [x] **Durée** : 60 secondes par niveau
 - **Conditions de réinitialisation** :
-  - Si le temps expire sans trouver le trésor, le niveau recommence sans redéfinir la position des objets (sauf réinitialisation de l’état des murs ouverts et du nombre d’ouvreurs)
+  - [x] Si le temps expire sans trouver le trésor, le niveau recommence sans redéfinir la position des objets (sauf réinitialisation de l’état des murs ouverts et du nombre d’ouvreurs)
 - **Transition** : Passage automatique au niveau suivant dès que le trésor est trouvé
 
 ## 8. Le score
