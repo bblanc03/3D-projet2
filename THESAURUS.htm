@@ -409,6 +409,34 @@
 
       }
 
+      if (event.keyCode == 33 && !binAriel) //page up mode aerienne
+      {
+        tabPosJoueurInitial = getPositionsCameraXYZ(camera);
+        tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
+        tabPosJoueur = getPositionsCameraXYZ(camera);
+        console.log(tabPosJoueur);
+        tabCibleJoueur = getCiblesCameraXYZ(camera);
+        setPositionsCameraXYZ([15, 40, 15], camera);
+        setOrientationX(-90, camera);
+        setCiblesCameraXYZ([15, 0, 15], camera);
+
+        console.log("page up mode aerienne");
+        binAriel = true;
+
+        obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
+
+      }
+      if (event.keyCode == 34 && binAriel) // page down mode joueur
+      {
+        setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+        setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+        setOrientationX(0, camera);
+        console.log("page down mode joueur");
+        binAriel = false;
+      }
+
+
+
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
     }
