@@ -31,11 +31,19 @@ const tabMurs =
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ];
 
+
 let binBas = false;
 let nbTriangles = 6;
 
 
+
 function creerObj3DMursInternes(objgl, intNoTexture) {
+
+    // for (let i = 0; i < tabMurs.length; i++) {
+    //     for (let j = 0; j < tabMurs[i].length; j++) {
+    //         tabMurs[i][j] = 0;
+    //     }
+    // }
     var obj3DMurs = new Object();
     obj3DMurs.fltProfondeur = 1;
     obj3DMurs.fltLargeur = 1;
@@ -95,7 +103,7 @@ function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
 
 
     }
-    console.log(nbTriangles);
+    //console.log(nbTriangles);
     var objMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
@@ -252,6 +260,13 @@ function creerMaillageMursInterne(objgl) {
     objMaillageMurs.intNbDroites = 0;
 
     return objMaillageMurs;
+}
+
+function getTabMap() {
+    if (tabMurs != null) {
+        return tabMurs;
+    }
+   return null;
 }
 
 

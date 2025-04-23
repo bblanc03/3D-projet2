@@ -15,6 +15,7 @@
   <script type="text/javascript" src="js/Textures.js"></script>
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
+  <script type="text/javascript" src="js/tresor.js"></script>
   <script type="text/javascript">
     // all the code goes here
     var objgl = null;
@@ -109,6 +110,18 @@
       // Créer les murs
       var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
       tabObjets3D.push(obj3DMurs);
+
+      // Creer le tresors
+      
+      var obj3DTornade = creerObj3DTornade(objgl, obj3DMurs, TEX_TRANSPARENT);
+      tabObjets3D.push(obj3DTornade);
+      console.log(positionValideTresor().x);
+      console.log(positionValideTresor().z);
+
+      setPositionX(positionValideTresor().x, obj3DTornade.transformations);
+      setPositionZ(positionValideTresor().z, obj3DTornade.transformations);
+
+
 
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
@@ -393,7 +406,7 @@
           setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
         }
 
-        
+
       }
 
       effacerCanevas(objgl);
@@ -411,12 +424,12 @@
 
       // Check if the camera is outside the bounds of the grid (outer wall collision)
       if (gridX < 0 || gridX >= tabMurs.length || gridZ < 0 || gridZ >= tabMurs[0].length) {
-          return true; // Collision with the outer wall
+        return true; // Collision with the outer wall
       }
 
       // Check if the camera is inside an inner wall
       if (tabMurs[gridX][gridZ] === 1) {
-          return true; // Collision with an inner wall
+        return true; // Collision with an inner wall
       }
 
       // No collision
