@@ -15,6 +15,7 @@
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
   <script type="text/javascript" src="js/Joueur.js"></script>
+  <script type="text/javascript" src="js/Teleportor.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>   
 
   <script type="text/javascript">
@@ -26,7 +27,7 @@
 
     var OBJ3D_SOL = 0;
     var OBJ3D_MURS = 1;
-
+var nbTeleporteur = 3; // Number of teleporters in the game
     var binAriel = false;
 
     var tabImages = [
@@ -128,8 +129,8 @@
         }
 
       // Créer le ciel
-      var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
-         tabObjets3D.push(obj3DCiel);
+      //var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+        // tabObjets3D.push(obj3DCiel);
 
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
