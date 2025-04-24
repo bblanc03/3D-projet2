@@ -272,6 +272,7 @@ function positionValideTresor() {
         //Eventuellement rajouter aussi pour ne pas spawn dans le milieu et dans les autres objects
     }
 
+    
     // Retourne les coords (+0.5 pour centrer)
     return {
         x: x + 0.5,

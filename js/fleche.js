@@ -1,7 +1,7 @@
 var positionFleches = [];
 
 
-function creerobj3DFleche(objgl, obj3DMurs, intNoTexture) {
+function creerobj3DFleche(objgl, tresorZ, tresorX) {
     var obj3DFleche = new Object();
 
     // Make arrow smaller
@@ -25,6 +25,9 @@ function creerobj3DFleche(objgl, obj3DMurs, intNoTexture) {
 
     setPositionZ(z, obj3DFleche.transformations);
     setPositionX(x, obj3DFleche.transformations);
+
+    const angle = directionFleche(tresorZ, tresorX);
+    setAngleY(angle, obj3DFleche.transformations);
 
     return obj3DFleche;
 }
@@ -323,6 +326,24 @@ function positionValideFleche() {
         x: x + 0.5,
         z: z + 0.5
     };
+}
+
+function directionFleche(tresorZ, tresorX) {
+
+    const posCourrant = positionFleches[positionFleches.length - 1];
+    
+    // Calculer direction 
+    const dirX = tresorX - posCourrant.x;
+    const dirZ = tresorZ - posCourrant.z;
+    
+    // Calculer angle en radians
+    let angle = Math.atan2(dirX, dirZ);
+    
+    // Convertir
+    angle = angle * (180 / Math.PI);
+    
+    // Angle de rotation
+    return angle;
 }
 
 

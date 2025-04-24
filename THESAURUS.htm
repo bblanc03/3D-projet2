@@ -135,14 +135,16 @@
       var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
       tabObjets3D.push(obj3DTresor);
 
+      
 
       // Creer les fleches
-
-
+      tresorZ = getPositionZ(tabObjets3D[OBJ3D_TRESOR].transformations);
+      tresorX = getPositionX(tabObjets3D[OBJ3D_TRESOR].transformations);
       for (let i = 0; i < nbrFleches; i++) {
-        var obj3DFleche = creerobj3DFleche(objgl);
+        var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         tabObjets3D.push(obj3DFleche);
       }
+
 
       //creer teleporteurs
       for (let i = 0; i < nbTeleporteur; i++) {
