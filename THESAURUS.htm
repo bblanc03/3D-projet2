@@ -118,14 +118,13 @@
       var z = position.z;
       var x = position.x;
       tabObjets3D.push(obj3DTornade);
-      //setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
-      //setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
+      setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
+      setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
 
-      setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
-      setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+      //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+      //setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
       
-      
-      console.log(tabObjets3D)
+
 
 
 
@@ -406,7 +405,9 @@
           setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
         }
 
-        collisionTresor(camera);
+        if (collisionTresor(camera)) {
+          console.log("collision!");
+        }
 
 
       }
@@ -470,9 +471,17 @@
       var cameraX = getPositionCameraX(camera);
       var cameraZ = getPositionCameraZ(camera);
 
-      var tresorX = getPositionX(tresor.transformations);
+      var tresorX = getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+      var tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
 
-      console.log(cameraZ + " " + cameraX);
+      if (Math.floor(cameraX) == Math.floor(tresorX) && Math.floor(cameraZ) == Math.floor(tresorZ)) {
+        //console.log("collision")
+        return true;
+      }
+
+
+      //console.log("Camera : " + cameraZ + " " + cameraX);
+      //console.log("Tresor : " + tresorZ + " " + tresorX);
     }
   </script>
 </head>
