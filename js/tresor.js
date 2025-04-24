@@ -1,131 +1,255 @@
-function creerObj3DTornade(objgl, obj3DMurs, intNoTexture) {
-    var obj3DTornade = new Object();  
-    obj3DTornade.fltProfondeur = 0.6;
-    obj3DTornade.fltLargeur = 0.6;
-    obj3DTornade.fltHauteur = obj3DMurs.fltHauteur;
-   
-    obj3DTornade.intNbCirconvolutions = 20;
-    obj3DTornade.vertex = creerVertexTornade(objgl, obj3DTornade.intNbCirconvolutions,
-                                             obj3DTornade.fltHauteur + 0.1, obj3DTornade.fltLargeur, obj3DTornade.fltProfondeur);
- 
-                                                
-    obj3DTornade.tabCouleurDebut = [0.5, 0.4, 0.1];    // Couleur sable � la base
-    obj3DTornade.tabCouleurMilieu = [0.9, 0.9, 0.9];   // Gris p�le presque blanc au 3/4
-    obj3DTornade.tabCouleurFin = [0.2, 0.2, 0.2];      // Gris fonc� au sommet
-    obj3DTornade.fltPosCouleurMilieu = 0.75;           // Couleur du milieu au 3/4 de la base
-    obj3DTornade.couleurs = creerCouleursTornade(objgl, obj3DTornade.intNbCirconvolutions,
-                                obj3DTornade.tabCouleurDebut, obj3DTornade.tabCouleurMilieu, obj3DTornade.tabCouleurFin,
-                                obj3DTornade.fltPosCouleurMilieu);
+function creerobj3DTresor(objgl, obj3DMurs, intNoTexture) {
+    var obj3DTresor = new Object();
+    obj3DTresor.fltProfondeur = 0.6;
+    obj3DTresor.fltLargeur = 0.6;
+    obj3DTresor.fltHauteur = obj3DMurs.fltHauteur;
 
-    obj3DTornade.texels = creerTexelsTornade(objgl, obj3DTornade.intNbCirconvolutions, intNoTexture);
-    obj3DTornade.maillage = creerMaillageTornade(objgl, obj3DTornade.intNbCirconvolutions)
-    obj3DTornade.transformations = creerTransformations();
-   
-    return obj3DTornade;
+    obj3DTresor.vertex = creerTresor(objgl);
+    obj3DTresor.couleurs = creerCouleursTresor(objgl);
+    obj3DTresor.maillage = null;
+    obj3DTresor.texels = creerTexelsTresor(objgl);
+    obj3DTresor.transformations = creerTransformations();
+
+    return obj3DTresor;
 }
 
-function creerVertexTornade(objgl, intNbCirconvolutions, fltHauteur, fltLargeur, fltProfondeur) {
-    var fltDistRayon = 1 / (180 * intNbCirconvolutions);
- 
-    // Cr�er 4 vrilles imbriqu�es l'une dans l'autre 
-    var tabVertex = [];
-    for (j = 0; j < 4; j++) {
-        var fltRayon = 0.0;
-        for (var i = j * 90; i < 360 * intNbCirconvolutions + j * 90; i+=2) {
-            fltRayon += fltDistRayon;
-            tabVertex = tabVertex.concat([Math.cos(i * Math.PI / 180) * fltRayon * fltLargeur,
-                                          fltHauteur * fltRayon,
-                                          Math.sin(i * Math.PI / 180) * fltRayon * fltProfondeur]);
+function creerTresor(objgl) {
+    var tabVertex = new Array();
+
+    // Face avant pleine
+    tabVertex[0] = [
+        0.0, 0.0, 1.0, // Centre du plan 
+        1.0, 1.0, 1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, 1.0, 1.0
+    ];
+
+    // Face arrère pleine
+    tabVertex[1] = [
+        0.0, 0.0, -1.0, // Centre du plan
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0,
+        1.0, 1.0, -1.0
+    ];
+
+    // Contour avant
+    tabVertex[2] = [
+        1.0, 1.0, 1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0
+    ];
+
+    // Contour arrière
+    tabVertex[3] = [
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        1.0, -1.0, -1.0
+    ];
+
+    // Droites reliées aux 2 faces
+    tabVertex[4] = [
+        1.0, 1.0, -1.0, 1.0, 1.0, 1.0,
+        -1.0, 1.0, -1.0, -1.0, 1.0, 1.0,
+        1.0, -1.0, -1.0, 1.0, -1.0, 1.0,
+        -1.0, -1.0, -1.0, -1.0, -1.0, 1.0
+    ];
+
+    // Haut
+    tabVertex[5] = [
+        0.0, 1.0, 0.0, // Centre du plan
+        1.0, 1.0, -1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, 1.0, 1.0,
+        1.0, 1.0, 1.0,
+        1.0, 1.0, -1.0
+    ];
+
+    // bas
+    tabVertex[6] = [
+        0.0, -1.0, 0.0, // Centre du plan
+        1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, -1.0, -1.0
+    ];
+
+    // Droite
+    tabVertex[7] = [
+        1.0, 0.0, 0.0, // Centre du plan
+        1.0, -1.0, -1.0,
+        1.0, 1.0, -1.0,
+        1.0, 1.0, 1.0,
+        1.0, -1.0, 1.0,
+        1.0, -1.0, -1.0
+    ];
+
+    // Gauche
+    tabVertex[8] = [
+        -1.0, 0.0, 0.0, // Centre du plan
+        -1.0, -1.0, -1.0,
+        -1.0, 1.0, -1.0,
+        -1.0, 1.0, 1.0,
+        -1.0, -1.0, 1.0,
+        -1.0, -1.0, -1.0
+    ];
+
+    // Création des tampons
+    var tabObjCube = new Array();
+    for (var i = 0; i < 9; i++) {
+        tabObjCube[i] = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCube[i]);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
+        tabObjCube[i].typeDessin = (i < 2) || ((i >= 5 && i <= 8)) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
+    }
+
+    return tabObjCube;
+}
+
+function creerCouleursTresor(objgl) {
+    var tabCouleurs = new Array();
+
+    // Couleurs face avant pleine
+    tabCouleurs[0] = [1.0, 1.0, 1.0, 1.0]; // Blanc 
+    for (var i = 1; i < 6; i++)
+        tabCouleurs[0] = tabCouleurs[0].concat([1.0, 0.0, 0.0, 1.0]); // Rouge
+
+    // Couleurs face arrière pleine
+    tabCouleurs[1] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+    for (var i = 1; i < 6; i++)
+        tabCouleurs[1] = tabCouleurs[1].concat([0.0, 1.0, 0.0, 1.0]); // Vert
+
+    // Couleurs contour avant
+    tabCouleurs[2] = [];
+    for (var i = 0; i < 4; i++)
+        tabCouleurs[2] = tabCouleurs[2].concat([1.0, 1.0, 1.0, 1.0]); // Blanc
+
+    // Couleurs contour arrière
+    tabCouleurs[3] = tabCouleurs[2];
+
+    // Couleurs droites reliées aux 2 faces
+    tabCouleurs[4] = tabCouleurs[2].concat(tabCouleurs[2]);
+
+    // Haut
+    tabCouleurs[5] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+    for (var i = 1; i < 6; i++)
+        tabCouleurs[5] = tabCouleurs[5].concat([0.0, 0.0, 1.0, 1.0]); // Bleu
+
+    // Bas
+    tabCouleurs[6] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+    for (var i = 1; i < 6; i++)
+        tabCouleurs[6] = tabCouleurs[6].concat([0.0, 1.0, 1.0, 1.0]); // Turquoise
+
+    // Droite
+    tabCouleurs[7] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+    for (var i = 1; i < 6; i++)
+        tabCouleurs[7] = tabCouleurs[7].concat([1.0, 1.0, 0.0, 1.0]); // Jaune
+
+    // Gauche
+    tabCouleurs[8] = [1.0, 1.0, 1.0, 1.0]; // Blanc
+    for (var i = 1; i < 6; i++)
+        tabCouleurs[8] = tabCouleurs[8].concat([1.0, 0.0, 1.0, 1.0]); // Rose
+
+    // Création des tampons
+    var tabObjCouleursCube = new Array();
+    for (var i = 0; i < 9; i++) {
+        tabObjCouleursCube[i] = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursCube[i]);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs[i]), objgl.STATIC_DRAW);
+    }
+
+    return tabObjCouleursCube;
+}
+
+function creerTexelsTresor(objgl) {
+    const tabTexels = new Array();
+
+    // Texels de la face avant
+    tabTexels[0] = [
+        0.5, 0.5,
+        1.0, 0.0,
+        0.0, 0.0,
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+    ];
+
+    // Texels de la face arrière
+    tabTexels[1] = tabTexels[0];
+
+    // Texels de la face avant, de la face arrière et des arêtes
+    tabTexels[2] = [];
+    for (let i = 0; i < 4; i++) {
+        tabTexels[2] = tabTexels[2].concat([0.0, 1.0]);
+    }
+
+    tabTexels[3] = tabTexels[2];
+    tabTexels[4] = tabTexels[2].concat(tabTexels[2]);
+
+    // Haut
+    tabTexels[5] = tabTexels[0];
+
+    // Bas
+    tabTexels[6] = tabTexels[0];
+
+    // Droite
+    tabTexels[7] = tabTexels[0];
+
+    // Gauche
+    tabTexels[8] = tabTexels[0];
+
+    const tabTexelsCube = new Array();
+    for (let i = 0; i < 9; i++) {
+        tabTexelsCube[i] = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabTexelsCube[i]);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels[i]), objgl.STATIC_DRAW);
+
+        if (i === 0) { //Face avant
+            tabTexelsCube[i].intNoTexture = 1; 
+            tabTexelsCube[i].pcCouleurTexel = 0.6;
+        }
+        else if (i === 1) { // Face derriere
+            tabTexelsCube[i].intNoTexture = 6; 
+            tabTexelsCube[i].pcCouleurTexel = 0.6;
+        }
+        else if (i === 5) { // face haut
+            tabTexelsCube[i].intNoTexture = 2; 
+            tabTexelsCube[i].pcCouleurTexel = 0.6;
+        }
+        else if (i === 6) { // face bas
+            tabTexelsCube[i].intNoTexture = 5; 
+            tabTexelsCube[i].pcCouleurTexel = 0.6;
+        }
+        else if (i === 7) { // face droite
+            tabTexelsCube[i].intNoTexture = 3; 
+            tabTexelsCube[i].pcCouleurTexel = 0.6;
+        }
+        else if (i === 8) { // face gauche
+            tabTexelsCube[i].intNoTexture = 4; 
+            tabTexelsCube[i].pcCouleurTexel = 0.6;
+        }
+        else { 
+            tabTexelsCube[i].intNoTexture = 0;
+            tabTexelsCube[i].pcCouleurTexel = 0.0;
         }
     }
 
-    var objTornade = objgl.createBuffer();
-    objgl.bindBuffer(objgl.ARRAY_BUFFER, objTornade);
-    objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
-    
-    return objTornade;
+    return tabTexelsCube;
 }
 
-function creerCouleursTornade(objgl, intNbCirconvolutions, tabCouleurDebut, tabCouleurMilieu, tabCouleurFin, fltPosCouleurMilieu) {
-    var intNbCoups = [Math.round(180 * intNbCirconvolutions * fltPosCouleurMilieu),
-                      Math.round(180 * intNbCirconvolutions * (1-fltPosCouleurMilieu))];
 
-    var fltDistRouge = [(tabCouleurMilieu[0] - tabCouleurDebut[0]) / intNbCoups[0], 
-                        (tabCouleurFin[0] - tabCouleurMilieu[0]) / intNbCoups[1]];
-    var fltDistVert = [(tabCouleurMilieu[1] - tabCouleurDebut[1]) / intNbCoups[0],
-                       (tabCouleurFin[1] - tabCouleurMilieu[1]) / intNbCoups[1]];
-    var fltDistBleu = [(tabCouleurMilieu[2] - tabCouleurDebut[2]) / intNbCoups[0], 
-                      (tabCouleurFin[2] - tabCouleurMilieu[2]) / intNbCoups[1]];
-
-    // Cr�er des d�grad�s de couleurs de la couleur du milieu jusqu'� la couleur de la fin
-    var tabCouleurs = [];
-    var fltRouge = tabCouleurDebut[0];
-    var fltVert = tabCouleurDebut[1];
-    var fltBleu = tabCouleurDebut[2];
-
-    for (j = 0; j < 2; j++) {
-        for (var i = 0; i < intNbCoups[j]; i++) {
-            var tabCouleur = [fltRouge, fltVert, fltBleu, 1];
-            tabCouleurs = tabCouleurs.concat(tabCouleur);
-            fltRouge += fltDistRouge[j];
-            fltVert += fltDistVert[j];
-            fltBleu += fltDistBleu[j];
-        } 
-    }
-    
-    // Les d�grad�s de couleurs sont les m�mes pour les 4 vrilles
-    tabCouleurs = tabCouleurs.concat(tabCouleurs).concat(tabCouleurs).concat(tabCouleurs);
-
-    var objCouleursTornade = objgl.createBuffer();
-    objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursTornade);
-    objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs), objgl.STATIC_DRAW);
- 
-    return objCouleursTornade;
-}
-
-function creerTexelsTornade(objgl, intNbCirconvolutions, intNoTexture) {
-    var tabTexels = []; 
-    for (var i = 0; i < 4 * intNbCirconvolutions * 180; i++)
-        tabTexels = tabTexels.concat([0,0]);
-
-   var objTexelsTornade = objgl.createBuffer();
-   objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsTornade);
-   objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
-
-   objTexelsTornade.intNoTexture = intNoTexture; objTexelsTornade.pcCouleurTexel = 0.0;
-    
-   return objTexelsTornade;
-}
-
-function creerMaillageTornade(objgl, intNbCirconvolutions) {
-    var noVertex = 0;
-    var tabMaillage = [];
-    for (var j = 0; j < 4; j++) {
-        for (var i = 0; i < intNbCirconvolutions * 180 - 1; i++)
-        {     
-            tabMaillage = tabMaillage.concat([noVertex, noVertex + 1]);
-            noVertex++;
-        }
-        noVertex++;
-    }
-
-    var objMaillageTornade = objgl.createBuffer();
-    objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageTornade);
-    objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
-
-    // Le nombre de triangles
-    objMaillageTornade.intNbTriangles = 0;
-    // Le nombre de droites
-    objMaillageTornade.intNbDroites = 4 * (intNbCirconvolutions * 180 - 1);
-
-    return objMaillageTornade;
-}
 
 function positionValideTresor() {
     let tableauMur = getTabMap();
     let validLocation = false;
     let x, z;
-    
+
     const GRANDEUR_GRID = 29;
 
     while (!validLocation) {
@@ -140,8 +264,8 @@ function positionValideTresor() {
     }
 
     // Retourne les coords (+0.5 pour centrer)
-    return { 
-        x: x + 0.5,  
-        z: z + 0.5 
+    return {
+        x: x + 0.5,
+        z: z + 0.5
     };
 }
