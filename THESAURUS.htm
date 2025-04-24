@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
-
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Thesaurus</title>
@@ -16,6 +15,8 @@
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
   <script type="text/javascript" src="js/Joueur.js"></script>
+  <script type="text/javascript" src="js/Teleportor.js"></script>
+  <script type="text/javascript" src="js/Ciel.js"></script>   
 
   <script type="text/javascript">
     // all the code goes here
@@ -26,17 +27,21 @@
 
     var OBJ3D_SOL = 0;
     var OBJ3D_MURS = 1;
-
+var nbTeleporteur = 3; // Number of teleporters in the game
     var binAriel = false;
 
     var tabImages = [
       "images/Transparent.gif",
       "images/Sol.jpg",
       "images/Mur.jpg",
+       "images/teleporter.jpg",
+      "images/Ciel.jpg",
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
     var TEX_MUR = 2;
+    var TEX_TELEPORTEUR = 3
+    TEX_CIEL = 4;
     var tabPosJoueur;
     var tabCibleJoueur;
     var tabPosJoueurInitial;
@@ -94,7 +99,6 @@
       startTime = time;
 
       // checks to see if time has run out. If true reset everything and the timer
-
       if (timeOut()) {
         demarrer();
         setTimerMax(timerLength);
@@ -117,6 +121,16 @@
       // Créer les murs
       var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
       tabObjets3D.push(obj3DMurs);
+      
+      //creer teleporteurs
+        for(let i = 0 ; i < nbTeleporteur ; i++){
+          var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+          tabObjets3D.push(obj3DTeleporteurs);
+        }
+
+      // Créer le ciel
+      //var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+        // tabObjets3D.push(obj3DCiel);
 
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
