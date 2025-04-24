@@ -1,280 +1,226 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Thesaurus</title>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Thesaurus</title>
 
-    <script type="text/javascript" src="js/WebGl.js"></script>
-    <script type="text/javascript" src="js/ShaderCouleursTextures.js"></script>
-    <script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
-    <script type="text/javascript" src="js/Transformations.js"></script>
-    <script type="text/javascript" src="js/Camera.js"></script>
-    <script type="text/javascript" src="js/Sol.js"></script>
-    <script type="text/javascript" src="js/Murs.js"></script>
-    <script type="text/javascript" src="js/murs_internes.js"></script>
-    <script type="text/javascript" src="js/Textures.js"></script>
-    <script type="text/javascript" src="js/timer.js"></script>
-    <script type="text/javascript" src="js/points.js"></script>
-    <script type="text/javascript" src="js/Teleportor.js"></script>
-    <script type="text/javascript">
-      // all the code goes here
-      var objgl = null;
-      var objProgShaders = null;
-      var objScene3D = null;
-      var objCycleAnimation = null;
+  <script type="text/javascript" src="js/WebGl.js"></script>
+  <script type="text/javascript" src="js/ShaderCouleursTextures.js"></script>
+  <script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
+  <script type="text/javascript" src="js/Transformations.js"></script>
+  <script type="text/javascript" src="js/Camera.js"></script>
+  <script type="text/javascript" src="js/Sol.js"></script>
+  <script type="text/javascript" src="js/Murs.js"></script>
+  <script type="text/javascript" src="js/murs_internes.js"></script>
+  <script type="text/javascript" src="js/Textures.js"></script>
+  <script type="text/javascript" src="js/timer.js"></script>
+  <script type="text/javascript" src="js/points.js"></script>
+  <script type="text/javascript" src="js/Joueur.js"></script>
+  <script type="text/javascript" src="js/Ciel.js"></script>   
 
-      var nbTeleporteur = 5;
+  <script type="text/javascript">
+    // all the code goes here
+    var objgl = null;
+    var objProgShaders = null;
+    var objScene3D = null;
+    var objCycleAnimation = null;
 
-      var OBJ3D_SOL = 0;
-      var OBJ3D_MURS = 1;
+    var OBJ3D_SOL = 0;
+    var OBJ3D_MURS = 1;
 
-      var binAriel = false;
+    var binAriel = false;
 
-      var tabImages = [
-        "images/Transparent.gif",
-        "images/Sol.jpg",
-        "images/Mur.jpg",
-        "images/teleporter.jpg"
-      ];
-      var TEX_TRANSPARENT = 0;
-      var TEX_SOL = 1;
-      var TEX_MUR = 2;
-      var TEX_TELEPORTEUR = 3
-      var tabPosJoueur;
-      var tabCibleJoueur;
-      var largeurJeux = 31;
+    var tabImages = [
+      "images/Transparent.gif",
+      "images/Sol.jpg",
+      "images/Mur.jpg",
+       "images/teleporter.jpg",
+      "images/Ciel.jpg",
+    ];
+    var TEX_TRANSPARENT = 0;
+    var TEX_SOL = 1;
+    var TEX_MUR = 2;
+    var TEX_TELEPORTEUR = 3
+    TEX_CIEL = 4;
+    var tabPosJoueur;
+    var tabCibleJoueur;
+    var tabPosJoueurInitial;
+    var tabCibleJoueurInitial;
+    var tabOrientationJoueur;
+    var largeurJeux = 31;
 
-      var startTime = createDate();
-      var timerLength = 60;
-      setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
-      var lastSec = 0;
+    var vueAerienne = false;
 
-      setPoint(300);
 
-      async function demarrer() {
-        var objCanvas = document.getElementById("monCanvas");
-        objgl = initWebGL(objCanvas); // Initialise le contexte WebGL
-        objProgShaders = initShaders(objgl);
-        objScene3D = await initScene3D(objgl); // Créer la scène
+    var startTime = createDate();
+    var timerLength = 60;
+    setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
+    var lastSec = 0;
 
-        effacerCanevas(objgl);
-        dessiner(objgl, objProgShaders, objScene3D);
-        animer();
-      }
+    setPoint(300);
 
-      // Un cycle d'animation
-      function animer() {
-        // Requête pour le prochain cycle
-        objCycleAnimation = requestAnimationFrame(animer);
+    async function demarrer() {
+      var objCanvas = document.getElementById("monCanvas");
+      objgl = initWebGL(objCanvas); // Initialise le contexte WebGL
+      objProgShaders = initShaders(objgl);
+      objScene3D = await initScene3D(objgl); // Créer la scène
 
-        // Le cycle d'animation
-        effacerCanevas(objgl);
-        mettreAjourAnimation();
-        dessiner(objgl, objProgShaders, objScene3D);
-      }
+      effacerCanevas(objgl);
+      dessiner(objgl, objProgShaders, objScene3D);
+      animer();
+    }
 
-      // Pour mettre à jour l'animation
-      function mettreAjourAnimation() {
-        var time = createDate();
-        currentSec = nextSecond(time, startTime);
-        showTime();
+    // Un cycle d'animation
+    function animer() {
+      // Requête pour le prochain cycle
+      objCycleAnimation = requestAnimationFrame(animer);
 
-        if (binAriel) {
-          // checks to see if player is in ariel mode to take off points
-          if (lastSec != currentSec) {
-            updatePoint(false, 10);
-            lastSec = currentSec;
-          }
-        }
+      // Le cycle d'animation
+      effacerCanevas(objgl);
+      mettreAjourAnimation();
+      dessiner(objgl, objProgShaders, objScene3D);
+    }
 
-        showPoints();
-        startTime = time;
+    // Pour mettre à jour l'animation
+    function mettreAjourAnimation() {
+      var time = createDate();
+      currentSec = nextSecond(time, startTime);
+      showTime();
 
-        // checks to see if time has run out. If true reset everything and the timer
-
-        if (timeOut()) {
-          demarrer();
-          setTimerMax(timerLength);
-          resetSeconds();
-          updatePoint(false, 200);
+      if (binAriel) {
+        // checks to see if player is in ariel mode to take off points
+        if (lastSec != currentSec) {
+          updatePoint(false, 10);
+          lastSec = currentSec;
         }
       }
 
-      async function initScene3D(objgl) {
-        var objScene3D = new Object();
-        var tabObjets3D = new Array();
+      showPoints();
+      startTime = time;
 
-        // Mettre les textures dans la scène
-        objScene3D.textures = await creerTextures(objgl, tabImages);
+      // checks to see if time has run out. If true reset everything and the timer
+      if (timeOut()) {
+        demarrer();
+        setTimerMax(timerLength);
+        resetSeconds();
+        updatePoint(false, 200);
+      }
+    }
 
-        // Créer le sol
-        var obj3DSol = creerObj3DSol(objgl, TEX_SOL);
-        tabObjets3D.push(obj3DSol);
+    async function initScene3D(objgl) {
+      var objScene3D = new Object();
+      var tabObjets3D = new Array();
 
-        // Créer les murs
-        var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
-        tabObjets3D.push(obj3DMurs);
+      // Mettre les textures dans la scène
+      objScene3D.textures = await creerTextures(objgl, tabImages);
 
-        //Creer les teleporteurs
+      // Créer le sol
+      var obj3DSol = creerObj3DSol(objgl, TEX_SOL);
+      tabObjets3D.push(obj3DSol);
 
+      // Créer les murs
+      var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
+      tabObjets3D.push(obj3DMurs);
+      
+      //creer teleporteurs
         for(let i = 0 ; i < nbTeleporteur ; i++){
           var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
           tabObjets3D.push(obj3DTeleporteurs);
         }
 
-       
-        
+      // Créer le ciel
+      var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+         tabObjets3D.push(obj3DCiel);
 
-        var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
-        tabObjets3D.push(obj3DMurInterne);
+      var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
+      tabObjets3D.push(obj3DMurInterne);
+      tabObjets3D.transformations = creerTransformations();
+      setPositionsXYZ([15, 0, 15], tabObjets3D.transformations); // does not actually do anything
 
-        tabObjets3D.transformations = creerTransformations();
-        setPositionsXYZ([15, 0, 15], tabObjets3D.transformations); // does not actually do anything
+      // Mettre les objets 3D sur la scène
+      objScene3D.tabObjets3D = tabObjets3D;
 
-        // Mettre les objets 3D sur la scène
-        objScene3D.tabObjets3D = tabObjets3D;
+      // La caméra
+      var camera = creerCamera();
+      setPositionsCameraXYZ(
+        [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
+        camera
+      ); // midle of the map
+      setCiblesCameraXYZ([0, 0.5, 0], camera);
+      setOrientationsXYZ([0, 1, 0], camera);
+      objScene3D.camera = camera;
 
-        // La caméra
-        var camera = creerCamera();
-        setPositionsCameraXYZ(
-          [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
-          camera
-        ); // midle of the map
-        setCiblesCameraXYZ([0, 0.5, 0], camera);
-        setOrientationsXYZ([0, 1, 0], camera);
-        objScene3D.camera = camera;
+      return objScene3D;
+    }
 
-        return objScene3D;
-      }
+    function dessiner(objgl, objProgShaders, objScene3D) {
+      // La vue
+      objgl.viewport(
+        0,
+        0,
+        objgl.drawingBufferWidth,
+        objgl.drawingBufferHeight
+      );
 
-      function dessiner(objgl, objProgShaders, objScene3D) {
-        // La vue
-        objgl.viewport(
-          0,
-          0,
-          objgl.drawingBufferWidth,
-          objgl.drawingBufferHeight
+      // Matrice de projection
+      var matProjection = mat4.create();
+      var fltRapportCanevas =
+        objgl.drawingBufferWidth / objgl.drawingBufferHeight;
+      mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);
+
+      // Relier la matrice aux shaders
+      objgl.uniformMatrix4fv(
+        objProgShaders.matProjection,
+        false,
+        matProjection
+      );
+
+      for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
+        var vertex = objScene3D.tabObjets3D[i].vertex;
+        var couleurs = objScene3D.tabObjets3D[i].couleurs;
+        var texels = objScene3D.tabObjets3D[i].texels;
+        var maillage = objScene3D.tabObjets3D[i].maillage;
+        var transformations = objScene3D.tabObjets3D[i].transformations;
+
+        // Matrice du modèle
+        var matModeleVue = mat4.create();
+        mat4.identity(matModeleVue);
+
+        // Placer la caméra sur la scène
+        mat4.lookAt(
+          getPositionsCameraXYZ(objScene3D.camera),
+          getCiblesCameraXYZ(objScene3D.camera),
+          getOrientationsXYZ(objScene3D.camera),
+          matModeleVue
         );
 
-        // Matrice de projection
-        var matProjection = mat4.create();
-        var fltRapportCanevas =
-          objgl.drawingBufferWidth / objgl.drawingBufferHeight;
-        mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);
+        // Appliquer les transformations sur le modèle
+        mat4.translate(matModeleVue, getPositionsXYZ(transformations));
+        mat4.scale(matModeleVue, getEchellesXYZ(transformations));
+        mat4.rotateX(
+          matModeleVue,
+          (getAngleX(transformations) * Math.PI) / 180
+        );
+        mat4.rotateY(
+          matModeleVue,
+          (getAngleY(transformations) * Math.PI) / 180
+        );
+        mat4.rotateZ(
+          matModeleVue,
+          (getAngleZ(transformations) * Math.PI) / 180
+        );
 
         // Relier la matrice aux shaders
         objgl.uniformMatrix4fv(
-          objProgShaders.matProjection,
+          objProgShaders.matModeleVue,
           false,
-          matProjection
+          matModeleVue
         );
 
-        for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
-          var vertex = objScene3D.tabObjets3D[i].vertex;
-          var couleurs = objScene3D.tabObjets3D[i].couleurs;
-          var texels = objScene3D.tabObjets3D[i].texels;
-          var maillage = objScene3D.tabObjets3D[i].maillage;
-          var transformations = objScene3D.tabObjets3D[i].transformations;
-
-          // Matrice du modèle
-          var matModeleVue = mat4.create();
-          mat4.identity(matModeleVue);
-
-          // Placer la caméra sur la scène
-          mat4.lookAt(
-            getPositionsCameraXYZ(objScene3D.camera),
-            getCiblesCameraXYZ(objScene3D.camera),
-            getOrientationsXYZ(objScene3D.camera),
-            matModeleVue
-          );
-
-          // Appliquer les transformations sur le modèle
-          mat4.translate(matModeleVue, getPositionsXYZ(transformations));
-          mat4.scale(matModeleVue, getEchellesXYZ(transformations));
-          mat4.rotateX(
-            matModeleVue,
-            (getAngleX(transformations) * Math.PI) / 180
-          );
-          mat4.rotateY(
-            matModeleVue,
-            (getAngleY(transformations) * Math.PI) / 180
-          );
-          mat4.rotateZ(
-            matModeleVue,
-            (getAngleZ(transformations) * Math.PI) / 180
-          );
-
-          // Relier la matrice aux shaders
-          objgl.uniformMatrix4fv(
-            objProgShaders.matModeleVue,
-            false,
-            matModeleVue
-          );
-
-          if (maillage == null)
-            // Dessiner les sous-objets
-            for (var j = 0; j < vertex.length; j++) {
-              // Relier les vertex aux shaders
-              objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
-              objgl.vertexAttribPointer(
-                objProgShaders.posVertex,
-                3,
-                objgl.FLOAT,
-                false,
-                0,
-                0
-              );
-              var intNbVertex =
-                objgl.getBufferParameter(
-                  objgl.ARRAY_BUFFER,
-                  objgl.BUFFER_SIZE
-                ) /
-                4 /
-                3;
-
-              // Relier les couleurs aux shaders
-              objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
-              objgl.vertexAttribPointer(
-                objProgShaders.couleurVertex,
-                4,
-                objgl.FLOAT,
-                false,
-                0,
-                0
-              );
-
-              // Activer la texture
-              objgl.activeTexture(objgl.TEXTURE0 + texels[j].intNoTexture);
-              objgl.bindTexture(
-                objgl.TEXTURE_2D,
-                objScene3D.textures[texels[j].intNoTexture]
-              );
-
-              // Relier les texels aux shaders
-              objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
-              objgl.vertexAttribPointer(
-                objProgShaders.posTexel,
-                2,
-                objgl.FLOAT,
-                false,
-                0,
-                0
-              );
-
-              // Relier le no de texture et le taux de couleur aux shaders
-              objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
-              objgl.uniform1f(
-                objProgShaders.pcCouleurTexel,
-                texels[j].pcCouleurTexel
-              );
-
-              // Dessiner
-              objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
-            }
-          else {
-            // Dessiner le maillage
-
+        if (maillage == null)
+          // Dessiner les sous-objets
+          for (var j = 0; j < vertex.length; j++) {
             // Relier les vertex aux shaders
-            objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
             objgl.vertexAttribPointer(
               objProgShaders.posVertex,
               3,
@@ -283,9 +229,16 @@
               0,
               0
             );
+            var intNbVertex =
+              objgl.getBufferParameter(
+                objgl.ARRAY_BUFFER,
+                objgl.BUFFER_SIZE
+              ) /
+              4 /
+              3;
 
             // Relier les couleurs aux shaders
-            objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
             objgl.vertexAttribPointer(
               objProgShaders.couleurVertex,
               4,
@@ -296,14 +249,14 @@
             );
 
             // Activer la texture
-            objgl.activeTexture(objgl.TEXTURE0 + texels.intNoTexture);
+            objgl.activeTexture(objgl.TEXTURE0 + texels[j].intNoTexture);
             objgl.bindTexture(
               objgl.TEXTURE_2D,
-              objScene3D.textures[texels.intNoTexture]
+              objScene3D.textures[texels[j].intNoTexture]
             );
 
             // Relier les texels aux shaders
-            objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
             objgl.vertexAttribPointer(
               objProgShaders.posTexel,
               2,
@@ -314,160 +267,236 @@
             );
 
             // Relier le no de texture et le taux de couleur aux shaders
-            objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
+            objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
             objgl.uniform1f(
               objProgShaders.pcCouleurTexel,
-              texels.pcCouleurTexel
+              texels[j].pcCouleurTexel
             );
 
-            // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
-            objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
-
-            // Dessiner les triangles
-            objgl.drawElements(
-              objgl.TRIANGLES,
-              maillage.intNbTriangles * 3,
-              objgl.UNSIGNED_SHORT,
-              0
-            );
-            // Dessiner les droites à la suite des triangles
-            objgl.drawElements(
-              objgl.LINES,
-              maillage.intNbDroites * 2,
-              objgl.UNSIGNED_SHORT,
-              maillage.intNbTriangles * 2 * 3
-            );
+            // Dessiner
+            objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
           }
+        else {
+          // Dessiner le maillage
+
+          // Relier les vertex aux shaders
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
+          objgl.vertexAttribPointer(
+            objProgShaders.posVertex,
+            3,
+            objgl.FLOAT,
+            false,
+            0,
+            0
+          );
+
+          // Relier les couleurs aux shaders
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
+          objgl.vertexAttribPointer(
+            objProgShaders.couleurVertex,
+            4,
+            objgl.FLOAT,
+            false,
+            0,
+            0
+          );
+
+          // Activer la texture
+          objgl.activeTexture(objgl.TEXTURE0 + texels.intNoTexture);
+          objgl.bindTexture(
+            objgl.TEXTURE_2D,
+            objScene3D.textures[texels.intNoTexture]
+          );
+
+          // Relier les texels aux shaders
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
+          objgl.vertexAttribPointer(
+            objProgShaders.posTexel,
+            2,
+            objgl.FLOAT,
+            false,
+            0,
+            0
+          );
+
+          // Relier le no de texture et le taux de couleur aux shaders
+          objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
+          objgl.uniform1f(
+            objProgShaders.pcCouleurTexel,
+            texels.pcCouleurTexel
+          );
+
+          // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
+          objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
+
+          // Dessiner les triangles
+          objgl.drawElements(
+            objgl.TRIANGLES,
+            maillage.intNbTriangles * 3,
+            objgl.UNSIGNED_SHORT,
+            0
+          );
+          // Dessiner les droites à la suite des triangles
+          objgl.drawElements(
+            objgl.LINES,
+            maillage.intNbDroites * 2,
+            objgl.UNSIGNED_SHORT,
+            maillage.intNbTriangles * 2 * 3
+          );
         }
       }
 
-      function effacerCanevas(objgl) {
-        // Met la couleur d'effacement au noir et complétement opaque
-        objgl.clearColor(0.0, 0.0, 0.0, 1.0);
-        // Efface les couleurs et le buffer de profondeur.
-        objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+
+
+      if (binAriel) {
+        objgl.uniform1i(objProgShaders.noTexture, 0);
+        objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
+
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
+        objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+        objgl.enableVertexAttribArray(objProgShaders.posVertex);
+
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.couleurs);
+        objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+        objgl.enableVertexAttribArray(objProgShaders.couleurVertex);
+
+        objgl.drawArrays(objgl.TRIANGLES, 0, obj3DJoueur.nbrVertex);
       }
 
-      function deplacerCamera() {
-        var camera = objScene3D.camera;
+    }
 
-        if ((event.keyCode == 37 || event.keyCode == 39) && !binAriel) {
-          // 37:  Flèche-à-gauche; 39:Flèche-à-droite
-          var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-          var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-          var intDirection = event.keyCode == 37 ? -1 : 1;
-          var fltAngle = (intDirection * Math.PI) / 90; // Tourner 2 degrés
-          var fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
-          var fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
-          setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
-          setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
-        } else if ((event.keyCode == 38 || event.keyCode == 40) && !binAriel) {
-          // 38:  Flèche-en-haut; 40:Flèche-en-bas
-          var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-          var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-          var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
-          var intDirection = event.keyCode == 38 ? 1 : -1;
+    function effacerCanevas(objgl) {
+      // Met la couleur d'effacement au noir et complétement opaque
+      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+      // Efface les couleurs et le buffer de profondeur.
+      objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
+    }
 
-          var fltXPrime =
-            intDirection * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
-          var fltZPrime =
-            intDirection * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
+    function deplacerCamera() {
+      var camera = objScene3D.camera;
 
-          // Positions de la caméra
-          var fltXCamera = getPositionX(camera) + fltXPrime;
-          var fltZCamera = getPositionZ(camera) + fltZPrime;
-
-          // Limites du mur
-          var fltLimiteOuest = 0;
-          var fltLimiteEst =
-            objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur - 0.1;
-          var fltLimiteNord = 0; // -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur + 0.1;
-          var fltLimiteSud =
-            objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur - 0.1;
-          var binAucuneCollision =
-            fltXCamera > fltLimiteOuest &&
-            fltXCamera < fltLimiteEst &&
-            fltZCamera > fltLimiteNord &&
-            fltZCamera < fltLimiteSud;
-
-          // Déplacer la caméra s'il n'y a pas de collision
-          if (binAucuneCollision) {
-            setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
-            setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
-            setPositionCameraX(getPositionCameraX(camera) + fltXPrime, camera);
-            setPositionCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
-          } else {
-            // Pour longer les murs s'il y a une collision
-
-            if (fltXCamera <= fltLimiteOuest || fltXCamera >= fltLimiteEst) {
-              // On longe le mur ouest ou est
-              fltZPrime = 0.2 * (fltZ < 0 ? -1 : 1);
-              fltXPrime = 0.0;
-            } else {
-              // On longe le mur sud ou nord
-              fltXPrime = 0.2 * (fltX < 0 ? -1 : 1);
-              fltZPrime = 0.0;
-            }
-
-            // Nouvelles positions de la caméra
-            fltXCamera = getPositionX(camera) + fltXPrime;
-            fltZCamera = getPositionZ(camera) + fltZPrime;
-            var binAucuneCollision =
-              fltXCamera > fltLimiteOuest &&
-              fltXCamera < fltLimiteEst &&
-              fltZCamera > fltLimiteNord &&
-              fltZCamera < fltLimiteSud;
-            // Longer le mur s'il ne rencontre pas un nouveau mur
-            if (binAucuneCollision) {
-              setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
-              setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
-              setPositionCameraX(
-                getPositionCameraX(camera) + fltXPrime,
-                camera
-              );
-              setPositionCameraZ(
-                getPositionCameraZ(camera) + fltZPrime,
-                camera
-              );
-            }
-          }
-        }
-
-        if (event.keyCode == 33 && !binAriel) {
-          //page up mode aerienne
-          tabPosJoueur = getPositionsCameraXYZ(camera);
-          tabCibleJoueur = getCiblesCameraXYZ(camera);
-          setPositionsCameraXYZ([largeurJeux / 2, 55, largeurJeux / 2], camera);
-          setCiblesCameraXYZ([15, 0, 15], camera);
-          binAriel = true;
-        }
-        if (event.keyCode == 34 && binAriel) {
-          // page down mode joueur
-          setPositionsCameraXYZ(tabPosJoueur, camera);
-          setCiblesCameraXYZ(tabCibleJoueur, camera);
-          binAriel = false;
-        }
-
-        effacerCanevas(objgl);
-        dessiner(objgl, objProgShaders, objScene3D);
+      if (cameraDansMur(camera)) {
+        console.log("The camera is inside a wall!");
+        // Rajouter le long du mur
+        return; // Arreter le mouvement
       }
-    </script>
-  </head>
 
-  <body onload="demarrer()">
-    <canvas
-      id="monCanvas"
-      width="640"
-      height="640"
-      tabindex="1"
-      ,
-      onkeydown="deplacerCamera(); return false"
-    >
-      Votre navigateur ne supporte pas la balise canvas
-    </canvas>
-    <div id="timer"></div>
-    <!--temporary. just here to test visibility of timer-->
-    <div id="points"></div>
-    <!--temporary. just here to test visibility of points-->
-  </body>
+      if ((event.keyCode == 37 || event.keyCode == 39) && !binAriel) {
+        // Mouvement gauche droite
+        var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+        var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+
+        var intDirection = event.keyCode == 37 ? -1 : 1;
+
+        var fltAngle = (intDirection * Math.PI) / 90;
+
+        var fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
+        var fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
+
+        setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
+        setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+
+      } else if ((event.keyCode == 38 || event.keyCode == 40) && !binAriel) {
+        // Mouvement avant arriere
+        var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+        var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+        var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
+        var intDirection = event.keyCode == 38 ? 1 : -1;
+
+        var fltXPrime = intDirection * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
+        var fltZPrime = intDirection * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
+
+        // Calculer nouvelle position camera
+        var fltXCamera = getPositionCameraX(camera) + fltXPrime;
+        var fltZCamera = getPositionCameraZ(camera) + fltZPrime;
+
+        // Limites du mur
+        var fltLimiteOuest = -objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2 + 0.1;
+        var fltLimiteEst = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2 - 0.1;
+        var fltLimiteNord = -objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2 + 0.1;
+        var fltLimiteSud = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2 - 0.1;
+        var binAucuneCollision = (fltXCamera > fltLimiteOuest) && (fltXCamera < fltLimiteEst) &&
+          (fltZCamera > fltLimiteNord) && (fltZCamera < fltLimiteSud);
+
+        // Checker nouvelles collisions avant de bouger
+        setPositionCameraX(fltXCamera, camera);
+        setPositionCameraZ(fltZCamera, camera);
+
+        if (cameraDansMur(camera)) {
+          // Ne pas faire le mouvement si il y une collision
+          setPositionCameraX(getPositionCameraX(camera) - fltXPrime, camera);
+          setPositionCameraZ(getPositionCameraZ(camera) - fltZPrime, camera);
+        } else {
+          // Update la target de la camera
+          setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
+          setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
+        }
+
+
+      }
+
+      if (event.keyCode == 33 && !binAriel) //page up mode aerienne
+      {
+        tabPosJoueurInitial = getPositionsCameraXYZ(camera);
+        tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
+        tabPosJoueur = getPositionsCameraXYZ(camera);
+        console.log(tabPosJoueur);
+        tabCibleJoueur = getCiblesCameraXYZ(camera);
+        setPositionsCameraXYZ([15, 40, 15], camera);
+        setOrientationX(-90, camera);
+        setCiblesCameraXYZ([15, 0, 15], camera);
+
+        console.log("page up mode aerienne");
+        binAriel = true;
+
+        obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
+
+      }
+      if (event.keyCode == 34 && binAriel) // page down mode joueur
+      {
+        setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+        setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+        setOrientationX(0, camera);
+        console.log("page down mode joueur");
+        binAriel = false;
+      }
+
+      effacerCanevas(objgl);
+      dessiner(objgl, objProgShaders, objScene3D);
+    }
+
+    function cameraDansMur(camera) {
+      // Get the camera's current position
+      var cameraX = getPositionCameraX(camera);
+      var cameraZ = getPositionCameraZ(camera);
+
+      // Convert the camera's position to grid coordinates
+      var gridX = Math.floor(cameraX);
+      var gridZ = Math.floor(cameraZ);
+
+      // Check if the camera is outside the bounds of the grid (outer wall collision)
+      if (gridX < 0 || gridX >= tabMurs.length || gridZ < 0 || gridZ >= tabMurs[0].length) {
+        return true; // Collision with the outer wall
+      }
+
+      // Check if the camera is inside an inner wall
+      if (tabMurs[gridX][gridZ] === 1) {
+        return true; // Collision with an inner wall
+      }
+      // No collision
+      return false;
+    }
+  </script>
+</head>
+
+<body onload="demarrer()">
+  <canvas id="monCanvas" width="640" height="640" tabindex="1" , onkeydown="deplacerCamera(); return false">
+    Votre navigateur ne supporte pas la balise canvas
+  </canvas>
+  <div id="timer"></div>
+  <!--temporary. just here to test visibility of timer-->
+  <div id="points"></div>
+  <!--temporary. just here to test visibility of points-->
+</body>
+
 </html>
