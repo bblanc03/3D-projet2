@@ -42,7 +42,7 @@
       "images/Sol.jpg",
       "images/Mur.jpg",
       "images/teleporter.jpg",
-      "images/Ciel.jpg",
+      "images/sky.jpg",
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
@@ -149,8 +149,8 @@
       }
 
       // Créer le ciel
-      //var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
-      // tabObjets3D.push(obj3DCiel);
+      var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+      tabObjets3D.push(obj3DCiel);
 
 
 
@@ -473,7 +473,7 @@
         setPositionsCameraXYZ([15, 40, 15], camera);
         setOrientationX(-90, camera);
         setCiblesCameraXYZ([15, 0, 15], camera);
-
+        updateHauteurCiel(-2, obj3DCiel);
         console.log("page up mode aerienne");
         binAriel = true;
 
@@ -485,6 +485,7 @@
         setPositionsCameraXYZ(tabPosJoueurInitial, camera);
         setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
         setOrientationX(0, camera);
+        updateHauteurCiel(2, obj3DCiel);
         console.log("page down mode joueur");
         binAriel = false;
       }
