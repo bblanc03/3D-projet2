@@ -48,7 +48,7 @@
     var TEX_SOL = 1;
     var TEX_MUR = 2;
     var TEX_TELEPORTEUR = 3
-    TEX_CIEL = 4;
+    var TEX_CIEL = 4;
     var tabPosJoueur;
     var tabCibleJoueur;
     var tabPosJoueurInitial;
@@ -139,13 +139,8 @@
       setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
 
       // Creer les fleches
-      var obj3DFleche = creerobj3DFleche(objgl, obj3DMurs, TEX_TRANSPARENT);
-      //var position = positionValideFleche();
-      //var z = position.z;
-      //var x = position.x;
+      var obj3DFleche = creerobj3DFleche(objgl);
       tabObjets3D.push(obj3DFleche);
-      setPositionZ(14.5, tabObjets3D[OBJ3D_FLECHE].transformations);
-      setPositionX(14.5, tabObjets3D[OBJ3D_FLECHE].transformations);
 
       //console.log(position.z + " " + position.x);
       //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
