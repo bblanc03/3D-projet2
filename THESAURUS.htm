@@ -113,20 +113,17 @@
       tabObjets3D.push(obj3DMurs);
 
       // Creer le tresor
-      var obj3DTornade = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
+      var obj3DTresore = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
       var position = positionValideTresor();
       var z = position.z;
       var x = position.x;
-      tabObjets3D.push(obj3DTornade);
+      tabObjets3D.push(obj3DTresore);
       setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
       setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
 
       //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
       //setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
       
-
-
-
 
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
