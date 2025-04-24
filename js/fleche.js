@@ -1,3 +1,6 @@
+var positionFleches = [];
+
+
 function creerobj3DFleche(objgl, obj3DMurs, intNoTexture) {
     var obj3DFleche = new Object();
 
@@ -137,7 +140,7 @@ function creerFleche(objgl) {
         objVertex[i] = objgl.createBuffer();
         objgl.bindBuffer(objgl.ARRAY_BUFFER, objVertex[i]);
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
-        
+
         // Use TRIANGLE_FAN for faces, LINE_STRIP for borders
         objVertex[i].typeDessin = (i < 9) ? objgl.TRIANGLE_FAN : objgl.LINE_STRIP;
     }
@@ -272,7 +275,7 @@ function creerTexelsFleche(objgl) {
         else {
             tabTexelsFleche[i].pcCouleurTexel = 0.0;
         }
-        
+
         // Add texture properties for all buffers
         tabTexelsFleche[i].intNoTexture = 0;
     }
@@ -285,7 +288,8 @@ function positionValideFleche() {
     let validLocation = false;
     let x, z;
 
-    const GRANDEUR_GRID = 29;
+    var GRANDEUR_GRID = 29;
+    var MIN_DISTANCE = 5;
 
     while (!validLocation) {
         x = Math.floor(Math.random() * GRANDEUR_GRID);  // rangees
@@ -293,7 +297,23 @@ function positionValideFleche() {
 
         // Checker si le coord est vide
         if (tableauMur[x][z] === 0) {
-            validLocation = true;
+            let tropProche = false;
+            for (let pos of positionFleches) {
+                let distance = Math.sqrt(
+                    Math.pow(x - pos.x, 2) +
+                    Math.pow(z - pos.z, 2)
+                );
+                if (distance < MIN_DISTANCE) {
+                    tropProche = true;
+                    break;
+                }
+            }
+
+            if (!tropProche) {
+                validLocation = true;
+                // Rajouter nouvelle position
+                positionFleches.push({ x: x + 0.5, z: z + 0.5 });
+            }
         }
         //Eventuellement rajouter aussi pour ne pas spawn dans le milieu et dans les autres objects
     }

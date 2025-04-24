@@ -14,6 +14,13 @@ function creerobj3DTresor(objgl, obj3DMurs, intNoTexture) {
 
     setPositionY(0.15, obj3DTresor.transformations);
 
+    var position = positionValideTresor();
+    var z = position.z;
+    var x = position.x;
+
+    setPositionZ(z, obj3DTresor.transformations);
+    setPositionX(x, obj3DTresor.transformations);
+
     return obj3DTresor;
 }
 

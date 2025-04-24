@@ -35,6 +35,7 @@
     var OBJ3D_FLECHE = 3;
 
     var nbTeleporteur = 3; // Number of teleporters in the game
+    var nbrFleches = 18;
     var binAriel = false;
 
     var tabImages = [
@@ -55,6 +56,7 @@
     var tabCibleJoueurInitial;
     var tabOrientationJoueur;
     var largeurJeux = 31;
+
 
     var vueAerienne = false;
 
@@ -131,16 +133,16 @@
 
       // Creer le tresor
       var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
-      var position = positionValideTresor();
-      var z = position.z;
-      var x = position.x;
       tabObjets3D.push(obj3DTresor);
-      setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
-      setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
+
 
       // Creer les fleches
-      var obj3DFleche = creerobj3DFleche(objgl);
-      tabObjets3D.push(obj3DFleche);
+
+
+      for (let i = 0; i < nbrFleches; i++) {
+        var obj3DFleche = creerobj3DFleche(objgl);
+        tabObjets3D.push(obj3DFleche);
+      }
 
       //creer teleporteurs
       for (let i = 0; i < nbTeleporteur; i++) {
