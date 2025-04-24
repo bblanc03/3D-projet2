@@ -113,16 +113,19 @@
       tabObjets3D.push(obj3DMurs);
 
       // Creer le tresor
-      var obj3DTresore = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
+      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
       var position = positionValideTresor();
       var z = position.z;
       var x = position.x;
-      tabObjets3D.push(obj3DTresore);
+      tabObjets3D.push(obj3DTresor);
       setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
       setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
 
+      //console.log(position.z + " " + position.x);
       //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
       //setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      //getCibleCameraX(camera);
       
 
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
@@ -135,6 +138,7 @@
 
       // La caméra
       var camera = creerCamera();
+      console.log(getCibleCameraX(camera));
       setPositionsCameraXYZ(
         [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
         camera
