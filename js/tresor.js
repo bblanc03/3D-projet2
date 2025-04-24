@@ -1,14 +1,18 @@
 function creerobj3DTresor(objgl, obj3DMurs, intNoTexture) {
     var obj3DTresor = new Object();
-    obj3DTresor.fltProfondeur = 0.6;
-    obj3DTresor.fltLargeur = 0.6;
-    obj3DTresor.fltHauteur = obj3DMurs.fltHauteur;
+    obj3DTresor.fltProfondeur = 0.15;
+    obj3DTresor.fltLargeur = 0.3;
+    obj3DTresor.fltHauteur = 0.1;
 
     obj3DTresor.vertex = creerTresor(objgl);
     obj3DTresor.couleurs = creerCouleursTresor(objgl);
     obj3DTresor.maillage = null;
     obj3DTresor.texels = creerTexelsTresor(objgl);
     obj3DTresor.transformations = creerTransformations();
+
+    setEchellesXYZ([obj3DTresor.fltLargeur, obj3DTresor.fltHauteur, obj3DTresor.fltProfondeur], obj3DTresor.transformations);
+
+    setPositionY(0.15, obj3DTresor.transformations);
 
     return obj3DTresor;
 }
@@ -243,8 +247,6 @@ function creerTexelsTresor(objgl) {
     return tabTexelsCube;
 }
 
-
-
 function positionValideTresor() {
     let tableauMur = getTabMap();
     let validLocation = false;
@@ -269,3 +271,5 @@ function positionValideTresor() {
         z: z + 0.5
     };
 }
+
+

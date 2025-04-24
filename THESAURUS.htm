@@ -25,6 +25,7 @@
 
     var OBJ3D_SOL = 0;
     var OBJ3D_MURS = 1;
+    var OBJ3D_TRESOR = 2;
 
     var binAriel = false;
 
@@ -112,21 +113,19 @@
       tabObjets3D.push(obj3DMurs);
 
       // Creer le tresor
-      
       var obj3DTornade = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
       var position = positionValideTresor();
       var z = position.z;
       var x = position.x;
-
       tabObjets3D.push(obj3DTornade);
-      
-      setPositionZ(position.z, obj3DTornade.transformations);
-      setPositionX(position.x, obj3DTornade.transformations);
-      
-      console.log("z : " + position.z);
-      console.log("x : " + position.x);
-      
+      //setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
+      //setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
 
+      setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+      setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+      
+      
+      console.log(tabObjets3D)
 
 
 
@@ -356,12 +355,6 @@
     function deplacerCamera() {
       var camera = objScene3D.camera;
 
-      if (cameraDansMur(camera)) {
-        console.log("The camera is inside a wall!");
-        // Rajouter le long du mur
-        return; // Arreter le mouvement
-      }
-
       if ((event.keyCode == 37 || event.keyCode == 39) && !binAriel) {
         // Mouvement gauche droite
         var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
@@ -412,6 +405,8 @@
           setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
           setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
         }
+
+        collisionTresor(camera);
 
 
       }
@@ -469,6 +464,15 @@
 
       // No collision
       return false;
+    }
+
+    function collisionTresor(camera) {
+      var cameraX = getPositionCameraX(camera);
+      var cameraZ = getPositionCameraZ(camera);
+
+      var tresorX = getPositionX(tresor.transformations);
+
+      console.log(cameraZ + " " + cameraX);
     }
   </script>
 </head>
