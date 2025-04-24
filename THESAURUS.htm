@@ -15,9 +15,8 @@
   <script type="text/javascript" src="js/Textures.js"></script>
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
-
   <script type="text/javascript" src="js/tresor.js"></script>
-
+  <script type="text/javascript" src="js/fleche.js"></script>
   <script type="text/javascript" src="js/Joueur.js"></script>
   <script type="text/javascript" src="js/Teleportor.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>
@@ -33,6 +32,7 @@
     var OBJ3D_SOL = 0;
     var OBJ3D_MURS = 1;
     var OBJ3D_TRESOR = 2;
+    var OBJ3D_FLECHE = 3;
 
     var nbTeleporteur = 3; // Number of teleporters in the game
     var binAriel = false;
@@ -137,6 +137,15 @@
       tabObjets3D.push(obj3DTresor);
       setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
       setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      // Creer les fleches
+      var obj3DFleche = creerobj3DFleche(objgl, obj3DMurs, TEX_TRANSPARENT);
+      //var position = positionValideFleche();
+      //var z = position.z;
+      //var x = position.x;
+      tabObjets3D.push(obj3DFleche);
+      setPositionZ(14.5, tabObjets3D[OBJ3D_FLECHE].transformations);
+      setPositionX(14.5, tabObjets3D[OBJ3D_FLECHE].transformations);
 
       //console.log(position.z + " " + position.x);
       //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);

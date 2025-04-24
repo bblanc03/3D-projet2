@@ -105,15 +105,15 @@ function creerTresor(objgl) {
     ];
 
     // Création des tampons
-    var tabObjCube = new Array();
+    var tabObjTresor = new Array();
     for (var i = 0; i < 9; i++) {
-        tabObjCube[i] = objgl.createBuffer();
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCube[i]);
+        tabObjTresor[i] = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjTresor[i]);
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
-        tabObjCube[i].typeDessin = (i < 2) || ((i >= 5 && i <= 8)) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
+        tabObjTresor[i].typeDessin = (i < 2) || ((i >= 5 && i <= 8)) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
     }
 
-    return tabObjCube;
+    return tabObjTresor;
 }
 
 function creerCouleursTresor(objgl) {
@@ -216,31 +216,31 @@ function creerTexelsTresor(objgl) {
 
         if (i === 0) { //Face avant
             tabTexelsCube[i].intNoTexture = 1; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 1) { // Face derriere
             tabTexelsCube[i].intNoTexture = 6; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 5) { // face haut
             tabTexelsCube[i].intNoTexture = 2; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 6) { // face bas
             tabTexelsCube[i].intNoTexture = 5; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 7) { // face droite
             tabTexelsCube[i].intNoTexture = 3; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 8) { // face gauche
             tabTexelsCube[i].intNoTexture = 4; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else { 
             tabTexelsCube[i].intNoTexture = 0;
-            tabTexelsCube[i].pcCouleurTexel = 0.0;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
     }
 
