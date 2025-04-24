@@ -15,6 +15,7 @@
     <script type="text/javascript" src="js/timer.js"></script>
     <script type="text/javascript" src="js/points.js"></script>
     <script type="text/javascript" src="js/Teleportor.js"></script>
+    <script type="text/javascript" src="js/Reciever.js"></script>
     <script type="text/javascript">
       // all the code goes here
       var objgl = null;
@@ -22,7 +23,10 @@
       var objScene3D = null;
       var objCycleAnimation = null;
 
+      //tp variables
+
       var nbTeleporteur = 5;
+      var nbReceveur = 5;
 
       var OBJ3D_SOL = 0;
       var OBJ3D_MURS = 1;
@@ -33,12 +37,14 @@
         "images/Transparent.gif",
         "images/Sol.jpg",
         "images/Mur.jpg",
-        "images/teleporter.jpg"
+        "images/teleporter.jpg",
+        "images/reciever.jpg"
       ];
       var TEX_TRANSPARENT = 0;
       var TEX_SOL = 1;
       var TEX_MUR = 2;
       var TEX_TELEPORTEUR = 3
+      var TEX_RECEVEUR = 4
       var tabPosJoueur;
       var tabCibleJoueur;
       var largeurJeux = 31;
@@ -121,8 +127,10 @@
           tabObjets3D.push(obj3DTeleporteurs);
         }
 
-       
-        
+        for(let i = 0 ; i < nbReceveur ; i++){
+          var obj3DReceveurs = creerObj3DTeleporteur(objgl, TEX_RECEVEUR, nbReceveur);
+          tabObjets3D.push(obj3DReceveurs);
+        }
 
         var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
         tabObjets3D.push(obj3DMurInterne);
@@ -142,9 +150,11 @@
         setCiblesCameraXYZ([0, 0.5, 0], camera);
         setOrientationsXYZ([0, 1, 0], camera);
         objScene3D.camera = camera;
-
+         
         return objScene3D;
       }
+
+      
 
       function dessiner(objgl, objProgShaders, objScene3D) {
         // La vue
@@ -450,7 +460,11 @@
 
         effacerCanevas(objgl);
         dessiner(objgl, objProgShaders, objScene3D);
+
+
       }
+      
+
     </script>
   </head>
 

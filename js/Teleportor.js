@@ -1,8 +1,11 @@
 const tableauMur = getTabMurs();
-
+let tabTeleports = [];
 let lastTeleportor = null;
-let lastReciever = null;
 let coordsTeleport = null;
+
+function getTabTeleports(){
+    return tabTeleports;
+}
 
 //verification des spawn teleporteurs
 function validTeleportorLocation() {
@@ -28,32 +31,6 @@ function validTeleportorLocation() {
     return { x: x, y: y };
 }
 
-//verification des spawn receveurs
-function validRecieverLocation() {
-    let validLocationRecep = false;
-    let x, y;
-
-    while (!validLocationRecep) {
-        x = Math.floor(Math.random() * (tableauMur.length));
-        y = Math.floor(Math.random() * (tableauMur.length));
-
-        // Ensure the guard spawns on a brick (1) and not on concrete (3), ladder (4), rope (5), or gold (6)
-        // Also ensure there is a solid surface (brick or concrete) directly below the guard
-        if (tableauMur[x][y] === 0 && tableauMur[x][y] !== 1 && tableauMur[x][y] !== 2) {
-            if (!lastTeleportor || (lastTeleportor.x !== x || lastTeleportor.y !== y)) {
-                if (!lastReciever || (lastReciever.x !== x || lastReciever.y !== y)) {
-                    validLocationRecep = true;
-                }
-
-            }
-
-        }
-    }
-
-    lastReciever = { x: x, y: y };
-    // Return the position at the center of the tile
-    return { x: x, y: y };
-};
 
 //creation du teleporteur
 function creerObj3DTeleporteur(objgl, intNoTexture) {
@@ -66,40 +43,42 @@ function creerObj3DTeleporteur(objgl, intNoTexture) {
     obj3DTeleporteurs.couleurs = creerCouleursTeleporteur(objgl, [1, 1, 1, 1]);
     obj3DTeleporteurs.texels = creerTexelsTeleporteur(objgl, obj3DTeleporteurs.fltLargeur, obj3DTeleporteurs.fltProfondeur, intNoTexture);
     obj3DTeleporteurs.maillage = creerMaillageTeleporteur(objgl, nbTeleporteur);
-
     obj3DTeleporteurs.transformations = creerTransformations();
     return obj3DTeleporteurs;
 }
+
 // final test
 function creerVertexTeleporteur(objgl, fltLargeur, fltProfondeur) {
-
-
     var tabVertex = [
     ];
 
     coordsTeleport = validTeleportorLocation()
+    tabTeleports.push(coordsTeleport);
     tabVertex.push(coordsTeleport.x); // bottom front left -- 0
-    tabVertex.push(0.2);
+    tabVertex.push(0.02);
     tabVertex.push(coordsTeleport.y);
 
     tabVertex.push(coordsTeleport.x + 1); // bottom front right -- 1
-    tabVertex.push(0.2);
+    tabVertex.push(0.02);
     tabVertex.push(coordsTeleport.y);
 
     tabVertex.push(coordsTeleport.x); // bottom back left -- 4
-    tabVertex.push(0.2);
+    tabVertex.push(0.02);
     tabVertex.push(coordsTeleport.y + 1);
 
     tabVertex.push(coordsTeleport.x + 1); // bottom back right -- 5
-    tabVertex.push(0.2);
+    tabVertex.push(0.02);
     tabVertex.push(coordsTeleport.y + 1);
 
 
+    
     var objTeleporteur = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTeleporteur);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
     return objTeleporteur;
 }
+
+
 
 function creerCouleursTeleporteur(objgl, tabCouleur) {
     tabCouleurs = [];
