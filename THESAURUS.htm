@@ -48,7 +48,7 @@
 
 
     var startTime = createDate();
-    var timerLength = 60;
+    var timerLength = 400;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -439,6 +439,7 @@
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
 
       }
+
       if (event.keyCode == 34 && binAriel) // page down mode joueur
       {
         setPositionsCameraXYZ(tabPosJoueurInitial, camera);
@@ -448,6 +449,33 @@
         binAriel = false;
       }
 
+      if (event.keyCode == 32) {
+        var posX = Math.floor(getPositionCameraX(camera));
+        var posZ = Math.floor(getPositionCameraZ(camera));
+        var cibleX = Math.floor(getCibleCameraX(camera));
+        var cibleZ = Math.floor(getCibleCameraZ(camera));
+
+        var dirX = cibleX - posX;
+        var dirZ = cibleZ - posZ;
+        console.log("dirX: " + dirX + " dirZ: " + dirZ) 
+
+        // directions (up, down, left, right) in grid
+        var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+        var dirGrixZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+        console.log("stepX: " + dirGridX + " stepZ: " + dirGrixZ) 
+
+        var gridX = posX + dirGridX;
+        var gridZ = posZ + dirGrixZ;
+
+        console.log("posX: " + posX + " posZ: " + posZ) 
+        console.log("gridX: " + gridX + " gridZ: " + gridZ)
+
+        if (tabMurs[gridZ] && tabMurs[gridX][gridZ] == 1) {
+          tabMurs[gridX][gridZ] = 0;
+          objScene3D.tabObjets3D[2] = creerObj3DMursInternes(objgl, TEX_MUR);
+          console.log("mur ouvert [" + gridZ + "][" + gridX + "]");
+        }
+      }
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
     }
