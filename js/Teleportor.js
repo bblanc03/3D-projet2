@@ -56,48 +56,43 @@ function validRecieverLocation() {
 };
 
 //creation du teleporteur
-function creerObj3DTeleporteur(objgl, intNoTexture, nbTeleporteur) {
+function creerObj3DTeleporteur(objgl, intNoTexture) {
     var obj3DTeleporteurs = new Object();
     obj3DTeleporteurs.fltProfondeur = 1;
     obj3DTeleporteurs.fltLargeur = 1;
-    obj3DTeleporteurs.fltHauteur = 0;
+    obj3DTeleporteurs.fltHauteur = 1;
 
-    obj3DTeleporteurs.vertex = creerVertexTeleporteur(objgl, obj3DTeleporteurs.fltLargeur, obj3DTeleporteurs.fltProfondeur, nbTeleporteur);
+    obj3DTeleporteurs.vertex = creerVertexTeleporteur(objgl, obj3DTeleporteurs.fltLargeur, obj3DTeleporteurs.fltProfondeur);
     obj3DTeleporteurs.couleurs = creerCouleursTeleporteur(objgl, [1, 1, 1, 1]);
-    obj3DTeleporteurs.texels = creerTexelsTeleporteur(objgl, obj3DTeleporteurs.fltLargeur, obj3DTeleporteurs.fltProfondeur, intNoTexture, nbTeleporteur);
+    obj3DTeleporteurs.texels = creerTexelsTeleporteur(objgl, obj3DTeleporteurs.fltLargeur, obj3DTeleporteurs.fltProfondeur, intNoTexture);
     obj3DTeleporteurs.maillage = creerMaillageTeleporteur(objgl, nbTeleporteur);
 
     obj3DTeleporteurs.transformations = creerTransformations();
     return obj3DTeleporteurs;
 }
 // final test
-function creerVertexTeleporteur(objgl, fltLargeur, fltProfondeur, nbTeleporteur) {
-   
+function creerVertexTeleporteur(objgl, fltLargeur, fltProfondeur) {
+
 
     var tabVertex = [
     ];
-    for (let i = 0; i < nbTeleporteur; i++) {
-        coordsTeleport = validTeleportorLocation();
-        console.log(coordsTeleport)
-        tabVertex.push(coordsTeleport.x); // bottom front left -- 0
-        tabVertex.push(0);
-        tabVertex.push(coordsTeleport.y);
 
-        tabVertex.push(coordsTeleport.x + 1); // bottom front right -- 1
-        tabVertex.push(0);
-        tabVertex.push(coordsTeleport.y);
+    coordsTeleport = validTeleportorLocation()
+    tabVertex.push(coordsTeleport.x); // bottom front left -- 0
+    tabVertex.push(0.2);
+    tabVertex.push(coordsTeleport.y);
 
-        tabVertex.push(coordsTeleport.x); // bottom back left -- 4
-        tabVertex.push(0);
-        tabVertex.push(coordsTeleport.y + 1);
+    tabVertex.push(coordsTeleport.x + 1); // bottom front right -- 1
+    tabVertex.push(0.2);
+    tabVertex.push(coordsTeleport.y);
 
-        tabVertex.push(coordsTeleport.x + 1); // bottom back right -- 5
-        tabVertex.push(0);
-        tabVertex.push(coordsTeleport.y + 1);
-    }
+    tabVertex.push(coordsTeleport.x); // bottom back left -- 4
+    tabVertex.push(0.2);
+    tabVertex.push(coordsTeleport.y + 1);
 
-
-
+    tabVertex.push(coordsTeleport.x + 1); // bottom back right -- 5
+    tabVertex.push(0.2);
+    tabVertex.push(coordsTeleport.y + 1);
 
 
     var objTeleporteur = objgl.createBuffer();
@@ -118,18 +113,17 @@ function creerCouleursTeleporteur(objgl, tabCouleur) {
     return objCouleursSol;
 }
 
-function creerTexelsTeleporteur(objgl, fltLargeur, fltProfondeur, intNoTexture, nbTeleporteur) {
+function creerTexelsTeleporteur(objgl, fltLargeur, fltProfondeur, intNoTexture) {
     var tabTexels = [];
-    for (let i = 0; i < nbTeleporteur; i++) {
-        tabTexels.push(0.0)
-        tabTexels.push(0.0)
-        tabTexels.push(fltLargeur)
-        tabTexels.push(0.0)
-        tabTexels.push(0.0)
-        tabTexels.push(fltProfondeur)
-        tabTexels.push(fltLargeur)
-        tabTexels.push(fltProfondeur)
-    }
+    tabTexels.push(0.0)
+    tabTexels.push(0.0)
+    tabTexels.push(fltLargeur)
+    tabTexels.push(0.0)
+    tabTexels.push(0.0)
+    tabTexels.push(fltProfondeur)
+    tabTexels.push(fltLargeur)
+    tabTexels.push(fltProfondeur)
+
 
 
     var objTexelsTeleporteur = objgl.createBuffer();
@@ -141,16 +135,16 @@ function creerTexelsTeleporteur(objgl, fltLargeur, fltProfondeur, intNoTexture, 
     return objTexelsTeleporteur;
 }
 
-function creerMaillageTeleporteur(objgl, nbTeleporteur) {
+function creerMaillageTeleporteur(objgl) {
     var tabMaillage = [];
-    for (let i = 0; i < nbTeleporteur; i++) {
-        tabMaillage.push(0);
-        tabMaillage.push(1);
-        tabMaillage.push(3);
-        tabMaillage.push(0);
-        tabMaillage.push(2);
-        tabMaillage.push(3);            
-    }
+
+    tabMaillage.push(0);
+    tabMaillage.push(1);
+    tabMaillage.push(3);
+    tabMaillage.push(0);
+    tabMaillage.push(2);
+    tabMaillage.push(3);
+
 
 
     var objMaillageTeleporteur = objgl.createBuffer();
