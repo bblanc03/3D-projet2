@@ -14,9 +14,13 @@
   <script type="text/javascript" src="js/Textures.js"></script>
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
+
+  <script type="text/javascript" src="js/tresor.js"></script>
+
   <script type="text/javascript" src="js/Joueur.js"></script>
   <script type="text/javascript" src="js/Teleportor.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>   
+
 
   <script type="text/javascript">
     // all the code goes here
@@ -27,6 +31,8 @@
 
     var OBJ3D_SOL = 0;
     var OBJ3D_MURS = 1;
+    var OBJ3D_TRESOR = 2;
+
 var nbTeleporteur = 3; // Number of teleporters in the game
     var binAriel = false;
 
@@ -132,6 +138,22 @@ var nbTeleporteur = 3; // Number of teleporters in the game
       //var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
         // tabObjets3D.push(obj3DCiel);
 
+      // Creer le tresor
+      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
+      var position = positionValideTresor();
+      var z = position.z;
+      var x = position.x;
+      tabObjets3D.push(obj3DTresor);
+      setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
+      setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      //console.log(position.z + " " + position.x);
+      //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+      //setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      //getCibleCameraX(camera);
+      
+
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
       tabObjets3D.transformations = creerTransformations();
@@ -142,6 +164,7 @@ var nbTeleporteur = 3; // Number of teleporters in the game
 
       // La caméra
       var camera = creerCamera();
+      console.log(getCibleCameraX(camera));
       setPositionsCameraXYZ(
         [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
         camera
@@ -376,12 +399,6 @@ var nbTeleporteur = 3; // Number of teleporters in the game
     function deplacerCamera() {
       var camera = objScene3D.camera;
 
-      if (cameraDansMur(camera)) {
-        console.log("The camera is inside a wall!");
-        // Rajouter le long du mur
-        return; // Arreter le mouvement
-      }
-
       if ((event.keyCode == 37 || event.keyCode == 39) && !binAriel) {
         // Mouvement gauche droite
         var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
@@ -434,6 +451,13 @@ var nbTeleporteur = 3; // Number of teleporters in the game
         }
 
 
+        if (collisionTresor(camera)) {
+          console.log("collision!");
+        }
+
+
+
+
       }
 
       if (event.keyCode == 33 && !binAriel) //page up mode aerienne
@@ -462,6 +486,8 @@ var nbTeleporteur = 3; // Number of teleporters in the game
         binAriel = false;
       }
 
+
+
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
     }
@@ -486,6 +512,23 @@ var nbTeleporteur = 3; // Number of teleporters in the game
       }
       // No collision
       return false;
+    }
+
+    function collisionTresor(camera) {
+      var cameraX = getPositionCameraX(camera);
+      var cameraZ = getPositionCameraZ(camera);
+
+      var tresorX = getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+      var tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      if (Math.floor(cameraX) == Math.floor(tresorX) && Math.floor(cameraZ) == Math.floor(tresorZ)) {
+        //console.log("collision")
+        return true;
+      }
+
+
+      //console.log("Camera : " + cameraZ + " " + cameraX);
+      //console.log("Tresor : " + tresorZ + " " + tresorX);
     }
   </script>
 </head>
