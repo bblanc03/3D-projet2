@@ -1,5 +1,4 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
-
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Thesaurus</title>
@@ -15,7 +14,14 @@
   <script type="text/javascript" src="js/Textures.js"></script>
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
+
   <script type="text/javascript" src="js/tresor.js"></script>
+
+  <script type="text/javascript" src="js/Joueur.js"></script>
+  <script type="text/javascript" src="js/Teleportor.js"></script>
+  <script type="text/javascript" src="js/Ciel.js"></script>   
+
+
   <script type="text/javascript">
     // all the code goes here
     var objgl = null;
@@ -27,19 +33,30 @@
     var OBJ3D_MURS = 1;
     var OBJ3D_TRESOR = 2;
 
+var nbTeleporteur = 3; // Number of teleporters in the game
     var binAriel = false;
 
     var tabImages = [
       "images/Transparent.gif",
       "images/Sol.jpg",
       "images/Mur.jpg",
+       "images/teleporter.jpg",
+      "images/Ciel.jpg",
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
     var TEX_MUR = 2;
+    var TEX_TELEPORTEUR = 3
+    TEX_CIEL = 4;
     var tabPosJoueur;
     var tabCibleJoueur;
+    var tabPosJoueurInitial;
+    var tabCibleJoueurInitial;
+    var tabOrientationJoueur;
     var largeurJeux = 31;
+
+    var vueAerienne = false;
+
 
     var startTime = createDate();
     var timerLength = 60;
@@ -88,7 +105,6 @@
       startTime = time;
 
       // checks to see if time has run out. If true reset everything and the timer
-
       if (timeOut()) {
         demarrer();
         setTimerMax(timerLength);
@@ -111,6 +127,16 @@
       // Créer les murs
       var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
       tabObjets3D.push(obj3DMurs);
+      
+      //creer teleporteurs
+        for(let i = 0 ; i < nbTeleporteur ; i++){
+          var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+          tabObjets3D.push(obj3DTeleporteurs);
+        }
+
+      // Créer le ciel
+      //var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+        // tabObjets3D.push(obj3DCiel);
 
       // Creer le tresor
       var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
@@ -343,6 +369,24 @@
           );
         }
       }
+
+
+
+      if (binAriel) {
+        objgl.uniform1i(objProgShaders.noTexture, 0);
+        objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
+
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
+        objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
+        objgl.enableVertexAttribArray(objProgShaders.posVertex);
+
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.couleurs);
+        objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
+        objgl.enableVertexAttribArray(objProgShaders.couleurVertex);
+
+        objgl.drawArrays(objgl.TRIANGLES, 0, obj3DJoueur.nbrVertex);
+      }
+
     }
 
     function effacerCanevas(objgl) {
@@ -406,9 +450,12 @@
           setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
         }
 
+
         if (collisionTresor(camera)) {
           console.log("collision!");
         }
+
+
 
 
       }
@@ -463,7 +510,6 @@
       if (tabMurs[gridX][gridZ] === 1) {
         return true; // Collision with an inner wall
       }
-
       // No collision
       return false;
     }
