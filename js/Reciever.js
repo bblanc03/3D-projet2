@@ -2,21 +2,26 @@ let lastReciever = null;
 let tabCoordsTeleports = null
 tabCoordsTeleports = getTabTeleports();
 let coordsReciever = null;
+let tabReceveurs = [];
+
+function getTabReceveurs(){
+    return tabReceveurs;
+}
 
 //verification des spawn receveurs
 function validRecieverLocation() {
     let validLocationRecep = false;
-    let x, y;
+    let x, z;
     let coordReciever
 
     while (!validLocationRecep) {
         x = Math.floor(Math.random() * (tableauMur.length));
-        y = Math.floor(Math.random() * (tableauMur.length));
-        coordReciever = { x: x, y: y };
-        console.log(coordReciever)
-        if (tableauMur[x][y] === 0 && tableauMur[x][y] !== 1 && tableauMur[x][y] !== 2) {
-            if (!lastTeleportor || (lastTeleportor.x !== x || lastTeleportor.y !== y)) {
-                if (!lastReciever || (lastReciever.x !== x || lastReciever.y !== y)) {
+        z = Math.floor(Math.random() * (tableauMur.length));
+        coordReciever = { x: x, z: z };
+
+        if (tableauMur[x][z] === 0 && tableauMur[x][z] !== 1 && tableauMur[x][z] !== 2 && tableauMur[x][z] !== 3) {
+            if (!lastTeleportor || (lastTeleportor.x !== x || lastTeleportor.z !== z)) {
+                if (!lastReciever || (lastReciever.x !== x || lastReciever.z !== z)) {
                     if (!tabCoordsTeleports.includes(coordReciever)) {
                         validLocationRecep = true;
                     }
@@ -25,9 +30,9 @@ function validRecieverLocation() {
         }
     }
 
-    lastReciever = { x: x, y: y };
+    lastReciever = { x: x, z: z };
     // Return the position at the center of the tile
-    return { x: x, y: y };
+    return { x: x, z: z };
 };
 
 validRecieverLocation();
@@ -53,21 +58,22 @@ function creerVertexReciever(objgl, fltLargeur, fltProfondeur) {
     ];
 
     coordsReciever = validRecieverLocation()
+    tabReceveurs.push(coordsReciever);
     tabVertex.push(coordsReciever.x); // bottom front left -- 0
     tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.y);
+    tabVertex.push(coordsReciever.z);
 
     tabVertex.push(coordsReciever.x + 1); // bottom front right -- 1
     tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.y);
+    tabVertex.push(coordsReciever.z);
 
     tabVertex.push(coordsReciever.x); // bottom back left -- 4
     tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.y + 1);
+    tabVertex.push(coordsReciever.z + 1);
 
     tabVertex.push(coordsReciever.x + 1); // bottom back right -- 5
     tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.y + 1);
+    tabVertex.push(coordsReciever.z + 1);
 
 
 
@@ -136,4 +142,3 @@ function creerMaillageReciever(objgl) {
 
     return objMaillageReciever;
 }
-

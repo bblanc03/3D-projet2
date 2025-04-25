@@ -3,32 +3,31 @@ let tabTeleports = [];
 let lastTeleportor = null;
 let coordsTeleport = null;
 
-function getTabTeleports(){
+function getTabTeleports() {
     return tabTeleports;
 }
 
 //verification des spawn teleporteurs
 function validTeleportorLocation() {
     let validLocationTele = false;
-    let x, y;
+    let x, z;
 
     while (!validLocationTele) {
         x = Math.floor(Math.random() * (tableauMur.length));
-        y = Math.floor(Math.random() * (tableauMur.length));
+        z = Math.floor(Math.random() * (tableauMur.length));
 
-        // Ensure the guard spawns on a brick (1) and not on concrete (3), ladder (4), rope (5), or gold (6)
-        // Also ensure there is a solid surface (brick or concrete) directly below the guard
-        if (tableauMur[x][y] === 0 && tableauMur[x][y] !== 1 && tableauMur[x][y] !== 2) {
-            if (!lastTeleportor || (lastTeleportor.x !== x || lastTeleportor.y !== y)) {
+
+        if (tableauMur[x][z] === 0 && tableauMur[x][z] !== 1 && tableauMur[x][z] !== 2 && tableauMur[x][z] !== 3) {
+            if (!lastTeleportor || (lastTeleportor.x !== x || lastTeleportor.z !== z)) {
                 validLocationTele = true;
             }
 
         }
     }
 
-    lastTeleportor = { x: x, y: y };
+    lastTeleportor = { x: x, z: z};
     // Return the position at the center of the tile
-    return { x: x, y: y };
+    return { x: x, z: z };
 }
 
 
@@ -56,22 +55,22 @@ function creerVertexTeleporteur(objgl, fltLargeur, fltProfondeur) {
     tabTeleports.push(coordsTeleport);
     tabVertex.push(coordsTeleport.x); // bottom front left -- 0
     tabVertex.push(0.02);
-    tabVertex.push(coordsTeleport.y);
+    tabVertex.push(coordsTeleport.z);
 
     tabVertex.push(coordsTeleport.x + 1); // bottom front right -- 1
     tabVertex.push(0.02);
-    tabVertex.push(coordsTeleport.y);
+    tabVertex.push(coordsTeleport.z);
 
     tabVertex.push(coordsTeleport.x); // bottom back left -- 4
     tabVertex.push(0.02);
-    tabVertex.push(coordsTeleport.y + 1);
+    tabVertex.push(coordsTeleport.z + 1);
 
     tabVertex.push(coordsTeleport.x + 1); // bottom back right -- 5
     tabVertex.push(0.02);
-    tabVertex.push(coordsTeleport.y + 1);
+    tabVertex.push(coordsTeleport.z + 1);
 
 
-    
+
     var objTeleporteur = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTeleporteur);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);

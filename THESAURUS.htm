@@ -1,6 +1,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 
 <head>
+  va
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Thesaurus</title>
 
@@ -20,6 +21,11 @@
 
   <script type="text/javascript" src="js/Joueur.js"></script>
   <script type="text/javascript" src="js/Teleportor.js"></script>
+  <script type="text/javascript" src="js/Reciever.js"></script>
+  <script type="text/javascript" src="js/Transportation.js"></script>
+
+
+
   <script type="text/javascript" src="js/Ciel.js"></script>
 
 
@@ -34,7 +40,8 @@
     var OBJ3D_MURS = 1;
     var OBJ3D_TRESOR = 2;
 
-    var nbTeleporteur = 3; // Number of teleporters in the game
+    var nbTeleporteur = 10; // Number of teleporters in the game
+    var nbReciever = 2;
     var binAriel = false;
 
     var tabImages = [
@@ -42,13 +49,15 @@
       "images/Sol.jpg",
       "images/Mur.jpg",
       "images/teleporter.jpg",
+      "images/reciever.jpg",
       "images/sky.jpg",
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
     var TEX_MUR = 2;
-    var TEX_TELEPORTEUR = 3
-    TEX_CIEL = 4;
+    var TEX_TELEPORTEUR = 3;
+    var TEX_RECIEVER = 4;
+    var TEX_CIEL = 5;
     var tabPosJoueur;
     var tabCibleJoueur;
     var tabPosJoueurInitial;
@@ -148,6 +157,12 @@
         tabObjets3D.push(obj3DTeleporteurs);
       }
 
+      //creer recievers
+      for (let i = 0; i < nbReciever; i++) {
+        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+        tabObjets3D.push(obj3DRecievers);
+      }
+
       // Créer le ciel
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
       tabObjets3D.push(obj3DCiel);
@@ -167,7 +182,6 @@
 
       // La caméra
       var camera = creerCamera();
-      console.log(getCibleCameraX(camera));
       setPositionsCameraXYZ(
         [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
         camera
@@ -371,6 +385,7 @@
             maillage.intNbTriangles * 2 * 3
           );
         }
+
       }
 
 
@@ -452,10 +467,14 @@
           setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
           setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
         }
-
+        console.log(getPositionsCameraXYZ(camera))
 
         if (collisionTresor(camera)) {
           console.log("collision!");
+        }
+
+        if (collisionTeleporteur(camera)) {
+          console.log("teleport!");
         }
 
 
@@ -534,6 +553,26 @@
       //console.log("Camera : " + cameraZ + " " + cameraX);
       //console.log("Tresor : " + tresorZ + " " + tresorX);
     }
+
+    function collisionTeleporteur(camera) {
+      let cameraX = Math.floor(getPositionCameraX(camera));
+      let cameraZ = Math.floor(getPositionCameraZ(camera));
+      let positionJoueur = { x: cameraX, z: cameraZ }
+      let tabTeleporteurs = getTabTeleports();
+      let tabReceveurs = getTabReceveurs();
+      const randomIndex = Math.floor(Math.random() * tabReceveurs.length);
+      console.log(tabReceveurs[randomIndex]);
+
+
+
+      for (let teleporter of tabTeleporteurs) {
+        if (teleporter.x === positionJoueur.x && teleporter.z === positionJoueur.z) {
+          setPositionsCameraXYZ([tabReceveurs[randomIndex].x, 0.5, tabReceveurs[randomIndex].z], camera);
+        }
+      }
+    }
+
+
   </script>
 </head>
 
