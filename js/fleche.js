@@ -5,7 +5,7 @@ function creerobj3DFleche(objgl, tresorZ, tresorX) {
     var obj3DFleche = new Object();
 
     // Make arrow smaller
-    var scale = 0.5;
+    var scale = 0.3;
     obj3DFleche.fltProfondeur = scale;
     obj3DFleche.fltLargeur = scale;
     obj3DFleche.fltHauteur = scale;
