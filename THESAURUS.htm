@@ -56,11 +56,12 @@
     var tabOrientationJoueur;
     var largeurJeux = 31;
 
-    var vueAerienne = false;
-
+    var binNiveauSuivant = false;
+    var numeroNiveau = 1;
+    var nbrOuvreursMurs = 4;
 
     var startTime = createDate();
-    var timerLength = 400;
+    var timerLength = 60;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -103,6 +104,8 @@
       }
 
       showPoints();
+      document.getElementById("ouvreurs").innerHTML = "Nombre de ouvreurs de murs: " + nbrOuvreursMurs;
+      document.getElementById("niveau").innerHTML = "Niveau: " + numeroNiveau;
       startTime = time;
 
       // checks to see if time has run out. If true reset everything and the timer
@@ -456,6 +459,7 @@
 
         if (collisionTresor(camera)) {
           console.log("collision!");
+          niveauSuivant();
         }
 
 
@@ -490,32 +494,36 @@
         console.log("page down mode joueur");
         binAriel = false;
       }
-      if (event.keyCode == 32) {
-        var posX = Math.floor(getPositionCameraX(camera));
-        var posZ = Math.floor(getPositionCameraZ(camera));
-        var cibleX = Math.floor(getCibleCameraX(camera));
-        var cibleZ = Math.floor(getCibleCameraZ(camera));
+      if (event.keyCode == 32 && nbrOuvreursMurs > 0 ) {
 
-        var dirX = cibleX - posX;
-        var dirZ = cibleZ - posZ;
-        console.log("dirX: " + dirX + " dirZ: " + dirZ) 
-
-        // directions (up, down, left, right) in grid
-        var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-        var dirGrixZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-        console.log("stepX: " + dirGridX + " stepZ: " + dirGrixZ) 
-
-        var gridX = posX + dirGridX;
-        var gridZ = posZ + dirGrixZ;
-
-        console.log("posX: " + posX + " posZ: " + posZ) 
-        console.log("gridX: " + gridX + " gridZ: " + gridZ)
-
-        if (tabMurs[gridZ] && tabMurs[gridX][gridZ] == 1) {
-          tabMurs[gridX][gridZ] = 0;
-          objScene3D.tabObjets3D[objScene3D.tabObjets3D.length - 1] = creerObj3DMursInternes(objgl, TEX_MUR);
-          console.log("mur ouvert [" + gridZ + "][" + gridX + "]");
+          
+          var posX = Math.floor(getPositionCameraX(camera));
+          var posZ = Math.floor(getPositionCameraZ(camera));
+          var cibleX = Math.floor(getCibleCameraX(camera));
+          var cibleZ = Math.floor(getCibleCameraZ(camera));
+  
+          var dirX = cibleX - posX;
+          var dirZ = cibleZ - posZ;
+          console.log("dirX: " + dirX + " dirZ: " + dirZ) 
+  
+          // directions (up, down, left, right) in grid
+          var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+          var dirGrixZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+          console.log("stepX: " + dirGridX + " stepZ: " + dirGrixZ) 
+  
+          var gridX = posX + dirGridX;
+          var gridZ = posZ + dirGrixZ;
+  
+          console.log("posX: " + posX + " posZ: " + posZ) 
+          console.log("gridX: " + gridX + " gridZ: " + gridZ)
+  
+          if (tabMurs[gridZ] && tabMurs[gridX][gridZ] == 1) {
+            tabMurs[gridX][gridZ] = 0;
+            objScene3D.tabObjets3D[objScene3D.tabObjets3D.length - 1] = creerObj3DMursInternes(objgl, TEX_MUR);
+            console.log("mur ouvert [" + gridZ + "][" + gridX + "]");
+            nbrOuvreursMurs--;
         }
+        
       }
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
@@ -559,6 +567,18 @@
       //console.log("Camera : " + cameraZ + " " + cameraX);
       //console.log("Tresor : " + tresorZ + " " + tresorX);
     }
+
+    function niveauSuivant() {
+      console.log("Niveau suivant");
+      binNiveauSuivant = true;
+      numeroNiveau++;
+      setTimerMax(timerLength);
+      resetSeconds();
+      updatePoint(false, 200);
+      if (numeroNiveau % 2 == 1) {
+      nbrOuvreursMurs--;
+      }
+    }
   </script>
 </head>
 
@@ -570,6 +590,12 @@
   <!--temporary. just here to test visibility of timer-->
   <div id="points"></div>
   <!--temporary. just here to test visibility of points-->
+
+  <div id="ouvreurs"></div>
+  <!--temporary. just here to test visibility of open walls-->
+
+  <div id="niveau"></div>
+  <!--temporary. just here to test visibility of the levels-->
 </body>
 
 </html>
