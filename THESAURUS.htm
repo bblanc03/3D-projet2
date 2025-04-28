@@ -15,7 +15,13 @@
   <script type="text/javascript" src="js/Textures.js"></script>
   <script type="text/javascript" src="js/timer.js"></script>
   <script type="text/javascript" src="js/points.js"></script>
+
+  <script type="text/javascript" src="js/tresor.js"></script>
+
   <script type="text/javascript" src="js/Joueur.js"></script>
+  <script type="text/javascript" src="js/Teleportor.js"></script>
+  <script type="text/javascript" src="js/Ciel.js"></script>
+
 
   <script type="text/javascript">
     // all the code goes here
@@ -26,17 +32,23 @@
 
     var OBJ3D_SOL = 0;
     var OBJ3D_MURS = 1;
+    var OBJ3D_TRESOR = 2;
 
+    var nbTeleporteur = 3; // Number of teleporters in the game
     var binAriel = false;
 
     var tabImages = [
       "images/Transparent.gif",
       "images/Sol.jpg",
       "images/Mur.jpg",
+      "images/teleporter.jpg",
+      "images/sky.jpg",
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
     var TEX_MUR = 2;
+    var TEX_TELEPORTEUR = 3
+    TEX_CIEL = 4;
     var tabPosJoueur;
     var tabCibleJoueur;
     var tabPosJoueurInitial;
@@ -94,7 +106,6 @@
       startTime = time;
 
       // checks to see if time has run out. If true reset everything and the timer
-
       if (timeOut()) {
         demarrer();
         setTimerMax(timerLength);
@@ -118,6 +129,34 @@
       var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
       tabObjets3D.push(obj3DMurs);
 
+      // Creer le tresor
+      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
+      var position = positionValideTresor();
+      var z = position.z;
+      var x = position.x;
+      tabObjets3D.push(obj3DTresor);
+      setPositionZ(position.z, tabObjets3D[OBJ3D_TRESOR].transformations);
+      setPositionX(position.x, tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      //console.log(position.z + " " + position.x);
+      //setPositionZ(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+      //setPositionX(14.5, tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      //creer teleporteurs
+      for (let i = 0; i < nbTeleporteur; i++) {
+        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+        tabObjets3D.push(obj3DTeleporteurs);
+      }
+
+      // Créer le ciel
+      var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+      tabObjets3D.push(obj3DCiel);
+
+
+
+      //getCibleCameraX(camera);
+
+
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
       tabObjets3D.transformations = creerTransformations();
@@ -128,6 +167,7 @@
 
       // La caméra
       var camera = creerCamera();
+      console.log(getCibleCameraX(camera));
       setPositionsCameraXYZ(
         [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
         camera
@@ -362,12 +402,6 @@
     function deplacerCamera() {
       var camera = objScene3D.camera;
 
-      if (cameraDansMur(camera)) {
-        console.log("The camera is inside a wall!");
-        // Rajouter le long du mur
-        return; // Arreter le mouvement
-      }
-
       if ((event.keyCode == 37 || event.keyCode == 39) && !binAriel) {
         // Mouvement gauche droite
         var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
@@ -420,6 +454,13 @@
         }
 
 
+        if (collisionTresor(camera)) {
+          console.log("collision!");
+        }
+
+
+
+
       }
 
       if (event.keyCode == 33 && !binAriel) //page up mode aerienne
@@ -432,7 +473,7 @@
         setPositionsCameraXYZ([15, 40, 15], camera);
         setOrientationX(-90, camera);
         setCiblesCameraXYZ([15, 0, 15], camera);
-
+        updateHauteurCiel(-2, obj3DCiel);
         console.log("page up mode aerienne");
         binAriel = true;
 
@@ -445,10 +486,10 @@
         setPositionsCameraXYZ(tabPosJoueurInitial, camera);
         setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
         setOrientationX(0, camera);
+        updateHauteurCiel(2, obj3DCiel);
         console.log("page down mode joueur");
         binAriel = false;
       }
-
       if (event.keyCode == 32) {
         var posX = Math.floor(getPositionCameraX(camera));
         var posZ = Math.floor(getPositionCameraZ(camera));
@@ -472,7 +513,7 @@
 
         if (tabMurs[gridZ] && tabMurs[gridX][gridZ] == 1) {
           tabMurs[gridX][gridZ] = 0;
-          objScene3D.tabObjets3D[2] = creerObj3DMursInternes(objgl, TEX_MUR);
+          objScene3D.tabObjets3D[objScene3D.tabObjets3D.length - 1] = creerObj3DMursInternes(objgl, TEX_MUR);
           console.log("mur ouvert [" + gridZ + "][" + gridX + "]");
         }
       }
@@ -500,6 +541,23 @@
       }
       // No collision
       return false;
+    }
+
+    function collisionTresor(camera) {
+      var cameraX = getPositionCameraX(camera);
+      var cameraZ = getPositionCameraZ(camera);
+
+      var tresorX = getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+      var tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      if (Math.floor(cameraX) == Math.floor(tresorX) && Math.floor(cameraZ) == Math.floor(tresorZ)) {
+        //console.log("collision")
+        return true;
+      }
+
+
+      //console.log("Camera : " + cameraZ + " " + cameraX);
+      //console.log("Tresor : " + tresorZ + " " + tresorX);
     }
   </script>
 </head>
