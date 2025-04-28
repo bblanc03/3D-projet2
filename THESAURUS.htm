@@ -20,6 +20,13 @@
 
   <script type="text/javascript" src="js/Joueur.js"></script>
   <script type="text/javascript" src="js/Teleportor.js"></script>
+  <script type="text/javascript" src="js/Reciever.js"></script>
+  <script type="text/javascript" src="js/Transportation.js"></script>
+
+  <script type="text/javascript" src="js/MouseControls.js"></script>
+
+
+
   <script type="text/javascript" src="js/Ciel.js"></script>
 
 
@@ -34,21 +41,30 @@
     var OBJ3D_MURS = 1;
     var OBJ3D_TRESOR = 2;
 
-    var nbTeleporteur = 3; // Number of teleporters in the game
+    var nbTeleporteur = 10; // Number of teleporters in the game
+    var nbReciever = 2;
     var binAriel = false;
+    //=====================================================
+    let isMouseLocked = false;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
+    //=====================================================
 
     var tabImages = [
       "images/Transparent.gif",
       "images/Sol.jpg",
       "images/Mur.jpg",
       "images/teleporter.jpg",
+      "images/reciever.jpg",
       "images/sky.jpg",
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
     var TEX_MUR = 2;
-    var TEX_TELEPORTEUR = 3
-    TEX_CIEL = 4;
+    var TEX_TELEPORTEUR = 3;
+    var TEX_RECIEVER = 4;
+    var TEX_CIEL = 5;
     var tabPosJoueur;
     var tabCibleJoueur;
     var tabPosJoueurInitial;
@@ -71,6 +87,8 @@
       objgl = initWebGL(objCanvas); // Initialise le contexte WebGL
       objProgShaders = initShaders(objgl);
       objScene3D = await initScene3D(objgl); // Créer la scène
+
+      initMouseControls(objCanvas);
 
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
@@ -148,6 +166,12 @@
         tabObjets3D.push(obj3DTeleporteurs);
       }
 
+      //creer recievers
+      for (let i = 0; i < nbReciever; i++) {
+        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+        tabObjets3D.push(obj3DRecievers);
+      }
+
       // Créer le ciel
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
       tabObjets3D.push(obj3DCiel);
@@ -167,7 +191,6 @@
 
       // La caméra
       var camera = creerCamera();
-      console.log(getCibleCameraX(camera));
       setPositionsCameraXYZ(
         [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
         camera
@@ -371,6 +394,7 @@
             maillage.intNbTriangles * 2 * 3
           );
         }
+
       }
 
 
@@ -391,6 +415,57 @@
       }
 
     }
+    //=====================================================
+    function initMouseControls(canvas) {
+      // Handle clicking on canvas
+      canvas.onclick = () => canvas.requestPointerLock();
+
+      // Update mouse lock state
+      document.onpointerlockchange = () => {
+        isMouseLocked = document.pointerLockElement === canvas;
+      };
+
+      // Handle mouse movement
+      document.onmousemove = (e) => {
+        if (!isMouseLocked || binAriel) return;
+
+        // Apply mouse movement with sensitivity
+        const moveX = e.movementX * MOUSE_SENSITIVITY;
+        const moveY = e.movementY * MOUSE_SENSITIVITY;
+
+        rotateCameraView(moveX, moveY);
+      };
+    }
+
+    function rotateCameraView(deltaX, deltaY) {
+      const camera = objScene3D.camera;
+
+      // Horizontal rotation (left/right)
+      const fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+      const fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+      const fltAngleH = (deltaX * Math.PI) / 180;
+
+      // Calculate new horizontal look target
+      const fltXPrime = fltX * Math.cos(fltAngleH) - fltZ * Math.sin(fltAngleH);
+      const fltZPrime = fltX * Math.sin(fltAngleH) + fltZ * Math.cos(fltAngleH);
+
+      // Apply horizontal rotation
+      setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
+      setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
+
+      // Vertical rotation (up/down)
+      const currentY = getCibleCameraY(camera);
+      const newY = currentY + (-deltaY) * 0.5;
+
+      const minAngle = -75.0;  // -180 degrees
+      const maxAngle = 75.0;   // 180 degrees
+
+      if (newY > minAngle && newY < maxAngle) {
+        setCibleCameraY(newY, camera);
+      }
+    }
+
+    //=====================================================
 
     function effacerCanevas(objgl) {
       // Met la couleur d'effacement au noir et complétement opaque
@@ -400,29 +475,16 @@
     }
 
     function deplacerCamera() {
+
       var camera = objScene3D.camera;
 
-      if ((event.keyCode == 37 || event.keyCode == 39) && !binAriel) {
-        // Mouvement gauche droite
-        var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-        var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-
-        var intDirection = event.keyCode == 37 ? -1 : 1;
-
-        var fltAngle = (intDirection * Math.PI) / 90;
-
-        var fltXPrime = fltX * Math.cos(fltAngle) - fltZ * Math.sin(fltAngle);
-        var fltZPrime = fltX * Math.sin(fltAngle) + fltZ * Math.cos(fltAngle);
-
-        setCibleCameraX(getPositionCameraX(camera) + fltXPrime, camera);
-        setCibleCameraZ(getPositionCameraZ(camera) + fltZPrime, camera);
-
-      } else if ((event.keyCode == 38 || event.keyCode == 40) && !binAriel) {
+      //move froint and back with W and S
+      if ((event.keyCode == 83 || event.keyCode == 87) && !binAriel) {
         // Mouvement avant arriere
         var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
         var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
         var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
-        var intDirection = event.keyCode == 38 ? 1 : -1;
+        var intDirection = event.keyCode == 87 ? 0.4 : -0.4;
 
         var fltXPrime = intDirection * 0.2 * Math.cos(Math.acos(fltX / fltRayon));
         var fltZPrime = intDirection * 0.2 * Math.sin(Math.asin(fltZ / fltRayon));
@@ -452,15 +514,14 @@
           setCibleCameraX(getCibleCameraX(camera) + fltXPrime, camera);
           setCibleCameraZ(getCibleCameraZ(camera) + fltZPrime, camera);
         }
+      }
 
+      if (collisionTresor(camera)) {
+        console.log("collision!");
+      }
 
-        if (collisionTresor(camera)) {
-          console.log("collision!");
-        }
-
-
-
-
+      if (collisionTeleporteur(camera)) {
+        console.log("teleport!");
       }
 
       if (event.keyCode == 33 && !binAriel) //page up mode aerienne
@@ -490,7 +551,7 @@
         binAriel = false;
       }
 
-
+      console.log(getPositionsCameraXYZ(camera))
 
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
@@ -534,11 +595,28 @@
       //console.log("Camera : " + cameraZ + " " + cameraX);
       //console.log("Tresor : " + tresorZ + " " + tresorX);
     }
+
+    function collisionTeleporteur(camera) {
+      let cameraX = Math.floor(getPositionCameraX(camera));
+      let cameraZ = Math.floor(getPositionCameraZ(camera));
+      let positionJoueur = { x: cameraX, z: cameraZ }
+      let tabTeleporteurs = getTabTeleports();
+      let tabReceveurs = getTabReceveurs();
+      const randomIndex = Math.floor(Math.random() * tabReceveurs.length);
+
+      for (let teleporter of tabTeleporteurs) {
+        if (teleporter.x === positionJoueur.x && teleporter.z === positionJoueur.z) {
+          setPositionsCameraXYZ([(tabReceveurs[randomIndex].x) + 0.5, 0.5, (tabReceveurs[randomIndex].z) + 0.5], camera);
+        }
+      }
+    }
+
+
   </script>
 </head>
 
 <body onload="demarrer()">
-  <canvas id="monCanvas" width="640" height="640" tabindex="1" , onkeydown="deplacerCamera(); return false">
+  <canvas id="monCanvas" width="1920" height="1200" tabindex="1" onkeydown="deplacerCamera(); return false">
     Votre navigateur ne supporte pas la balise canvas
   </canvas>
   <div id="timer"></div>
