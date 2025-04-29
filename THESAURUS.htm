@@ -153,85 +153,85 @@
     }
 
     function updateMovement(deltaTime) {
-        const camera = objScene3D.camera;
-        if (binAriel) return;
+      const camera = objScene3D.camera;
+      if (binAriel) return;
 
-        const speed = movementSpeed;
-        const distance = speed * deltaTime;
+      const speed = movementSpeed;
+      const distance = speed * deltaTime;
 
-        const dirX = getCibleCameraX(camera) - getPositionCameraX(camera);
-        const dirZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-        const length = Math.sqrt(dirX * dirX + dirZ * dirZ);
-        if (length === 0) return;
+      const dirX = getCibleCameraX(camera) - getPositionCameraX(camera);
+      const dirZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+      const length = Math.sqrt(dirX * dirX + dirZ * dirZ);
+      if (length === 0) return;
 
-        const forwardX = dirX / length;
-        const forwardZ = dirZ / length;
+      const forwardX = dirX / length;
+      const forwardZ = dirZ / length;
 
-        const rightX = -forwardZ;
-        const rightZ = forwardX;
+      const rightX = -forwardZ;
+      const rightZ = forwardX;
 
-        let moveX = 0;
-        let moveZ = 0;
+      let moveX = 0;
+      let moveZ = 0;
 
-        if (keysPressed["KeyW"]) {
-            moveX += forwardX;
-            moveZ += forwardZ;
-        }
-        if (keysPressed["KeyS"]) {
-            moveX -= forwardX;
-            moveZ -= forwardZ;
-        }
-        if (keysPressed["KeyD"]) {
-            moveX += rightX;
-            moveZ += rightZ;
-        }
-        if (keysPressed["KeyA"]) {
-            moveX -= rightX;
-            moveZ -= rightZ;
-        }
+      if (keysPressed["KeyW"]) {
+        moveX += forwardX;
+        moveZ += forwardZ;
+      }
+      if (keysPressed["KeyS"]) {
+        moveX -= forwardX;
+        moveZ -= forwardZ;
+      }
+      if (keysPressed["KeyD"]) {
+        moveX += rightX;
+        moveZ += rightZ;
+      }
+      if (keysPressed["KeyA"]) {
+        moveX -= rightX;
+        moveZ -= rightZ;
+      }
 
-        // Store current position
-        const oldX = getPositionCameraX(camera);
-        const oldZ = getPositionCameraZ(camera);
+      // Store current position
+      const oldX = getPositionCameraX(camera);
+      const oldZ = getPositionCameraZ(camera);
 
-        // Try moving on X axis only
-        const newXOnly = oldX + moveX * distance;
-        setPositionCameraX(newXOnly, camera);
-        setPositionCameraZ(oldZ, camera);
-        const canMoveX = !cameraDansMur(camera);
+      // Try moving on X axis only
+      const newXOnly = oldX + moveX * distance;
+      setPositionCameraX(newXOnly, camera);
+      setPositionCameraZ(oldZ, camera);
+      const canMoveX = !cameraDansMur(camera);
 
-        // Try moving on Z axis only
-        setPositionCameraX(oldX, camera);
-        const newZOnly = oldZ + moveZ * distance;
-        setPositionCameraZ(newZOnly, camera);
-        const canMoveZ = !cameraDansMur(camera);
+      // Try moving on Z axis only
+      setPositionCameraX(oldX, camera);
+      const newZOnly = oldZ + moveZ * distance;
+      setPositionCameraZ(newZOnly, camera);
+      const canMoveZ = !cameraDansMur(camera);
 
-        // Reset position
-        setPositionCameraX(oldX, camera);
-        setPositionCameraZ(oldZ, camera);
+      // Reset position
+      setPositionCameraX(oldX, camera);
+      setPositionCameraZ(oldZ, camera);
 
-        // Apply movement based on what's possible
-        const finalX = canMoveX ? newXOnly : oldX;
-        const finalZ = canMoveZ ? newZOnly : oldZ;
+      // Apply movement based on what's possible
+      const finalX = canMoveX ? newXOnly : oldX;
+      const finalZ = canMoveZ ? newZOnly : oldZ;
 
-        setPositionCameraX(finalX, camera);
-        setPositionCameraZ(finalZ, camera);
+      setPositionCameraX(finalX, camera);
+      setPositionCameraZ(finalZ, camera);
 
-        // Update camera target
-        if (canMoveX || canMoveZ) {
-            const targetDeltaX = (finalX - oldX);
-            const targetDeltaZ = (finalZ - oldZ);
-            setCibleCameraX(getCibleCameraX(camera) + targetDeltaX, camera);
-            setCibleCameraZ(getCibleCameraZ(camera) + targetDeltaZ, camera);
-        }
+      // Update camera target
+      if (canMoveX || canMoveZ) {
+        const targetDeltaX = (finalX - oldX);
+        const targetDeltaZ = (finalZ - oldZ);
+        setCibleCameraX(getCibleCameraX(camera) + targetDeltaX, camera);
+        setCibleCameraZ(getCibleCameraZ(camera) + targetDeltaZ, camera);
+      }
 
-        if (collisionTresor(camera)) {
-            prochainNiveau();
-        }
+      if (collisionTresor(camera)) {
+        prochainNiveau();
+      }
 
-        if (collisionTeleporteur(camera)) {
-            console.log("teleport!");
-        }
+      if (collisionTeleporteur(camera)) {
+        console.log("teleport!");
+      }
     }
 
     function animationFleche() {
@@ -459,12 +459,12 @@
 
       }
 
-
-
-      if (binAriel) {
+      // Draw player arrow in aerial view
+      if (binAriel && obj3DJoueur) {
         objgl.uniform1i(objProgShaders.noTexture, 0);
         objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
 
+        // Enable vertex attributes
         objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
         objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
         objgl.enableVertexAttribArray(objProgShaders.posVertex);
@@ -473,6 +473,7 @@
         objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
         objgl.enableVertexAttribArray(objProgShaders.couleurVertex);
 
+        // Draw the player arrow
         objgl.drawArrays(objgl.TRIANGLES, 0, obj3DJoueur.nbrVertex);
       }
 
@@ -579,36 +580,36 @@
     }
 
     function cameraDansMur(camera) {
-        // Get the camera's current position
-        var cameraX = getPositionCameraX(camera);
-        var cameraZ = getPositionCameraZ(camera);
+      // Get the camera's current position
+      var cameraX = getPositionCameraX(camera);
+      var cameraZ = getPositionCameraZ(camera);
 
-        // Add buffer distance
-        const WALL_BUFFER = 0.1;
+      // Add buffer distance
+      const WALL_BUFFER = 0.1;
 
-        // Check grid positions around the camera (including buffer)
-        const positions = [
-            { x: Math.floor(cameraX - WALL_BUFFER), z: Math.floor(cameraZ - WALL_BUFFER) },
-            { x: Math.floor(cameraX - WALL_BUFFER), z: Math.floor(cameraZ + WALL_BUFFER) },
-            { x: Math.floor(cameraX + WALL_BUFFER), z: Math.floor(cameraZ - WALL_BUFFER) },
-            { x: Math.floor(cameraX + WALL_BUFFER), z: Math.floor(cameraZ + WALL_BUFFER) }
-        ];
+      // Check grid positions around the camera (including buffer)
+      const positions = [
+        { x: Math.floor(cameraX - WALL_BUFFER), z: Math.floor(cameraZ - WALL_BUFFER) },
+        { x: Math.floor(cameraX - WALL_BUFFER), z: Math.floor(cameraZ + WALL_BUFFER) },
+        { x: Math.floor(cameraX + WALL_BUFFER), z: Math.floor(cameraZ - WALL_BUFFER) },
+        { x: Math.floor(cameraX + WALL_BUFFER), z: Math.floor(cameraZ + WALL_BUFFER) }
+      ];
 
-        // Check each position for walls
-        for (const pos of positions) {
-            // Check bounds
-            if (pos.z < 0 || pos.z >= tabMurs.length || 
-                pos.x < 0 || pos.x >= tabMurs[0].length) {
-                return true; // Out of bounds collision
-            }
-
-            // Check for wall
-            if (tabMurs[pos.x][pos.z] === 1) {
-                return true; // Collision with inner wall
-            }
+      // Check each position for walls
+      for (const pos of positions) {
+        // Check bounds
+        if (pos.z < 0 || pos.z >= tabMurs.length ||
+          pos.x < 0 || pos.x >= tabMurs[0].length) {
+          return true; // Out of bounds collision
         }
 
-        return false; // No collision
+        // Check for wall
+        if (tabMurs[pos.x][pos.z] === 1) {
+          return true; // Collision with inner wall
+        }
+      }
+
+      return false; // No collision
     }
 
     function collisionTresor(camera) {
@@ -670,6 +671,26 @@
       // Reset the camera
       var camera = objScene3D.camera;
       resetCamera(camera, objScene3D);
+
+      // Recreate player arrow if in aerial view
+      if (binAriel) {
+        // Get updated camera position after reset
+        tabPosJoueur = getPositionsCameraXYZ(camera);
+        tabCibleJoueur = getCiblesCameraXYZ(camera);
+        
+        // Create new player arrow
+        obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
+        
+        // Make sure vertex and color buffers are properly created
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(obj3DJoueur.tabVertex), objgl.STATIC_DRAW);
+        
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.couleurs);
+        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(obj3DJoueur.tabCouleurs), objgl.STATIC_DRAW);
+
+        // Add player arrow to scene objects
+        objScene3D.tabObjets3D.push(obj3DJoueur);
+      }
 
       // Reset the timer
       startTime = createDate();
