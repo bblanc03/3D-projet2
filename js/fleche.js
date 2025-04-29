@@ -4,7 +4,7 @@ var positionFleches = [];
 function creerobj3DFleche(objgl, tresorZ, tresorX) {
     var obj3DFleche = new Object();
 
-    // Make arrow smaller
+    // Grandeur de la fleche
     var scale = 0.3;
     obj3DFleche.fltProfondeur = scale;
     obj3DFleche.fltLargeur = scale;
@@ -283,25 +283,37 @@ function creerTexelsFlecheOptimized(objgl) {
     return tabTexelsFleche;
 }
 
-// Position validation with spatial grid for collision detection
+// Validation des position avec le centre et espacement entre fleches
 function positionValideFleche() {
     let tableauMur = getTabMap();
     var GRANDEUR_GRID = 29;
     var MIN_DISTANCE = 5;
-    
-    // Create a list of potential positions to avoid recalculating each time
+    var RAYON_CENTRE_EXCLUSION = 5;
+
+    // Calculer centre du tableau
+    const centerX = GRANDEUR_GRID / 2;
+    const centerZ = GRANDEUR_GRID / 2;
+
+    // Tableau de posiitions valides
     let validPositions = [];
-    
-    // Pre-populate valid positions
+
+    // Remplir les positions existantes
     for (let x = 0; x < GRANDEUR_GRID; x++) {
         for (let z = 0; z < GRANDEUR_GRID; z++) {
             if (tableauMur[x][z] === 0) {
-                validPositions.push({x: x + 0.5, z: z + 0.5});
+                // Exclure les positions du centre
+                const distanceFromCenter = Math.sqrt(
+                    Math.pow(x + 0.5 - centerX, 2) +
+                    Math.pow(z + 0.5 - centerZ, 2)
+                );
+                if (distanceFromCenter > RAYON_CENTRE_EXCLUSION) {
+                    validPositions.push({ x: x + 0.5, z: z + 0.5 });
+                }
             }
         }
     }
-    
-    // Filter out positions too close to existing arrows
+
+    // Filtrer positions trop proche des autres fleches
     if (positionFleches.length > 0) {
         validPositions = validPositions.filter(pos => {
             for (let existingPos of positionFleches) {
@@ -316,32 +328,32 @@ function positionValideFleche() {
             return true;
         });
     }
-    
-    // If we have valid positions, choose one randomly
+
+    // Si il y a des positions vailde, utiliser un random
     if (validPositions.length > 0) {
         const randomIndex = Math.floor(Math.random() * validPositions.length);
         const selectedPosition = validPositions[randomIndex];
-        
-        // Add to positions array
-        positionFleches.push({x: selectedPosition.x, z: selectedPosition.z});
+
+        // Rajouter au tableau de position
+        positionFleches.push({ x: selectedPosition.x, z: selectedPosition.z });
         return selectedPosition;
     }
-    
-    // Fallback if no valid position is found (rare case)
-    return {x: GRANDEUR_GRID/2, z: GRANDEUR_GRID/2};
+
+    // Si il y a aucune place de libre
+    return { x: GRANDEUR_GRID / 2, z: GRANDEUR_GRID / 2 };
 }
 
 function directionFleche(tresorZ, tresorX) {
     const posCourrant = positionFleches[positionFleches.length - 1];
     
-    // Calculate direction
+    // Calculer la direction
     const dirX = tresorX - posCourrant.x;
     const dirZ = tresorZ - posCourrant.z;
     
-    // Calculate angle in radians
+    // Calculer angle a radian
     let angle = Math.atan2(dirX, dirZ);
     
-    // Convert to degrees
+    // Convertir en degres
     angle = angle * (180 / Math.PI);
     
     return angle;

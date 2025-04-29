@@ -63,7 +63,7 @@
 
 
     var startTime = createDate();
-    var timerLength = 90;
+    var timerLength = 60;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -155,16 +155,10 @@
       //var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
       // tabObjets3D.push(obj3DCiel);
 
-
-
-      //getCibleCameraX(camera);
-
-
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
       tabObjets3D.transformations = creerTransformations();
       OBJ3D_MURS_INTERNES = tabObjets3D.length - 1;
-      //setPositionsXYZ([15, 0, 15], tabObjets3D.transformations); // does not actually do anything
 
       // Mettre les objets 3D sur la scène
       objScene3D.tabObjets3D = tabObjets3D;
@@ -250,7 +244,7 @@
         if (maillage == null)
           // Dessiner les sous-objets
           for (var j = 0; j < vertex.length; j++) {
-            
+
             // Relier les vertex aux shaders
             objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
             objgl.vertexAttribPointer(
@@ -538,81 +532,94 @@
 
 
     async function resetNiveau() {
-    // Sauvegarder un pointeur des murs internes
-    var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
+      // Sauvegarder un pointeur des murs internes
+      var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
 
-    // Garder les murs et le sol
-    objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
+      // Garder les murs et le sol
+      objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
         return index === OBJ3D_SOL || index === OBJ3D_MURS;
-    });
+      });
 
-    // Pousser les murs internes dans la scene
-    objScene3D.tabObjets3D.push(objMursInternes);
+      // Pousser les murs internes dans la scene
+      objScene3D.tabObjets3D.push(objMursInternes);
 
-    // Updater l'objet des murs internes
-    OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
+      // Updater l'objet des murs internes
+      OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
 
-    positionFleches = [];
+      positionFleches = [];
 
-    var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
-    objScene3D.tabObjets3D.push(obj3DTresor);
+      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
+      objScene3D.tabObjets3D.push(obj3DTresor);
 
-    var tresorZ = getPositionZ(obj3DTresor.transformations);
-    var tresorX = getPositionX(obj3DTresor.transformations);
+      var tresorZ = getPositionZ(obj3DTresor.transformations);
+      var tresorX = getPositionX(obj3DTresor.transformations);
 
-    for (let i = 0; i < nbrFleches; i++) {
+      for (let i = 0; i < nbrFleches; i++) {
         var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         objScene3D.tabObjets3D.push(obj3DFleche);
-    }
+      }
 
-    for (let i = 0; i < nbTeleporteur; i++) {
+      for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         objScene3D.tabObjets3D.push(obj3DTeleporteur);
+      }
+
+      startTime = createDate();
+      resetSeconds();
+      setTimerMax(timerLength);
     }
 
-    startTime = createDate();
-    resetSeconds();
-    setTimerMax(timerLength);
-}
 
+    async function prochainNiveau() {
+      // Sauvegarder un pointeur des murs internes
+      var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
 
-async function prochainNiveau() {
-    // Sauvegarder un pointeur des murs internes
-    var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
-
-    // Garder les murs et le sol
-    objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
+      // Garder les murs et le sol
+      objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
         return index === OBJ3D_SOL || index === OBJ3D_MURS;
-    });
+      });
 
-    // Pousser les murs internes dans la scene
-    objScene3D.tabObjets3D.push(objMursInternes);
+      // Pousser les murs internes dans la scene
+      objScene3D.tabObjets3D.push(objMursInternes);
 
-    // Updater l'objet des murs internes
-    OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
+      // Updater l'objet des murs internes
+      OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
 
-    positionFleches = [];
+      positionFleches = [];
 
-    var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
-    objScene3D.tabObjets3D.push(obj3DTresor);
+      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
+      objScene3D.tabObjets3D.push(obj3DTresor);
 
-    var tresorZ = getPositionZ(obj3DTresor.transformations);
-    var tresorX = getPositionX(obj3DTresor.transformations);
+      var tresorZ = getPositionZ(obj3DTresor.transformations);
+      var tresorX = getPositionX(obj3DTresor.transformations);
 
-    for (let i = 0; i < nbrFleches; i++) {
+      if (nbrFleches > 0)
+        nbrFleches -= 2;
+
+      for (let i = 0; i < nbrFleches; i++) {
         var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         objScene3D.tabObjets3D.push(obj3DFleche);
-    }
+      }
 
-    for (let i = 0; i < nbTeleporteur; i++) {
+      for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         objScene3D.tabObjets3D.push(obj3DTeleporteur);
-    }
+      }
 
-    startTime = createDate();
-    resetSeconds();
-    setTimerMax(timerLength);
-}
+      var camera = objScene3D.camera;
+      var centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
+      var centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
+
+      setPositionsCameraXYZ([centerX, 0.5, centerZ], camera); // Reset camera position
+      setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera); // Reset camera target
+      setOrientationsXYZ([0, 1, 0], camera); // Reset camera orientation
+
+      startTime = createDate();
+      resetSeconds();
+      setTimerMax(timerLength);
+
+      console.log("Nombre de fleches : " + nbrFleches)
+    }
 
   </script>
 </head>
