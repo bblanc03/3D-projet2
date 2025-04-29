@@ -53,6 +53,10 @@
     let lastMouseX = 0;
     let lastMouseY = 0;
     const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
+    let targetDeltaX = 0;
+    let targetDeltaY = 0;
+    let currentDeltaX = 0;
+    let currentDeltaY = 0;
     //=====================================================
 
     var tabImages = [
@@ -83,7 +87,7 @@
 
 
     var startTime = createDate();
-    var timerLength = 30;
+    var timerLength = 60;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -183,16 +187,16 @@
 
 
       //creer teleporteurs
-      for (let i = 0; i < nbTeleporteur; i++) {
-        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-        tabObjets3D.push(obj3DTeleporteurs);
-      }
+      //for (let i = 0; i < nbTeleporteur; i++) {
+      //  var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+      //  tabObjets3D.push(obj3DTeleporteurs);
+      //}
 
       //creer recievers
-      for (let i = 0; i < nbReciever; i++) {
-        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
-        tabObjets3D.push(obj3DRecievers);
-      }
+      //for (let i = 0; i < nbReciever; i++) {
+      //  var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+      //  tabObjets3D.push(obj3DRecievers);
+      //}
 
       // Créer le ciel
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
@@ -397,8 +401,8 @@
         if (!isMouseLocked || binAriel) return;
 
         // Apply mouse movement with sensitivity
-        const moveX = e.movementX * MOUSE_SENSITIVITY;
-        const moveY = e.movementY * MOUSE_SENSITIVITY;
+        const moveX = e.movementX;
+        const moveY = e.movementY;
 
         rotateCameraView(moveX, moveY);
       };
@@ -410,7 +414,7 @@
       // Horizontal rotation (left/right)
       const fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
       const fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-      const fltAngleH = (deltaX * Math.PI) / 180;
+      const fltAngleH = (deltaX * MOUSE_SENSITIVITY * Math.PI) / 180;
 
       // Calculate new horizontal look target
       const fltXPrime = fltX * Math.cos(fltAngleH) - fltZ * Math.sin(fltAngleH);
@@ -422,13 +426,13 @@
 
       // Vertical rotation (up/down)
       const currentY = getCibleCameraY(camera);
-      const newY = currentY + (-deltaY) * 0.1;
+      const newY = currentY + (-deltaY * MOUSE_SENSITIVITY * 0.1);
 
-      const minAngle = -75.0;  // -180 degrees
-      const maxAngle = 75.0;   // 180 degrees
+      const minAngle = -75.0; // Minimum vertical angle
+      const maxAngle = 75.0;  // Maximum vertical angle
 
       if (newY > minAngle && newY < maxAngle) {
-        setCibleCameraY(newY, camera);
+          setCibleCameraY(newY, camera);
       }
     }
 
@@ -633,10 +637,10 @@
       }
 
       // Create new teleporters
-      for (let i = 0; i < nbTeleporteur; i++) {
-          var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-          objScene3D.tabObjets3D.push(obj3DTeleporteur);
-      }
+      //for (let i = 0; i < nbTeleporteur; i++) {
+      //    var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+      //    objScene3D.tabObjets3D.push(obj3DTeleporteur);
+      //}
 
       // Reset the camera
       var camera = objScene3D.camera;
