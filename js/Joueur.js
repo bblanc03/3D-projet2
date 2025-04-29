@@ -13,9 +13,9 @@ function creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur) {
    
     obj3DJoueur.angle = Math.atan2(tabCibleJoueur[2] - tabPosJoueur[2], tabCibleJoueur[0] - tabPosJoueur[0]) + (90 * Math.PI / 180);
     
-    console.log("tabPosJoueur[0] = " + tabPosJoueur[0]);
-    console.log("tabPosJoueur[2] = " + tabPosJoueur[2]);
-    console.log("angle = " + obj3DJoueur.angle);
+    //console.log("tabPosJoueur[0] = " + tabPosJoueur[0]);
+    //console.log("tabPosJoueur[2] = " + tabPosJoueur[2]);
+    //console.log("angle = " + obj3DJoueur.angle);
 
     obj3DJoueur.vertex = creerVertexJoueurFleche(objgl, obj3DJoueur.fltLargeur, obj3DJoueur.fltProfondeur, obj3DJoueur.fltHauteur, obj3DJoueur.fltPosX, obj3DJoueur.fltPosZ, obj3DJoueur.angle);
     obj3DJoueur.couleurs = creerCouleursJoueurFleche(objgl, [1, 0, 0, 1]);
