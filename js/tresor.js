@@ -222,30 +222,30 @@ function creerTexelsTresor(objgl) {
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels[i]), objgl.STATIC_DRAW);
 
         if (i === 0) { //Face avant
-            tabTexelsCube[i].intNoTexture = 1; 
+            tabTexelsCube[i].intNoTexture = 1;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 1) { // Face derriere
-            tabTexelsCube[i].intNoTexture = 6; 
+            tabTexelsCube[i].intNoTexture = 6;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 5) { // face haut
-            tabTexelsCube[i].intNoTexture = 2; 
+            tabTexelsCube[i].intNoTexture = 2;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 6) { // face bas
-            tabTexelsCube[i].intNoTexture = 5; 
+            tabTexelsCube[i].intNoTexture = 5;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 7) { // face droite
-            tabTexelsCube[i].intNoTexture = 3; 
+            tabTexelsCube[i].intNoTexture = 3;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 8) { // face gauche
-            tabTexelsCube[i].intNoTexture = 4; 
+            tabTexelsCube[i].intNoTexture = 4;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
-        else { 
+        else {
             tabTexelsCube[i].intNoTexture = 0;
             tabTexelsCube[i].pcCouleurTexel = 1;
         }
@@ -259,20 +259,31 @@ function positionValideTresor() {
     let validLocation = false;
     let x, z;
 
-    const GRANDEUR_GRID = 29;
+
+
+    var GRANDEUR_GRID = 29;
+    var RAYON_CENTRE_EXCLUSION = 5;
+
+    var centerX = GRANDEUR_GRID / 2;
+    var centerZ = GRANDEUR_GRID / 2;
 
     while (!validLocation) {
         x = Math.floor(Math.random() * GRANDEUR_GRID);  // rangees
         z = Math.floor(Math.random() * GRANDEUR_GRID);  // colonnes
 
-        // Checker si le coord est vide
+        // Vérifier si la position est vide et hors du rayon d'exclusion
         if (tableauMur[x][z] === 0) {
-            validLocation = true;
+            const distanceCentre = Math.sqrt(
+                Math.pow(x + 0.5 - centerX, 2) +
+                Math.pow(z + 0.5 - centerZ, 2)
+            );
+
+            if (distanceCentre > RAYON_CENTRE_EXCLUSION) {
+                validLocation = true;
+            }
         }
-        //Eventuellement rajouter aussi pour ne pas spawn dans le milieu et dans les autres objects
     }
 
-    
     // Retourne les coords (+0.5 pour centrer)
     return {
         x: x + 0.5,
