@@ -83,7 +83,7 @@
 
 
     var startTime = createDate();
-    var timerLength = 400;
+    var timerLength = 30;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -99,6 +99,7 @@
 
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
+      resetCamera(objScene3D.camera, objScene3D);
       animer();
     }
 
@@ -140,16 +141,16 @@
 
     function animationFleche() {
       // Animation de hovering
-      const hoverAmplitude = 0.1; // Hauteur maximum de amplitude
-      const hoverVitesse = 1; // Vitesse of du hovering 
+      const hoverAmplitude = 0.1; // Maximum height of amplitude
+      const hoverVitesse = 1; // Speed of hovering
       const hoverOffset = Math.sin(Date.now() / 1000 * hoverVitesse) * hoverAmplitude;
 
-      for (let i = 0; i < objScene3D.tabObjets3D.length; i++) {
-        const obj3D = objScene3D.tabObjets3D[i];
-        if (obj3D.baseY !== undefined) {
-          setPositionY(obj3D.baseY + hoverOffset, obj3D.transformations);
-        }
-      }
+      // Update only arrow objects
+      objScene3D.tabObjets3D
+          .filter(obj3D => obj3D.baseY !== undefined) // Filter arrows
+          .forEach(obj3D => {
+              setPositionY(obj3D.baseY + hoverOffset, obj3D.transformations);
+          });
     }
 
     async function initScene3D(objgl) {
@@ -207,12 +208,10 @@
 
       // La caméra
       var camera = creerCamera();
-      setPositionsCameraXYZ(
-        [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
-        camera
-      ); // midle of the map
-      setCiblesCameraXYZ([0, 0.5, 0], camera);
-      setOrientationsXYZ([0, 1, 0], camera);
+      const fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+      const fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+      resetCamera(camera, objScene3D);
+
       objScene3D.camera = camera;
 
       return objScene3D;
@@ -423,7 +422,7 @@
 
       // Vertical rotation (up/down)
       const currentY = getCibleCameraY(camera);
-      const newY = currentY + (-deltaY) * 0.5;
+      const newY = currentY + (-deltaY) * 0.1;
 
       const minAngle = -75.0;  // -180 degrees
       const maxAngle = 75.0;   // 180 degrees
@@ -449,8 +448,8 @@
       //move froint and back with W and S
       if ((event.keyCode == 83 || event.keyCode == 87) && !binAriel) {
         // Mouvement avant arriere
-        var fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-        var fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+        const fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
+        const fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
         var fltRayon = Math.sqrt(fltX * fltX + fltZ * fltZ);
         var intDirection = event.keyCode == 87 ? 0.4 : -0.4;
 
@@ -584,128 +583,66 @@
     }
 
     function collisionTresor(camera) {
-      var cameraX = getPositionCameraX(camera);
-      var cameraZ = getPositionCameraZ(camera);
+      const cameraX = Math.floor(getPositionCameraX(camera));
+      const cameraZ = Math.floor(getPositionCameraZ(camera));
 
-      var tresorX = getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
-      var tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+      const tresorX = Math.floor(getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations));
+      const tresorZ = Math.floor(getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations));
 
-      if (Math.floor(cameraX) == Math.floor(tresorX) && Math.floor(cameraZ) == Math.floor(tresorZ)) {
-        console.log("Collision avec tresor");
-        return true;
-      }
+      return cameraX === tresorX && cameraZ === tresorZ;
     }
 
+    function resetOrNextLevel(isNextLevel) {
+      console.log(isNextLevel ? "Prochain niveau" : "reset niveau");
 
-    async function resetNiveau() {
-      console.log("reset niveau");
-
-
-      // Sauvegarder un pointeur des murs internes
+      // Save pointers for internal walls and sky
       var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
+      var objCiel = objScene3D.tabObjets3D.find(obj => obj === obj3DCiel);
 
-      // Garder les murs et le sol
+      // Keep walls, ground, and sky
       objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
-        return index === OBJ3D_SOL || index === OBJ3D_MURS;
+          return index === OBJ3D_SOL || index === OBJ3D_MURS || obj3D === objCiel;
       });
 
-      // Pousser les murs internes dans la scene
+      // Add internal walls back to the scene
       objScene3D.tabObjets3D.push(objMursInternes);
-
-      // Updater l'objet des murs internes
       OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
 
+      // Reset arrow positions
       positionFleches = [];
 
+      // Create a new treasure
       var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
       objScene3D.tabObjets3D.push(obj3DTresor);
-
-      var tresorZ = getPositionZ(obj3DTresor.transformations);
-      var tresorX = getPositionX(obj3DTresor.transformations);
-
-      for (let i = 0; i < nbrFleches; i++) {
-        var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
-        objScene3D.tabObjets3D.push(obj3DFleche);
-      }
-
-      for (let i = 0; i < nbTeleporteur; i++) {
-        var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-        objScene3D.tabObjets3D.push(obj3DTeleporteur);
-      }
-
-      var camera = objScene3D.camera;
-      var centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
-      var centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
-
-      setPositionsCameraXYZ([centerX, 0.5, centerZ], camera); // Reset camera position
-      setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera); // Reset camera target
-      setOrientationsXYZ([0, 1, 0], camera); // Reset camera orientation
-
-      startTime = createDate();
-      resetSeconds();
-      setTimerMax(timerLength);
-    }
-
-
-
-    async function prochainNiveau() {
-      console.log("Prochain niveau");
-
-      // Sauvegarder un pointeur des murs internes
-      var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
-
-      // Garder les murs et le sol
-      objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
-        return index === OBJ3D_SOL || index === OBJ3D_MURS;
-      });
-
-      // Pousser les murs internes dans la scene
-      objScene3D.tabObjets3D.push(objMursInternes);
-
-      // Updater l'objet des murs internes
-      OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
-
-      // Réinitialiser les positions des flèches
-      positionFleches = [];
-
-      // Créer un nouveau trésor
-      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
-      objScene3D.tabObjets3D.push(obj3DTresor);
-
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-      // Mettre à jour les coordonnées du trésor
+      // Update treasure coordinates
       var tresorZ = getPositionZ(obj3DTresor.transformations);
       var tresorX = getPositionX(obj3DTresor.transformations);
 
       console.log("TresorZ : " + tresorZ);
       console.log("TresorX : " + tresorX);
 
-      // Réduire le nombre de flèches si possible
-      if (nbrFleches > 0) nbrFleches -= 2;
+      // Reduce the number of arrows if it's the next level
+      if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
 
-      // Créer de nouvelles flèches
+      // Create new arrows
       for (let i = 0; i < nbrFleches; i++) {
-        var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
-        objScene3D.tabObjets3D.push(obj3DFleche);
+          var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
+          objScene3D.tabObjets3D.push(obj3DFleche);
       }
 
-      // Créer de nouveaux téléporteurs
+      // Create new teleporters
       for (let i = 0; i < nbTeleporteur; i++) {
-        var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-        objScene3D.tabObjets3D.push(obj3DTeleporteur);
+          var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+          objScene3D.tabObjets3D.push(obj3DTeleporteur);
       }
 
-      // Réinitialiser la caméra
+      // Reset the camera
       var camera = objScene3D.camera;
-      var centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
-      var centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
+      resetCamera(camera, objScene3D);
 
-      setPositionsCameraXYZ([centerX, 0.5, centerZ], camera); // Reset camera position
-      setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera); // Reset camera target
-      setOrientationsXYZ([0, 1, 0], camera); // Reset camera orientation
-
-      // Réinitialiser le timer
+      // Reset the timer
       startTime = createDate();
       resetSeconds();
       setTimerMax(timerLength);
@@ -713,6 +650,14 @@
       console.log("Nombre de flèches : " + nbrFleches);
     }
 
+    // Use the helper function
+    async function resetNiveau() {
+      resetOrNextLevel(false);
+    }
+
+    async function prochainNiveau() {
+      resetOrNextLevel(true);
+    }
 
     function collisionTeleporteur(camera) {
       let cameraX = Math.floor(getPositionCameraX(camera));
@@ -729,7 +674,15 @@
       }
     }
 
+    function resetCamera(camera, objScene3D) {
+      const centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
+      const centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
 
+      // Reset camera position, target, and orientation
+      setPositionsCameraXYZ([centerX, 0.5, centerZ], camera);
+      setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera);
+      setOrientationsXYZ([0, 1, 0], camera);
+    }
 
   </script>
 </head>
