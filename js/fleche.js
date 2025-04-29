@@ -1,6 +1,6 @@
 var positionFleches = [];
 
-
+// Improved arrow creation function
 function creerobj3DFleche(objgl, tresorZ, tresorX) {
     var obj3DFleche = new Object();
 
@@ -10,10 +10,10 @@ function creerobj3DFleche(objgl, tresorZ, tresorX) {
     obj3DFleche.fltLargeur = scale;
     obj3DFleche.fltHauteur = scale;
 
-    obj3DFleche.vertex = creerFleche(objgl);
-    obj3DFleche.couleurs = creerCouleursFleche(objgl);
+    obj3DFleche.vertex = creerFlecheOptimized(objgl);
+    obj3DFleche.couleurs = creerCouleursFlecheOptimized(objgl);
     obj3DFleche.maillage = null;
-    obj3DFleche.texels = creerTexelsFleche(objgl);
+    obj3DFleche.texels = creerTexelsFlecheOptimized(objgl);
     obj3DFleche.transformations = creerTransformations();
 
     setEchellesXYZ([obj3DFleche.fltLargeur, obj3DFleche.fltHauteur, obj3DFleche.fltProfondeur], obj3DFleche.transformations);
@@ -32,109 +32,147 @@ function creerobj3DFleche(objgl, tresorZ, tresorX) {
     return obj3DFleche;
 }
 
-function creerFleche(objgl) {
+// Fixed arrow geometry with proper triangles
+function creerFlecheOptimized(objgl) {
     var tabVertex = new Array();
 
-    // ARROWHEAD
-    // TOP FACE
+    // ARROW HEAD - top triangular face
     tabVertex[0] = [
-        0.0, 1.0, 0.5,    // Milieu
-        0.0, 1.0, 1.0,    // Bout
-        1.0, 1.0, 0.0,     // Droit
-        -1.0, 1.0, 0.0,   // Gauche
-        0.0, 1.0, 1.0   // Bout
+        // Triangle 1 - left side of head
+        0.0, 1.0, 1.0,    // Tip
+        -1.0, 1.0, 0.0,   // Left corner
+        0.0, 1.0, 0.0,    // Center
+        
+        // Triangle 2 - right side of head
+        0.0, 1.0, 1.0,    // Tip
+        0.0, 1.0, 0.0,    // Center
+        1.0, 1.0, 0.0     // Right corner
     ];
 
-    // BOTTOM FACE
+    // ARROW HEAD - bottom triangular face
     tabVertex[1] = [
-        0.0, 0.5, 0.5,    // Milieu
-        0.0, 0.5, 1.0,    // Bout
-        1.0, 0.5, 0.0,     // Droit
-        -1.0, 0.5, 0.0,   // Gauche
-        0.0, 0.5, 1.0   // Bout
+        // Triangle 1 - left side of head
+        0.0, 0.5, 1.0,    // Tip
+        -1.0, 0.5, 0.0,   // Left corner
+        0.0, 0.5, 0.0,    // Center
+        
+        // Triangle 2 - right side of head
+        0.0, 0.5, 1.0,    // Tip
+        0.0, 0.5, 0.0,    // Center
+        1.0, 0.5, 0.0     // Right corner
     ];
 
-    // SIDE FACE
+    // ARROW HEAD - side faces
     tabVertex[2] = [
-        -1.0, 1.0, 0.0,    // Top left
-        -1.0, 0.5, 0.0,    // Bottom left
-        0.0, 0.5, 1.0,    // Bottom right
-        0.0, 1.0, 1.0     // Top right
-    ];
-
-    // SIDE FACE
-    tabVertex[3] = [
-        1.0, 1.0, 0.0,    // Top left
-        1.0, 0.5, 0.0,    // Bottom left
-        0.0, 0.5, 1.0,    // Bottom right
-        0.0, 1.0, 1.0     // Top right
-    ];
-
-    // SIDE FACE
-    tabVertex[4] = [
-        -1.0, 1.0, 0.0,    // Top left
-        -1.0, 0.5, 0.0,    // Bottom left
+        // Triangle 1 - left side face
+        0.0, 1.0, 1.0,    // Top tip
+        0.0, 0.5, 1.0,    // Bottom tip
+        -1.0, 0.5, 0.0,   // Bottom left
+        
+        // Triangle 2 - left side face (continued)
+        0.0, 1.0, 1.0,    // Top tip
+        -1.0, 0.5, 0.0,   // Bottom left
+        -1.0, 1.0, 0.0,   // Top left
+        
+        // Triangle 3 - right side face
+        0.0, 1.0, 1.0,    // Top tip
+        1.0, 1.0, 0.0,    // Top right
         1.0, 0.5, 0.0,    // Bottom right
-        1.0, 1.0, 0.0     // Top right
+        
+        // Triangle 4 - right side face (continued) 
+        0.0, 1.0, 1.0,    // Top tip
+        1.0, 0.5, 0.0,    // Bottom right
+        0.0, 0.5, 1.0     // Bottom tip
     ];
 
+    // SHAFT - top face
+    tabVertex[3] = [
+        // Rectangle as two triangles
+        -0.5, 1.0, 0.0,   // Top front left
+        -0.5, 1.0, -1.0,  // Top back left
+        0.5, 1.0, -1.0,   // Top back right
+        
+        -0.5, 1.0, 0.0,   // Top front left
+        0.5, 1.0, -1.0,   // Top back right
+        0.5, 1.0, 0.0     // Top front right
+    ];
 
-    //SHAFT ;)
-    //TOP FACE
+    // SHAFT - bottom face
+    tabVertex[4] = [
+        // Rectangle as two triangles
+        -0.5, 0.5, 0.0,   // Bottom front left
+        -0.5, 0.5, -1.0,  // Bottom back left
+        0.5, 0.5, -1.0,   // Bottom back right
+        
+        -0.5, 0.5, 0.0,   // Bottom front left
+        0.5, 0.5, -1.0,   // Bottom back right
+        0.5, 0.5, 0.0     // Bottom front right
+    ];
+
+    // SHAFT - side faces
     tabVertex[5] = [
-        -0.5, 1.0, 0.5,    // Top left
-        -0.5, 1.0, -1.0,     // bottom left
-        0.5, 1.0, -1.0,   // bottom right
-        0.5, 1.0, 0.5   // Top right
+        // Left side (rectangle as two triangles)
+        -0.5, 1.0, 0.0,   // Top front left
+        -0.5, 0.5, 0.0,   // Bottom front left
+        -0.5, 0.5, -1.0,  // Bottom back left
+        
+        -0.5, 1.0, 0.0,   // Top front left
+        -0.5, 0.5, -1.0,  // Bottom back left
+        -0.5, 1.0, -1.0,  // Top back left
+        
+        // Right side (rectangle as two triangles)
+        0.5, 1.0, 0.0,    // Top front right
+        0.5, 1.0, -1.0,   // Top back right
+        0.5, 0.5, -1.0,   // Bottom back right
+        
+        0.5, 1.0, 0.0,    // Top front right
+        0.5, 0.5, -1.0,   // Bottom back right
+        0.5, 0.5, 0.0,    // Bottom front right
+        
+        // Back side (rectangle as two triangles)
+        -0.5, 1.0, -1.0,  // Top back left
+        -0.5, 0.5, -1.0,  // Bottom back left
+        0.5, 0.5, -1.0,   // Bottom back right
+        
+        -0.5, 1.0, -1.0,  // Top back left
+        0.5, 0.5, -1.0,   // Bottom back right
+        0.5, 1.0, -1.0    // Top back right
     ];
 
-    // BOTTOM FACE
+    // CONNECTION between arrow head and shaft (front face)
     tabVertex[6] = [
-        -0.5, 0.5, 0.5,    // Top left
-        -0.5, 0.5, -1.0,     // bottom left
-        0.5, 0.5, -1.0,   // bottom right
-        0.5, 0.5, 0.5   // Top right
+        // Left side triangle
+        -1.0, 1.0, 0.0,   // Top head left
+        -1.0, 0.5, 0.0,   // Bottom head left
+        -0.5, 0.5, 0.0,   // Bottom shaft left
+        
+        // Left side triangle (continued)
+        -1.0, 1.0, 0.0,   // Top head left
+        -0.5, 0.5, 0.0,   // Bottom shaft left
+        -0.5, 1.0, 0.0,   // Top shaft left
+        
+        // Right side triangle
+        1.0, 1.0, 0.0,    // Top head right
+        0.5, 1.0, 0.0,    // Top shaft right
+        0.5, 0.5, 0.0,    // Bottom shaft right
+        
+        // Right side triangle (continued)
+        1.0, 1.0, 0.0,    // Top head right
+        0.5, 0.5, 0.0,    // Bottom shaft right
+        1.0, 0.5, 0.0     // Bottom head right
     ];
-
-    // SIDE FACE
+    
+    // OUTLINE - for wireframe rendering
     tabVertex[7] = [
-        -0.5, 1.0, 0.5,    // Top left
-        -0.5, 0.5, 0.5,    // Bottom left
-        -0.5, 0.5, -1.0,    // Bottom right
-        -0.5, 1.0, -1.0,    // Top right
-    ];
-
-    // SIDE FACE
-    tabVertex[8] = [
-        0.5, 1.0, 0.5,    // Top left
-        0.5, 0.5, 0.5,    // Bottom left
-        0.5, 0.5, -1.0,    // Bottom right
-        0.5, 1.0, -1.0,    // Top right
-    ];
-
-    // Lines 
-    // TOP
-    tabVertex[9] = [
-        0.0, 1.0, 1.0, //  MIDDLE TIP TOP
-        -1.0, 1.0, 0.0, // RIGHT TIP TOP
-        -0.5, 1.0, 0.0,  // RIGHT SHAFT UP TOP
-        -0.5, 1.0, -1.0,  // RIGHT SHAFT LOWER TOP
-        0.5, 1.0, -1.0,  // LEFT SHAFT LOWER TOP
-        0.5, 1.0, 0.0,  // LEFT SHAFT UP TOP
-        1.0, 1.0, 0.0, // LEFT TIP TOP
-        0.0, 1.0, 1.0, //  MIDDLE TIP TOP
-    ];
-
-    //BOTTOM
-    tabVertex[10] = [
-        0.0, 0.5, 1.0, //  MIDDLE TIP Bottom
-        -1.0, 0.5, 0.0, // RIGHT TIP Bottom
-        -0.5, 0.5, 0.0,  // RIGHT SHAFT UP Bottom
-        -0.5, 0.5, -1.0,  // RIGHT SHAFT LOWER Bottom
-        0.5, 0.5, -1.0,  // LEFT SHAFT LOWER Bottom
-        0.5, 0.5, 0.0,  // LEFT SHAFT UP Bottom
-        1.0, 0.5, 0.0, // LEFT TIP Bottom
-        0.0, 0.5, 1.0, //  MIDDLE TIP Bottom
+        // Top outline
+        0.0, 1.0, 1.0,    // Tip
+        -1.0, 1.0, 0.0,   // Left corner
+        -0.5, 1.0, 0.0,   // Left shaft join
+        -0.5, 1.0, -1.0,  // Left back
+        0.5, 1.0, -1.0,   // Right back
+        0.5, 1.0, 0.0,    // Right shaft join
+        1.0, 1.0, 0.0,    // Right corner
+        0.0, 1.0, 1.0     // Back to tip
     ];
 
     // Create vertex buffers
@@ -144,206 +182,167 @@ function creerFleche(objgl) {
         objgl.bindBuffer(objgl.ARRAY_BUFFER, objVertex[i]);
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
 
-        // Use TRIANGLE_FAN for faces, LINE_STRIP for borders
-        objVertex[i].typeDessin = (i < 9) ? objgl.TRIANGLE_FAN : objgl.LINE_STRIP;
+        // All buffers are triangle sets except the last one (outline)
+        objVertex[i].typeDessin = (i < 7) ? objgl.TRIANGLES : objgl.LINE_STRIP;
+        objVertex[i].nbVertex = tabVertex[i].length / 3;
     }
 
     return objVertex;
 }
 
-
-
-function creerCouleursFleche(objgl) {
+// Updated colors to match the 8 vertex buffers
+function creerCouleursFlecheOptimized(objgl) {
     var tabCouleurs = new Array();
+    
+    // Blue color with alpha for faces
+    const blueColor = [0.0, 0.0, 1.0, 0.7];
+    // Slightly lighter blue for some faces to create depth
+    const lightBlueColor = [0.2, 0.2, 1.0, 0.7];
+    // Black for outlines
+    const blackColor = [0.0, 0.0, 0.0, 1.0];
 
-    // Define colors
-    const blueColor = [0.0, 0.0, 1.0, 0.7]; // Rouge
-    const blackColor = [0.0, 0.0, 0.0, 1.0]; // Noir
+    // Function to create color arrays
+    function createColorArray(color, vertexCount) {
+        const result = [];
+        for (let i = 0; i < vertexCount; i++) {
+            result.push(...color);
+        }
+        return result;
+    }
 
-    // Face avant pleine
-    tabCouleurs[0] = [];
-    for (var i = 0; i < 6; i++)
-        tabCouleurs[0] = tabCouleurs[0].concat(blueColor);
+    // Colors for each buffer
+    tabCouleurs[0] = createColorArray(blueColor, 6);       // Arrow head top
+    tabCouleurs[1] = createColorArray(lightBlueColor, 6);  // Arrow head bottom
+    tabCouleurs[2] = createColorArray(blueColor, 12);      // Arrow head sides
+    tabCouleurs[3] = createColorArray(blueColor, 6);       // Shaft top
+    tabCouleurs[4] = createColorArray(lightBlueColor, 6);  // Shaft bottom
+    tabCouleurs[5] = createColorArray(blueColor, 18);      // Shaft sides
+    tabCouleurs[6] = createColorArray(blueColor, 12);      // Connection
+    tabCouleurs[7] = createColorArray(blackColor, 8);      // Outline
 
-    // Face arrière pleine
-    tabCouleurs[1] = [];
-    for (var i = 0; i < 6; i++)
-        tabCouleurs[1] = tabCouleurs[1].concat(blueColor);
-
-    // Couleurs contour avant
-    tabCouleurs[2] = [];
-    for (var i = 0; i < 4; i++)
-        tabCouleurs[2] = tabCouleurs[2].concat(blueColor);
-
-    // Couleurs contour arrière
-    tabCouleurs[3] = tabCouleurs[2];
-
-    // Couleurs droites reliées aux 2 faces
-    tabCouleurs[4] = tabCouleurs[2].concat(tabCouleurs[2]);
-
-    // Haut
-    tabCouleurs[5] = [];
-    for (var i = 0; i < 6; i++)
-        tabCouleurs[5] = tabCouleurs[5].concat(blueColor);
-
-    // Bas
-    tabCouleurs[6] = [];
-    for (var i = 0; i < 6; i++)
-        tabCouleurs[6] = tabCouleurs[6].concat(blueColor);
-
-    // Droite
-    tabCouleurs[7] = [];
-    for (var i = 0; i < 6; i++)
-        tabCouleurs[7] = tabCouleurs[7].concat(blueColor);
-
-    // Gauche
-    tabCouleurs[8] = [];
-    for (var i = 0; i < 6; i++)
-        tabCouleurs[8] = tabCouleurs[8].concat(blueColor);
-
-    // Add colors for arrowhead borders in black
-    tabCouleurs[9] = [];
-    for (var i = 0; i < 10; i++) // 10 vertices for arrowhead borders
-        tabCouleurs[9] = tabCouleurs[9].concat(blackColor);
-
-    // Add colors for shaft borders in black
-    tabCouleurs[10] = [];
-    for (var i = 0; i < 18; i++) // 18 vertices for shaft borders
-        tabCouleurs[10] = tabCouleurs[10].concat(blackColor);
-
-    var tabObjCouleursCube = new Array();
-    for (var i = 0; i < 11; i++) { // Update loop to include new vertices
-        tabObjCouleursCube[i] = objgl.createBuffer();
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursCube[i]);
+    // Create buffers
+    var tabObjCouleursFleche = new Array();
+    for (var i = 0; i < tabCouleurs.length; i++) {
+        tabObjCouleursFleche[i] = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCouleursFleche[i]);
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabCouleurs[i]), objgl.STATIC_DRAW);
     }
 
-    return tabObjCouleursCube;
+    return tabObjCouleursFleche;
 }
 
-function creerTexelsFleche(objgl) {
+// Updated texels to match the 8 vertex buffers
+function creerTexelsFlecheOptimized(objgl) {
     const tabTexels = new Array();
 
-    // Basic texture coordinates for a quad
-    const basicTexCoords = [
-        0.5, 0.5,
-        1.0, 0.0,
-        0.0, 0.0,
-        0.0, 1.0,
-        1.0, 1.0,
-        1.0, 0.0,
+    // Function to create basic texture coordinates for triangles
+    function createTriangleTexCoords(numTriangles) {
+        const result = [];
+        for (let i = 0; i < numTriangles; i++) {
+            result.push(
+                0.0, 1.0,  // Top-left
+                0.0, 0.0,  // Bottom-left
+                1.0, 0.0   // Bottom-right
+            );
+        }
+        return result;
+    }
+
+    // Create texture coordinates for each buffer
+    tabTexels[0] = createTriangleTexCoords(2);  // Arrow head top - 2 triangles
+    tabTexels[1] = createTriangleTexCoords(2);  // Arrow head bottom - 2 triangles
+    tabTexels[2] = createTriangleTexCoords(4);  // Arrow head sides - 4 triangles
+    tabTexels[3] = createTriangleTexCoords(2);  // Shaft top - 2 triangles
+    tabTexels[4] = createTriangleTexCoords(2);  // Shaft bottom - 2 triangles
+    tabTexels[5] = createTriangleTexCoords(6);  // Shaft sides - 6 triangles
+    tabTexels[6] = createTriangleTexCoords(4);  // Connection - 4 triangles
+    
+    // Outline texels - one per vertex
+    tabTexels[7] = [
+        0.5, 1.0,  // Tip
+        0.0, 0.5,  // Left corner
+        0.25, 0.5, // Left shaft join
+        0.25, 0.0, // Left back
+        0.75, 0.0, // Right back
+        0.75, 0.5, // Right shaft join
+        1.0, 0.5,  // Right corner
+        0.5, 1.0   // Back to tip
     ];
 
-    // Faces 0-8 use the same texture coordinates
-    for (let i = 0; i < 9; i++) {
-        tabTexels[i] = basicTexCoords;
-    }
-
-    // Add texture coordinates for border lines (vertices 9 and 10)
-    // For lines, we can use simple coordinates since they won't show texture
-    tabTexels[9] = [];
-    for (let i = 0; i < 10; i++) { // 10 vertices for arrowhead borders
-        tabTexels[9].push(0.0, 0.0);
-    }
-
-    tabTexels[10] = [];
-    for (let i = 0; i < 18; i++) { // 18 vertices for shaft borders
-        tabTexels[10].push(0.0, 0.0);
-    }
-
     const tabTexelsFleche = new Array();
-    for (let i = 0; i < 11; i++) { // Update to handle 11 buffers
+    for (let i = 0; i < tabTexels.length; i++) {
         tabTexelsFleche[i] = objgl.createBuffer();
         objgl.bindBuffer(objgl.ARRAY_BUFFER, tabTexelsFleche[i]);
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels[i]), objgl.STATIC_DRAW);
-
-        if (i === 0) { //Face avant
-            tabTexelsFleche[i].pcCouleurTexel = 0;
-        }
-        else if (i === 1) { // Face derriere
-            tabTexelsFleche[i].pcCouleurTexel = 0;
-        }
-        else if (i === 5) { // face haut
-            tabTexelsFleche[i].pcCouleurTexel = 0;
-        }
-        else if (i === 6) { // face bas
-            tabTexelsFleche[i].pcCouleurTexel = 0;
-        }
-        else if (i === 7) { // face droite
-            tabTexelsFleche[i].pcCouleurTexel = 0;
-        }
-        else if (i === 8) { // face gauche
-            tabTexelsFleche[i].pcCouleurTexel = 0;
-        }
-        else {
-            tabTexelsFleche[i].pcCouleurTexel = 0.0;
-        }
-
-        // Add texture properties for all buffers
+        
+        // Set texture properties
+        tabTexelsFleche[i].pcCouleurTexel = 0.0;
         tabTexelsFleche[i].intNoTexture = 0;
     }
 
     return tabTexelsFleche;
 }
 
+// Position validation with spatial grid for collision detection
 function positionValideFleche() {
     let tableauMur = getTabMap();
-    let validLocation = false;
-    let x, z;
-
     var GRANDEUR_GRID = 29;
     var MIN_DISTANCE = 5;
-
-    while (!validLocation) {
-        x = Math.floor(Math.random() * GRANDEUR_GRID);  // rangees
-        z = Math.floor(Math.random() * GRANDEUR_GRID);  // colonnes
-
-        // Checker si le coord est vide
-        if (tableauMur[x][z] === 0) {
-            let tropProche = false;
-            for (let pos of positionFleches) {
-                let distance = Math.sqrt(
-                    Math.pow(x - pos.x, 2) +
-                    Math.pow(z - pos.z, 2)
-                );
-                if (distance < MIN_DISTANCE) {
-                    tropProche = true;
-                    break;
-                }
-            }
-
-            if (!tropProche) {
-                validLocation = true;
-                // Rajouter nouvelle position
-                positionFleches.push({ x: x + 0.5, z: z + 0.5 });
+    
+    // Create a list of potential positions to avoid recalculating each time
+    let validPositions = [];
+    
+    // Pre-populate valid positions
+    for (let x = 0; x < GRANDEUR_GRID; x++) {
+        for (let z = 0; z < GRANDEUR_GRID; z++) {
+            if (tableauMur[x][z] === 0) {
+                validPositions.push({x: x + 0.5, z: z + 0.5});
             }
         }
-        //Eventuellement rajouter aussi pour ne pas spawn dans le milieu et dans les autres objects
     }
-
-    // Retourne les coords (+0.5 pour centrer)
-    return {
-        x: x + 0.5,
-        z: z + 0.5
-    };
+    
+    // Filter out positions too close to existing arrows
+    if (positionFleches.length > 0) {
+        validPositions = validPositions.filter(pos => {
+            for (let existingPos of positionFleches) {
+                let distance = Math.sqrt(
+                    Math.pow(pos.x - existingPos.x, 2) +
+                    Math.pow(pos.z - existingPos.z, 2)
+                );
+                if (distance < MIN_DISTANCE) {
+                    return false;
+                }
+            }
+            return true;
+        });
+    }
+    
+    // If we have valid positions, choose one randomly
+    if (validPositions.length > 0) {
+        const randomIndex = Math.floor(Math.random() * validPositions.length);
+        const selectedPosition = validPositions[randomIndex];
+        
+        // Add to positions array
+        positionFleches.push({x: selectedPosition.x, z: selectedPosition.z});
+        return selectedPosition;
+    }
+    
+    // Fallback if no valid position is found (rare case)
+    return {x: GRANDEUR_GRID/2, z: GRANDEUR_GRID/2};
 }
 
 function directionFleche(tresorZ, tresorX) {
-
     const posCourrant = positionFleches[positionFleches.length - 1];
     
-    // Calculer direction 
+    // Calculate direction
     const dirX = tresorX - posCourrant.x;
     const dirZ = tresorZ - posCourrant.z;
     
-    // Calculer angle en radians
+    // Calculate angle in radians
     let angle = Math.atan2(dirX, dirZ);
     
-    // Convertir
+    // Convert to degrees
     angle = angle * (180 / Math.PI);
     
-    // Angle de rotation
     return angle;
 }
-
-
