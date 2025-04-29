@@ -63,7 +63,7 @@
 
 
     var startTime = createDate();
-    var timerLength = 10;
+    var timerLength = 60;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -108,7 +108,7 @@
       startTime = time;
 
       if (timeOut()) {
-        console.log('Reset game elements (not full scene)');
+       // console.log('Reset game elements (not full scene)');
         await resetNiveau();
         updatePoint(false, 200);
       }
@@ -148,7 +148,6 @@
       // Creer le tresor
       var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
       tabObjets3D.push(obj3DTresor);
-
 
 
       // Creer les fleches
@@ -437,7 +436,7 @@
         setOrientationX(-90, camera);
         setCiblesCameraXYZ([15, 0, 15], camera);
 
-        console.log("page up mode aerienne");
+        //console.log("page up mode aerienne");
         binAriel = true;
 
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
@@ -448,7 +447,7 @@
         setPositionsCameraXYZ(tabPosJoueurInitial, camera);
         setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
         setOrientationX(0, camera);
-        console.log("page down mode joueur");
+        //console.log("page down mode joueur");
         binAriel = false;
       }
 
@@ -488,13 +487,14 @@
       var tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
 
       if (Math.floor(cameraX) == Math.floor(tresorX) && Math.floor(cameraZ) == Math.floor(tresorZ)) {
+        console.log("Collision avec tresor");
         return true;
       }
     }
 
 
     async function resetNiveau() {
-      console.log("Prochain niveau");
+      console.log("reset niveau");
 
 
       // Sauvegarder un pointeur des murs internes
@@ -544,8 +544,8 @@
 
 
     async function prochainNiveau() {
-
       console.log("Prochain niveau");
+
       // Sauvegarder un pointeur des murs internes
       var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
 
@@ -560,27 +560,38 @@
       // Updater l'objet des murs internes
       OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
 
+      // Réinitialiser les positions des flèches
       positionFleches = [];
 
+      // Créer un nouveau trésor
       var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
       objScene3D.tabObjets3D.push(obj3DTresor);
 
+      OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
+
+      // Mettre à jour les coordonnées du trésor
       var tresorZ = getPositionZ(obj3DTresor.transformations);
       var tresorX = getPositionX(obj3DTresor.transformations);
 
-      if (nbrFleches > 0)
-        nbrFleches -= 2;
+      console.log("TresorZ : " + tresorZ);
+      console.log("TresorX : " + tresorX);
 
+      // Réduire le nombre de flèches si possible
+      if (nbrFleches > 0) nbrFleches -= 2;
+
+      // Créer de nouvelles flèches
       for (let i = 0; i < nbrFleches; i++) {
         var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         objScene3D.tabObjets3D.push(obj3DFleche);
       }
 
+      // Créer de nouveaux téléporteurs
       for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         objScene3D.tabObjets3D.push(obj3DTeleporteur);
       }
 
+      // Réinitialiser la caméra
       var camera = objScene3D.camera;
       var centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
       var centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
@@ -589,11 +600,12 @@
       setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera); // Reset camera target
       setOrientationsXYZ([0, 1, 0], camera); // Reset camera orientation
 
+      // Réinitialiser le timer
       startTime = createDate();
       resetSeconds();
       setTimerMax(timerLength);
 
-      console.log("Nombre de fleches : " + nbrFleches)
+      console.log("Nombre de flèches : " + nbrFleches);
     }
 
   </script>
