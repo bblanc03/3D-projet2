@@ -63,7 +63,7 @@
 
 
     var startTime = createDate();
-    var timerLength = 60;
+    var timerLength = 10;
     setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
     var lastSec = 0;
 
@@ -112,8 +112,23 @@
         await resetNiveau();
         updatePoint(false, 200);
       }
+
+      animationFleche();
     }
 
+    function animationFleche() {
+      // Animation de hovering
+      const hoverAmplitude = 0.1; // Hauteur maximum de amplitude
+      const hoverVitesse = 1; // Vitesse of du hovering 
+      const hoverOffset = Math.sin(Date.now() / 1000 * hoverVitesse) * hoverAmplitude;
+
+      for (let i = 0; i < objScene3D.tabObjets3D.length; i++) {
+        const obj3D = objScene3D.tabObjets3D[i];
+        if (obj3D.baseY !== undefined) {
+          setPositionY(obj3D.baseY + hoverOffset, obj3D.transformations);
+        }
+      }
+    }
 
     async function initScene3D(objgl) {
       var objScene3D = new Object();
@@ -165,7 +180,6 @@
 
       // La caméra
       var camera = creerCamera();
-      console.log(getCibleCameraX(camera));
       setPositionsCameraXYZ(
         [obj3DMurs.fltProfondeur / 2, 0.5, obj3DMurs.fltProfondeur / 2],
         camera
@@ -406,7 +420,6 @@
 
         if (collisionTresor(camera)) {
           prochainNiveau();
-          console.log("collision!");
         }
 
 
@@ -419,7 +432,6 @@
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
         tabPosJoueur = getPositionsCameraXYZ(camera);
-        console.log(tabPosJoueur);
         tabCibleJoueur = getCiblesCameraXYZ(camera);
         setPositionsCameraXYZ([15, 40, 15], camera);
         setOrientationX(-90, camera);
@@ -476,13 +488,15 @@
       var tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
 
       if (Math.floor(cameraX) == Math.floor(tresorX) && Math.floor(cameraZ) == Math.floor(tresorZ)) {
-        //console.log("collision")
         return true;
       }
     }
 
 
     async function resetNiveau() {
+      console.log("Prochain niveau");
+
+
       // Sauvegarder un pointeur des murs internes
       var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
 
@@ -515,6 +529,14 @@
         objScene3D.tabObjets3D.push(obj3DTeleporteur);
       }
 
+      var camera = objScene3D.camera;
+      var centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
+      var centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
+
+      setPositionsCameraXYZ([centerX, 0.5, centerZ], camera); // Reset camera position
+      setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera); // Reset camera target
+      setOrientationsXYZ([0, 1, 0], camera); // Reset camera orientation
+
       startTime = createDate();
       resetSeconds();
       setTimerMax(timerLength);
@@ -522,6 +544,8 @@
 
 
     async function prochainNiveau() {
+
+      console.log("Prochain niveau");
       // Sauvegarder un pointeur des murs internes
       var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
 

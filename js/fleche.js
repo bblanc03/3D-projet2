@@ -17,7 +17,11 @@ function creerobj3DFleche(objgl, tresorZ, tresorX) {
     obj3DFleche.transformations = creerTransformations();
 
     setEchellesXYZ([obj3DFleche.fltLargeur, obj3DFleche.fltHauteur, obj3DFleche.fltProfondeur], obj3DFleche.transformations);
-    setPositionY(1, obj3DFleche.transformations);
+
+
+    const baseY = 1;
+    setPositionY(baseY, obj3DFleche.transformations);
+    obj3DFleche.baseY = baseY; 
 
     var position = positionValideFleche();
     var z = position.z;
