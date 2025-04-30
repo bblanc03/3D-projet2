@@ -17,7 +17,7 @@ function initAudio() {
 
     backgroundMusic = new Audio('./audios/background.mp3');
     backgroundMusic.loop = true;  
-    backgroundMusic.volume = 0.2; 
+    backgroundMusic.volume = 0.5; 
 
     footstepSound = new Audio('./audios/footsteps.mp3');
     footstepSound.loop = false;
