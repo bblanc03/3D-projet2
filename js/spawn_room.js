@@ -19,7 +19,7 @@ function creerObj3DMursSpawn(objgl, intNoTexture) {
     return obj3DMurs;
 }
 
-function creerVertexSpawn(objgl, fltHauteur) {
+function creerVertexSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     let tabVertex = [
     ];
     nbTrianglesSpawn = 0;
@@ -96,19 +96,19 @@ function creerVertexSpawn(objgl, fltHauteur) {
 
 
                 //back-----------------------------------------------------------------------                
-                tabVertex.push(x +1); // top left-side left -- 12
+                tabVertex.push(x +1); // top left-side left -- 16
                 tabVertex.push(0);
                 tabVertex.push(y +1);
 
-                tabVertex.push(x+1); // top left-side right -- 13
+                tabVertex.push(x+1); // top left-side right -- 17
                 tabVertex.push(0);
                 tabVertex.push(y);
 
-                tabVertex.push(x +1); // top right-side left -- 14
+                tabVertex.push(x +1); // top right-side left -- 18
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y +1);
 
-                tabVertex.push(x + 1); //  top right-side right -- 15
+                tabVertex.push(x + 1); //  top right-side right -- 19
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y);
 
