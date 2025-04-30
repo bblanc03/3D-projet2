@@ -1,8 +1,10 @@
-<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<html xmlns="http://www.w3.org/199/xhtml" lang="fr" xml:lang="fr">
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Thesaurus</title>
+
+  <link rel="stylesheet" href="css/jeu.css">
 
   <script type="text/javascript" src="js/WebGl.js"></script>
   <script type="text/javascript" src="js/ShaderCouleursTextures.js"></script>
@@ -95,6 +97,8 @@
 
     setPoint(300);
 
+    let currentLevel = 1;
+
     async function demarrer() {
 
       var objCanvas = document.getElementById("monCanvas");
@@ -112,7 +116,6 @@
 
       // Initialize and start background music
       initAudio();
-      playBackgroundMusic();
     }
 
     // Un cycle d'animation
@@ -123,7 +126,8 @@
       const deltaTime = (now - lastFrameTime) / 1000.0; // in seconds
       lastFrameTime = now;
 
-      updateMovement(deltaTime);  // <<< NEW
+      updateMovement(deltaTime);
+      updateInteractionPrompt(); // Add this line
 
       effacerCanevas(objgl);
       mettreAjourAnimation();
@@ -228,10 +232,6 @@
         const targetDeltaZ = (finalZ - oldZ);
         setCibleCameraX(getCibleCameraX(camera) + targetDeltaX, camera);
         setCibleCameraZ(getCibleCameraZ(camera) + targetDeltaZ, camera);
-      }
-
-      if (collisionTresor(camera)) {
-        prochainNiveau();
       }
 
       if (collisionTeleporteur(camera)) {
@@ -559,10 +559,14 @@
 
     function handleKeyDown(event) {
       keysPressed[event.code] = true;
-      console.log("Key down:", event.code);
-    
+      
       var camera = objScene3D.camera;
-    
+
+      // Add chest interaction
+      if (event.code === "KeyE" && isNearTresor(camera)) {
+          handleChestInteraction(camera);
+      }
+
       if (event.code === "PageUp" && !binAriel) { // Aerial view
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
@@ -747,6 +751,26 @@
       setTimerMax(timerLength);
 
       console.log("Nombre de flèches : " + nbrFleches);
+
+      // Show level announcement for both reset and next level
+      if (isNextLevel) {
+        currentLevel++;
+      } else {
+        currentLevel = 1;
+      }
+
+      // Show level announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = `ROUND ${currentLevel}`;
+      announcement.classList.add('visible');
+      
+      // Play new round music for both reset and next level
+      playNewRoundMusic();
+      
+      // Remove the visible class after animation completes
+      setTimeout(() => {
+          announcement.classList.remove('visible');
+      }, 3000); // 3 seconds to match CSS animation duration
     }
 
     // Use the helper function
@@ -791,6 +815,29 @@
 
     }
 
+    function updateInteractionPrompt() {
+      const prompt = document.getElementById('interactionPrompt');
+      if (isNearTresor(objScene3D.camera)) {
+          prompt.classList.add('visible');
+      } else {
+          prompt.classList.remove('visible');
+      }
+    }
+
+    function isNearTresor(camera) {
+      const cameraX = getPositionCameraX(camera);
+      const cameraZ = getPositionCameraZ(camera);
+
+      const tresorX = getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+      const tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+
+      const distance = Math.sqrt(
+          Math.pow(cameraX - tresorX, 2) + 
+          Math.pow(cameraZ - tresorZ, 2)
+      );
+
+      return distance < 2; // Show prompt within 2 units of treasure
+    }
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
@@ -801,9 +848,10 @@
 
 <body onload="demarrer()">
   <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
-
   <div id="timer"></div>
   <div id="points"></div>
+  <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
+  <div id="levelAnnouncement">Niveau 1</div>
 </body>
 
 </html>
