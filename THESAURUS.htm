@@ -23,6 +23,7 @@
   <script type="text/javascript" src="js/Transportation.js"></script>
   <script type="text/javascript" src="js/MouseControls.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>
+  <script type="text/javascript" src="js/audio.js"></script>
 
 
   <script type="text/javascript">
@@ -108,6 +109,10 @@
       dessiner(objgl, objProgShaders, objScene3D);
       resetCamera(objScene3D.camera, objScene3D);
       animer();
+
+      // Initialize and start background music
+      initAudio();
+      playBackgroundMusic();
     }
 
     // Un cycle d'animation
