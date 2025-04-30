@@ -7,6 +7,12 @@ function getTabTeleports() {
     return tabTeleports;
 }
 
+function resetTeleport(){
+    tabTeleports = [];
+    lastTeleportor = null;
+    coordsTeleport = null;
+}
+
 //verification des spawn teleporteurs
 function validTeleportorLocation() {
     let validLocationTele = false;

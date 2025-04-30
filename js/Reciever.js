@@ -8,6 +8,12 @@ function getTabReceveurs(){
     return tabReceveurs;
 }
 
+function resetReciever(){
+    tabReceveurs = [];
+    coordsReciever = null;
+    lastReciever = null;
+}
+
 //verification des spawn receveurs
 function validRecieverLocation() {
     let validLocationRecep = false;

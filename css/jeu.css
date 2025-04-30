@@ -75,6 +75,19 @@
     }
 }
 
+#points, #timer {
+    color: white;
+    font-size: 20px; /* Adjust the size as needed */
+    position: absolute;
+    top: 10px; /* Adjust the position for #timer */
+    right: 10px; /* Adjust the position for #points */
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+#timer {
+    top: 40px; /* Adjust the position for the timer */
+}
+
 body {
     margin: 0;
     padding: 0;
