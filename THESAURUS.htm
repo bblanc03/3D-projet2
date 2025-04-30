@@ -30,8 +30,6 @@
 
   <script type="text/javascript">
 
-
-    // all the code goes here
     var objgl = null;
     var objProgShaders = null;
     var objScene3D = null;
@@ -95,7 +93,7 @@
 
     var startTime = createDate();
     var timerLength = 60;
-    setTimerMax(timerLength); // Sets the timer in secounds for the length of the game based of timerLength
+    setTimerMax(timerLength);
     var lastSec = 0;
 
     setPoint(300);
@@ -294,17 +292,17 @@
       }
 
 
-      //creer teleporteurs
-      //for (let i = 0; i < nbTeleporteur; i++) {
-      //  var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-      //  tabObjets3D.push(obj3DTeleporteurs);
-      //}
+      // creer teleporteurs
+      for (let i = 0; i < nbTeleporteur; i++) {
+        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+        tabObjets3D.push(obj3DTeleporteurs);
+      }
 
-      //creer recievers
-      //for (let i = 0; i < nbReciever; i++) {
-      //  var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
-      //  tabObjets3D.push(obj3DRecievers);
-      //}
+      // creer recievers
+      for (let i = 0; i < nbReciever; i++) {
+        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+        tabObjets3D.push(obj3DRecievers);
+      }
 
       // Créer le ciel
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
@@ -609,31 +607,37 @@
         objScene3D.obj3DJoueur = null;
       }
 
+      var points = getPoints();
+      console.log(points);
       // Handle wall removal
       if (event.code === "Space") {
-        var posX = Math.floor(getPositionCameraX(camera));
-        var posZ = Math.floor(getPositionCameraZ(camera));
-        var cibleX = Math.floor(getCibleCameraX(camera));
-        var cibleZ = Math.floor(getCibleCameraZ(camera));
+        if (points >= 50) {
 
-        var dirX = cibleX - posX;
-        var dirZ = cibleZ - posZ;
+          updatePoint(false, 50);
+          var posX = Math.floor(getPositionCameraX(camera));
+          var posZ = Math.floor(getPositionCameraZ(camera));
+          var cibleX = Math.floor(getCibleCameraX(camera));
+          var cibleZ = Math.floor(getCibleCameraZ(camera));
 
-        var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-        var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+          var dirX = cibleX - posX;
+          var dirZ = cibleZ - posZ;
 
-        var gridX = posX + dirGridX;
-        var gridZ = posZ + dirGridZ;
+          var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+          var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
 
-        if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
-          // Remove the wall from tabMurs
-          tabMurs[gridX][gridZ] = 0;
+          var gridX = posX + dirGridX;
+          var gridZ = posZ + dirGridZ;
 
-          // Recreate the internal walls
-          var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+          if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
+            // Remove the wall from tabMurs
+            tabMurs[gridX][gridZ] = 0;
 
-          // Replace the old internal walls object in the scene
-          objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
+            // Recreate the internal walls
+            var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+
+            // Replace the old internal walls object in the scene
+            objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
+          }
         }
       }
     }
@@ -725,6 +729,21 @@
       var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
+
+      resetTeleport();
+      resetReciever();
+
+      // creer teleporteurs
+      for (let i = 0; i < nbTeleporteur; i++) {
+        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+        objScene3D.tabObjets3D.push(obj3DTeleporteurs);
+      }
+
+      // creer recievers
+      for (let i = 0; i < nbReciever; i++) {
+        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+        objScene3D.tabObjets3D.push(obj3DRecievers);
+      }
 
       // Update treasure coordinates
       var tresorZ = getPositionZ(obj3DTresor.transformations);

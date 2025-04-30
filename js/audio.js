@@ -13,11 +13,11 @@ function initAudio() {
 
     newRoundMusic = new Audio('./audios/newround.mp3');
     newRoundMusic.loop = false;
-    newRoundMusic.volume = 0.4;
+    newRoundMusic.volume = 0.5;
 
     backgroundMusic = new Audio('./audios/background.mp3');
     backgroundMusic.loop = true;  
-    backgroundMusic.volume = 1; 
+    backgroundMusic.volume = 0.9; 
 
     footstepSound = new Audio('./audios/footsteps.mp3');
     footstepSound.loop = false;
