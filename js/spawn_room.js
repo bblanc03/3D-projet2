@@ -152,27 +152,6 @@ function creerTexelsSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTex
                 0.0, fltHauteur,
                 fltProfondeur, fltHauteur,
 
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-
             );
         }
     }

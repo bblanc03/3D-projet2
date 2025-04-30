@@ -68,6 +68,7 @@ function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
             if (tabMurs[x][y] == 1) {
+                //left side----------------------------------------------------
                 tabVertex.push(x); // bottom front left -- 0
                 tabVertex.push(0);
                 tabVertex.push(y);
@@ -85,6 +86,7 @@ function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
                 tabVertex.push(y);
 
 
+                // right side---------------------------------------------------
                 tabVertex.push(x); // bottom back left -- 4
                 tabVertex.push(0);
                 tabVertex.push(y + 1);
@@ -100,7 +102,59 @@ function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
                 tabVertex.push(x + 1); //  top front right -- 7
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y + 1);
-                nbTriangles += 10;
+
+                //top-----------------------------------------------------------------------
+                tabVertex.push(x); // top left-side left -- 8
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y);
+
+                tabVertex.push(x + 1); // top left-side right -- 9
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y);
+
+                tabVertex.push(x); // top right-side left -- 10
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y + 1);
+
+                tabVertex.push(x + 1); //  top right-side right -- 11
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y + 1);
+
+                //front-----------------------------------------------------------------------                
+                tabVertex.push(x); // top left-side left -- 12
+                tabVertex.push(0);
+                tabVertex.push(y);
+
+                tabVertex.push(x); // top left-side right -- 13
+                tabVertex.push(0);
+                tabVertex.push(y + 1);
+
+                tabVertex.push(x); // top right-side left -- 14
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y);
+
+                tabVertex.push(x); //  top right-side right -- 15
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y + 1);
+
+                //back-----------------------------------------------------------------------                
+                tabVertex.push(x +1); // top left-side left -- 16
+                tabVertex.push(0);
+                tabVertex.push(y +1);
+
+                tabVertex.push(x+1); // top left-side right -- 17
+                tabVertex.push(0);
+                tabVertex.push(y);
+
+                tabVertex.push(x +1); // top right-side left -- 18
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y +1);
+
+                tabVertex.push(x + 1); //  top right-side right -- 19
+                tabVertex.push(fltHauteur);
+                tabVertex.push(y);
+
+                nbTriangles += 20;
             }
         }
 
@@ -149,31 +203,6 @@ function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, i
                 fltProfondeur, 0.0,
                 0.0, fltHauteur,
                 fltProfondeur, fltHauteur,
-
-                0.0, fltHauteur,
-                0.0, 0.0,
-                fltProfondeur, fltHauteur,
-                fltProfondeur, 0.0,
-
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-                0.0, 0.0,
-                fltProfondeur, 0.0,
-                0.0, fltHauteur,
-                fltProfondeur, fltHauteur,
-
-                0.0, fltHauteur,
-                0.0, 0.0,
-                fltProfondeur, fltHauteur,
-                fltProfondeur, 0.0,
             );
         }
     }
@@ -214,7 +243,7 @@ function creerMaillageMursInterne(objgl) {
 
     for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
-            ecart += 8;
+            ecart += 12;
             tabMaillage.push(0 + ecart);
             tabMaillage.push(1 + ecart);
             tabMaillage.push(2 + ecart);
@@ -229,27 +258,26 @@ function creerMaillageMursInterne(objgl) {
             tabMaillage.push(6 + ecart);
             tabMaillage.push(7 + ecart);
 
-            tabMaillage.push(0 + ecart);
-            tabMaillage.push(2 + ecart);
-            tabMaillage.push(4 + ecart);
-            tabMaillage.push(2 + ecart);
-            tabMaillage.push(4 + ecart);
-            tabMaillage.push(6 + ecart);
+            tabMaillage.push(8 + ecart);
+            tabMaillage.push(9 + ecart);
+            tabMaillage.push(10 + ecart);
+            tabMaillage.push(9 + ecart);
+            tabMaillage.push(10 + ecart);
+            tabMaillage.push(11 + ecart);
 
-            tabMaillage.push(1 + ecart);
-            tabMaillage.push(5 + ecart);
-            tabMaillage.push(7 + ecart);
-            tabMaillage.push(7 + ecart);
-            tabMaillage.push(3 + ecart);
-            tabMaillage.push(1 + ecart);
+            tabMaillage.push(12 + ecart);
+            tabMaillage.push(13 + ecart);
+            tabMaillage.push(14 + ecart);
+            tabMaillage.push(13 + ecart);
+            tabMaillage.push(14 + ecart);
+            tabMaillage.push(15 + ecart);
 
-            tabMaillage.push(3 + ecart);
-            tabMaillage.push(6 + ecart);
-            tabMaillage.push(7 + ecart);
-            tabMaillage.push(6 + ecart);
-            tabMaillage.push(7 + ecart);
-            tabMaillage.push(2 + ecart);
-
+            tabMaillage.push(16 + ecart);
+            tabMaillage.push(17 + ecart);
+            tabMaillage.push(18 + ecart);
+            tabMaillage.push(17 + ecart);
+            tabMaillage.push(18 + ecart);
+            tabMaillage.push(19 + ecart);
 
         }
     }
@@ -263,7 +291,7 @@ function creerMaillageMursInterne(objgl) {
     objMaillageMurs.intNbTriangles = nbTriangles;
     // Le nombre de droites
     objMaillageMurs.intNbDroites = 0;
-console.log(tabMaillage)
+
     return objMaillageMurs;
 }
 
