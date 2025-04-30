@@ -794,7 +794,7 @@
 
       // Show level announcement
       const announcement = document.getElementById('levelAnnouncement');
-      announcement.textContent = `ROUND ${currentLevel}`;
+      announcement.textContent = `NIVEAU ${currentLevel}`;
       announcement.classList.add('visible');
       
       // Play new round music for both reset and next level
@@ -884,11 +884,12 @@
 </head>
 
 <body onload="demarrer()">
-  <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
-  <div id="timer"></div>
-  <div id="points"></div>
-  <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
-  <div id="levelAnnouncement">Niveau 1</div>
+    <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
+    <div id="timer"></div>
+    <div id="points"></div>
+    <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
+    <div id="levelAnnouncement">Niveau 1</div>
+  
 </body>
 
 </html>
