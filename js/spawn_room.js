@@ -1,73 +1,33 @@
-const tabMurs =
-    [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-        [1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 2, 2, 0, 2, 2, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 2, 3, 3, 3, 2, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 2, 3, 3, 3, 2, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 2, 3, 3, 3, 2, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 2, 2, 2, 2, 2, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 0],
-        [0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
-        [0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0],
-        [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 0],
-        [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-        [0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
-        [1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ];
 
 
-let binBas = false;
-let nbTriangles = 6;
 
-function getTabMurs(){
-    return tabMurs;
-}
+let nbTrianglesSpawn = 6;
 
 
-function creerObj3DMursInternes(objgl, intNoTexture) {
-
-    // for (let i = 0; i < tabMurs.length; i++) {
-    //     for (let j = 0; j < tabMurs[i].length; j++) {
-    //         tabMurs[i][j] = 0;
-    //     }
-    // }
+function creerObj3DMursSpawn(objgl, intNoTexture) {
     var obj3DMurs = new Object();
     obj3DMurs.fltProfondeur = 1;
     obj3DMurs.fltLargeur = 1;
     obj3DMurs.fltHauteur = 2;
 
-    obj3DMurs.vertex = creerVertexMursInternes(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
-    obj3DMurs.couleurs = creerCouleursMursInternes(objgl, [1, 1, 1, 1]);
-    obj3DMurs.texels = creerTexelsMursInternes(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
-    obj3DMurs.maillage = creerMaillageMursInterne(objgl);
+    obj3DMurs.vertex = creerVertexSpawn(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
+    obj3DMurs.couleurs = creerCouleursSpawn(objgl, [1, 1, 1, 1]);
+    obj3DMurs.texels = creerTexelsSpawn(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
+    obj3DMurs.maillage = creerMaillageMursSpawn(objgl);
 
     obj3DMurs.transformations = creerTransformations();
     return obj3DMurs;
 }
 
-function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
-    var tabVertex = [
+function creerVertexSpawn(objgl, fltHauteur) {
+    let tabVertex = [
     ];
-    nbTriangles = 0;
+    nbTrianglesSpawn = 0;
     for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
-            if (tabMurs[x][y] == 1) {
+            if (tabMurs[x][y] == 2) {
+                
+                console.log("Spawn : " + x + " " + y);
                 tabVertex.push(x); // bottom front left -- 0
                 tabVertex.push(0);
                 tabVertex.push(y);
@@ -100,23 +60,22 @@ function creerVertexMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur) {
                 tabVertex.push(x + 1); //  top front right -- 7
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y + 1);
-                nbTriangles += 10;
+                nbTrianglesSpawn += 10;
             }
         }
 
 
     }
-    //console.log(nbTriangles);
+    //console.log(nbTrianglesSpawn);
 
 
     var objMurs = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex), objgl.STATIC_DRAW);
-
     return objMurs;
 }
 
-function creerCouleursMursInternes(objgl, tabCouleur) {
+function creerCouleursSpawn(objgl, tabCouleur) {
     tabCouleurs = [];
     for (var i = 0; i < 4; i++)
         tabCouleurs = tabCouleurs.concat(tabCouleur);
@@ -128,8 +87,8 @@ function creerCouleursMursInternes(objgl, tabCouleur) {
     return objCouleursMurs;
 }
 
-function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
-    var tabTexels = [
+function creerTexelsSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
+    let tabTexels = [
 
 
     ];
@@ -183,11 +142,10 @@ function creerTexelsMursInternes(objgl, fltLargeur, fltProfondeur, fltHauteur, i
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
 
     objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 1.0;
-
     return objTexelsMurs;
 }
 
-function creerMaillageMursInterne(objgl) {
+function creerMaillageMursSpawn(objgl) {
     var tabMaillage =
         [ // Les 2 triangles du gauche
 
@@ -260,18 +218,11 @@ function creerMaillageMursInterne(objgl) {
     objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
     // Le nombre de triangles
-    objMaillageMurs.intNbTriangles = nbTriangles;
+    objMaillageMurs.intNbTriangles = nbTrianglesSpawn;
     // Le nombre de droites
     objMaillageMurs.intNbDroites = 0;
 console.log(tabMaillage)
     return objMaillageMurs;
-}
-
-function getTabMap() {
-    if (tabMurs != null) {
-        return tabMurs;
-    }
-   return null;
 }
 
 
