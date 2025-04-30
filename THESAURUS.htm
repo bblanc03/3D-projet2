@@ -685,7 +685,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_CIEL);
         }
 
         // Check for wall
-        if (tabMurs[pos.x][pos.z] === 1) {
+        if (tabMurs[pos.x][pos.z] === 1 || tabMurs[pos.x][pos.z] === 2) {
           return true; // Collision with inner wall
         }
       }
