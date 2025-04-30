@@ -26,6 +26,7 @@
   <script type="text/javascript" src="js/MouseControls.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>
   <script type="text/javascript" src="js/audio.js"></script>
+  <script type="text/javascript" src="js/spawn_room.js"></script>
 
 
   <script type="text/javascript">
@@ -42,6 +43,7 @@
     var OBJ3D_TRESOR = 2;
     var OBJ3D_FLECHE = 3;
     var OBJ3D_MURS_INTERNES = null;
+    var OBJ3D_MURS_SPAWN = null;
 
     let keysPressed = {};
     let movementSpeed = 2.5; // units per second
@@ -66,7 +68,7 @@
     var tabImages = [
       "images/Transparent.gif",
       "images/Sol.jpg",
-      "images/Mur.jpg",
+      "images/new_wall.png",
       "images/teleporter.jpg",
       "images/reciever.jpg",
       "images/sky.jpg",
@@ -308,10 +310,20 @@
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
       tabObjets3D.push(obj3DCiel);
 
+// creer mur interne spwan
+var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
+      tabObjets3D.push(obj3DMurSpawn);
+      //tabObjets3D.transformations = creerTransformations();
+      OBJ3D_MURS_SPAWN = tabObjets3D.length - 1;
+
+
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
-      tabObjets3D.transformations = creerTransformations();
+      //tabObjets3D.transformations = creerTransformations();
       OBJ3D_MURS_INTERNES = tabObjets3D.length - 1;
+
+      
+      
 
       // Mettre les objets 3D sur la scène
       objScene3D.tabObjets3D = tabObjets3D;
@@ -673,7 +685,7 @@
         }
 
         // Check for wall
-        if (tabMurs[pos.x][pos.z] === 1) {
+        if (tabMurs[pos.x][pos.z] === 1 || tabMurs[pos.x][pos.z] === 2) {
           return true; // Collision with inner wall
         }
       }
@@ -696,6 +708,7 @@
 
       // Save pointers for internal walls and sky
       var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
+      var objMurSpawn = objScene3D.tabObjets3D[OBJ3D_MURS_SPAWN];
       var objCiel = objScene3D.tabObjets3D.find(obj => obj === obj3DCiel);
 
       // Keep walls, ground, and sky
@@ -706,6 +719,8 @@
       // Add internal walls back to the scene
       objScene3D.tabObjets3D.push(objMursInternes);
       OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
+      objScene3D.tabObjets3D.push(objMurSpawn);
+      OBJ3D_MURS_SPAWN = objScene3D.tabObjets3D.length - 1;
 
       // Reset arrow positions
       positionFleches = [];
@@ -722,7 +737,7 @@
       console.log("TresorZ : " + tresorZ);
       console.log("TresorX : " + tresorX);
 
-      // Reduce the number of arrows if it's the next level
+      // Reduce the number of arrows if it's the next levels
       if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
 
       // Create new arrows
