@@ -137,4 +137,9 @@ function creerMaillageTeleporteur(objgl) {
     return objMaillageTeleporteur;
 }
 
+function resetTeleports(){
+    tabTeleports = [];
+}
+
+
 

@@ -142,3 +142,7 @@ function creerMaillageReciever(objgl) {
 
     return objMaillageReciever;
 }
+
+function resetReciever(){
+    tabReceveurs = [];
+}
