@@ -237,7 +237,7 @@
     function animationFleche() {
       // Animation de hovering
       const hoverAmplitude = 0.1; // Maximum height of amplitude
-      const hoverVitesse = 1; // Speed of hovering
+      const hoverVitesse = 3; // Speed of hovering
       const hoverOffset = Math.sin(Date.now() / 1000 * hoverVitesse) * hoverAmplitude;
 
       // Update only arrow objects
@@ -456,27 +456,50 @@
             maillage.intNbTriangles * 2 * 3
           );
         }
-
       }
 
-      // Draw player arrow in aerial view
-      if (binAriel && obj3DJoueur) {
+      // Draw player arrow in aerial view - IMPROVED SECTION
+      if (binAriel && objScene3D.obj3DJoueur) {
+        // Use the stored player arrow object
+        const joueur = objScene3D.obj3DJoueur;
+
+        // Set up model-view matrix for player arrow
+        var matModeleVue = mat4.create();
+        mat4.identity(matModeleVue);
+
+        // Use aerial camera view
+        mat4.lookAt(
+          getPositionsCameraXYZ(objScene3D.camera),
+          getCiblesCameraXYZ(objScene3D.camera),
+          getOrientationsXYZ(objScene3D.camera),
+          matModeleVue
+        );
+
+        // Apply transformations
+        mat4.translate(matModeleVue, getPositionsXYZ(joueur.transformations));
+        mat4.scale(matModeleVue, getEchellesXYZ(joueur.transformations));
+        mat4.rotateX(matModeleVue, (getAngleX(joueur.transformations) * Math.PI) / 180);
+        mat4.rotateY(matModeleVue, (getAngleY(joueur.transformations) * Math.PI) / 180);
+        mat4.rotateZ(matModeleVue, (getAngleZ(joueur.transformations) * Math.PI) / 180);
+
+        // Connect matrix to shaders
+        objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+
+        // Set texture and color settings
         objgl.uniform1i(objProgShaders.noTexture, 0);
         objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
 
-        // Enable vertex attributes
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
+        // Connect vertex data
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, joueur.vertex);
         objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
-        objgl.enableVertexAttribArray(objProgShaders.posVertex);
 
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.couleurs);
+        // Connect color data
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, joueur.couleurs);
         objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
-        objgl.enableVertexAttribArray(objProgShaders.couleurVertex);
 
         // Draw the player arrow
-        objgl.drawArrays(objgl.TRIANGLES, 0, obj3DJoueur.nbrVertex);
+        objgl.drawArrays(objgl.TRIANGLES, 0, joueur.nbrVertex);
       }
-
     }
     //=====================================================
     function initMouseControls(canvas) {
@@ -532,9 +555,9 @@
     function handleKeyDown(event) {
       keysPressed[event.code] = true;
       console.log("Key down:", event.code);
-
+    
       var camera = objScene3D.camera;
-
+    
       if (event.code === "PageUp" && !binAriel) { // Aerial view
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
@@ -545,32 +568,37 @@
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
+        
+        // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
+        objScene3D.obj3DJoueur = obj3DJoueur;  // Store reference in scene object
       }
-
+    
       if (event.code === "PageDown" && binAriel) { // Back to player view
         setPositionsCameraXYZ(tabPosJoueurInitial, camera);
         setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
         setOrientationX(0, camera);
         updateHauteurCiel(2, obj3DCiel);
         binAriel = false;
+        // Clear the player arrow reference
+        objScene3D.obj3DJoueur = null;
       }
-
+    
       if (event.code === "Space") { // Remove wall
         var posX = Math.floor(getPositionCameraX(camera));
         var posZ = Math.floor(getPositionCameraZ(camera));
         var cibleX = Math.floor(getCibleCameraX(camera));
         var cibleZ = Math.floor(getCibleCameraZ(camera));
-
+    
         var dirX = cibleX - posX;
         var dirZ = cibleZ - posZ;
-
+    
         var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
         var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-
+    
         var gridX = posX + dirGridX;
         var gridZ = posZ + dirGridZ;
-
+    
         if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
           tabMurs[gridX][gridZ] = 0;
           objScene3D.tabObjets3D[objScene3D.tabObjets3D.length - 1] = creerObj3DMursInternes(objgl, TEX_MUR);
@@ -578,7 +606,6 @@
         }
       }
     }
-
     function cameraDansMur(camera) {
       // Get the camera's current position
       var cameraX = getPositionCameraX(camera);
@@ -662,34 +689,51 @@
         objScene3D.tabObjets3D.push(obj3DFleche);
       }
 
-      //// Create new teleporters
-      //for (let i = 0; i < nbTeleporteur; i++) {
-      //    var obj3DTeleporteur = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-      //    objScene3D.tabObjets3D.push(obj3DTeleporteur);
-      //}
-
       // Reset the camera
       var camera = objScene3D.camera;
       resetCamera(camera, objScene3D);
 
-      // Recreate player arrow if in aerial view
+      // Handle player arrow in aerial view - FIXED SECTION
       if (binAriel) {
-        // Get updated camera position after reset
-        tabPosJoueur = getPositionsCameraXYZ(camera);
-        tabCibleJoueur = getCiblesCameraXYZ(camera);
-        
-        // Create new player arrow
-        obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
-        
-        // Make sure vertex and color buffers are properly created
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
-        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(obj3DJoueur.tabVertex), objgl.STATIC_DRAW);
-        
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.couleurs);
-        objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(obj3DJoueur.tabCouleurs), objgl.STATIC_DRAW);
+        // Get current camera position
+        tabPosJoueur = [
+          getPositionCameraX(camera),
+          0.5,  // Fixed height for player arrow
+          getPositionCameraZ(camera)
+        ];
 
-        // Add player arrow to scene objects
-        objScene3D.tabObjets3D.push(obj3DJoueur);
+        // Target is in front of the player
+        tabCibleJoueur = [
+          getCibleCameraX(camera),
+          0.5,
+          getCibleCameraZ(camera)
+        ];
+
+        // Create player arrow with proper positioning
+        obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
+
+        // Make sure arrow is visible from aerial view
+        setEchellesXYZ([0.5, 0.5, 0.5], obj3DJoueur.transformations);
+
+        // Get direction for arrow rotation
+        const dirX = getCibleCameraX(camera) - getPositionCameraX(camera);
+        const dirZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+        const angle = Math.atan2(dirX, dirZ) * (180 / Math.PI);
+        setAngleY(angle, obj3DJoueur.transformations);
+
+        // Make sure WebGL buffers are created and prepared
+        if (obj3DJoueur.vertex && obj3DJoueur.tabVertex) {
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.vertex);
+          objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(obj3DJoueur.tabVertex), objgl.STATIC_DRAW);
+        }
+
+        if (obj3DJoueur.couleurs && obj3DJoueur.tabCouleurs) {
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, obj3DJoueur.couleurs);
+          objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(obj3DJoueur.tabCouleurs), objgl.STATIC_DRAW);
+        }
+
+        // Store the object in the scene and store reference globally
+        objScene3D.obj3DJoueur = obj3DJoueur;
       }
 
       // Reset the timer
