@@ -28,3 +28,7 @@ function updatePoint(binAdd, number) {
 function showPoints(){
     document.getElementById("points").innerHTML = "Points: " + point;
 }
+
+function getPoints() {
+    return point;
+}
