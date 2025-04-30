@@ -9,7 +9,7 @@ let footstepPlaying = false;
 function initAudio() {
     mysteryBoxMusic = new Audio('./audios/mysterybox.mp3');
     mysteryBoxMusic.loop = false;
-    mysteryBoxMusic.volume = 0.3;
+    mysteryBoxMusic.volume = 0.5;
 
     newRoundMusic = new Audio('./audios/newround.mp3');
     newRoundMusic.loop = false;
@@ -17,11 +17,11 @@ function initAudio() {
 
     backgroundMusic = new Audio('./audios/background.mp3');
     backgroundMusic.loop = true;  
-    backgroundMusic.volume = 0.5; 
+    backgroundMusic.volume = 1; 
 
     footstepSound = new Audio('./audios/footsteps.mp3');
     footstepSound.loop = false;
-    footstepSound.volume = 0.2;
+    footstepSound.volume = 0.5;
 }
 
 function playMysteryBoxMusic() {
