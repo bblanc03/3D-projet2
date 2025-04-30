@@ -14,6 +14,13 @@ function creerobj3DTresor(objgl, obj3DMurs, intNoTexture) {
 
     setPositionY(0.15, obj3DTresor.transformations);
 
+    var position = positionValideTresor();
+    var z = position.z;
+    var x = position.x;
+
+    setPositionZ(z, obj3DTresor.transformations);
+    setPositionX(x, obj3DTresor.transformations);
+
     return obj3DTresor;
 }
 
@@ -105,15 +112,15 @@ function creerTresor(objgl) {
     ];
 
     // Création des tampons
-    var tabObjCube = new Array();
+    var tabObjTresor = new Array();
     for (var i = 0; i < 9; i++) {
-        tabObjCube[i] = objgl.createBuffer();
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjCube[i]);
+        tabObjTresor[i] = objgl.createBuffer();
+        objgl.bindBuffer(objgl.ARRAY_BUFFER, tabObjTresor[i]);
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabVertex[i]), objgl.STATIC_DRAW);
-        tabObjCube[i].typeDessin = (i < 2) || ((i >= 5 && i <= 8)) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
+        tabObjTresor[i].typeDessin = (i < 2) || ((i >= 5 && i <= 8)) ? objgl.TRIANGLE_FAN : ((i < 4) ? objgl.LINE_LOOP : objgl.LINES);
     }
 
-    return tabObjCube;
+    return tabObjTresor;
 }
 
 function creerCouleursTresor(objgl) {
@@ -215,32 +222,32 @@ function creerTexelsTresor(objgl) {
         objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels[i]), objgl.STATIC_DRAW);
 
         if (i === 0) { //Face avant
-            tabTexelsCube[i].intNoTexture = 1; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].intNoTexture = 1;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 1) { // Face derriere
-            tabTexelsCube[i].intNoTexture = 6; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].intNoTexture = 6;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 5) { // face haut
-            tabTexelsCube[i].intNoTexture = 2; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].intNoTexture = 2;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 6) { // face bas
-            tabTexelsCube[i].intNoTexture = 5; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].intNoTexture = 5;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 7) { // face droite
-            tabTexelsCube[i].intNoTexture = 3; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].intNoTexture = 3;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
         else if (i === 8) { // face gauche
-            tabTexelsCube[i].intNoTexture = 4; 
-            tabTexelsCube[i].pcCouleurTexel = 0.6;
+            tabTexelsCube[i].intNoTexture = 4;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
-        else { 
+        else {
             tabTexelsCube[i].intNoTexture = 0;
-            tabTexelsCube[i].pcCouleurTexel = 0.0;
+            tabTexelsCube[i].pcCouleurTexel = 1;
         }
     }
 
@@ -252,17 +259,29 @@ function positionValideTresor() {
     let validLocation = false;
     let x, z;
 
-    const GRANDEUR_GRID = 29;
+
+
+    var GRANDEUR_GRID = 29;
+    var RAYON_CENTRE_EXCLUSION = 5;
+
+    var centerX = GRANDEUR_GRID / 2;
+    var centerZ = GRANDEUR_GRID / 2;
 
     while (!validLocation) {
         x = Math.floor(Math.random() * GRANDEUR_GRID);  // rangees
         z = Math.floor(Math.random() * GRANDEUR_GRID);  // colonnes
 
-        // Checker si le coord est vide
+        // Vérifier si la position est vide et hors du rayon d'exclusion
         if (tableauMur[x][z] === 0) {
-            validLocation = true;
+            const distanceCentre = Math.sqrt(
+                Math.pow(x + 0.5 - centerX, 2) +
+                Math.pow(z + 0.5 - centerZ, 2)
+            );
+
+            if (distanceCentre > RAYON_CENTRE_EXCLUSION) {
+                validLocation = true;
+            }
         }
-        //Eventuellement rajouter aussi pour ne pas spawn dans le milieu et dans les autres objects
     }
 
     // Retourne les coords (+0.5 pour centrer)
@@ -271,5 +290,7 @@ function positionValideTresor() {
         z: z + 0.5
     };
 }
+
+
 
 
