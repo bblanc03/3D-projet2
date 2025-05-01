@@ -1,4 +1,3 @@
-
 var intTimerMax = 0;
 var intTimerDebut = 0;
 var milisecounds = 0;
@@ -71,4 +70,11 @@ function showTime() {
  */
 function timeOut() {
     return intTimerMax - secounds <= 0;
+}
+
+function getSecondsLeft() {
+    const timerElement = document.getElementById('timer');
+    const timeText = timerElement.textContent;
+    const seconds = parseInt(timeText.split(':')[1]);
+    return seconds;
 }

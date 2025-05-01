@@ -146,9 +146,10 @@
       currentSec = nextSecond(time, startTime);
       showTime();
 
+      // Deduct points when in aerial view
       if (binAriel) {
         if (lastSec != currentSec) {
-          updatePoint(false, 10);
+          updatePoint(false, 10); // Deduct 10 points every second
           lastSec = currentSec;
         }
       }
@@ -157,7 +158,6 @@
       startTime = time;
 
       if (timeOut()) {
-        // console.log('Reset game elements (not full scene)');
         await resetNiveau();
         updatePoint(false, 200);
       }
@@ -527,6 +527,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
         // Draw the player arrow
         objgl.drawArrays(objgl.TRIANGLES, 0, joueur.nbrVertex);
       }
+      
     }
     //=====================================================
     function initMouseControls(canvas) {
@@ -593,7 +594,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       }
 
       // Handle aerial view toggle
-      if (event.code === "PageUp" && !binAriel) {
+      if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
         tabPosJoueur = getPositionsCameraXYZ(camera);
@@ -656,18 +657,19 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
 
     function handleChestInteraction(camera) {
       if (isNearTresor(camera)) {
-        playMysteryBoxMusic();
+        // Calculate bonus points based on remaining time
+        const remainingSeconds = getSecondsLeft();
+        const bonusPoints = 10 * remainingSeconds;
+        
 
-        // Wait for mystery box sound to finish
+        playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
           playNewRoundMusic();
-
-          // Wait for new round music to finish before unlocking
           newRoundMusic.onended = () => {
-            isChestInteractionLocked = false; // Unlock interaction
+            isChestInteractionLocked = false;
           };
-
           prochainNiveau();
+          updatePoint(true, bonusPoints); // Add bonus points
         };
       }
     }
@@ -796,6 +798,9 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
         currentLevel = 1;
       }
 
+      // Reset interaction lock
+      isChestInteractionLocked = false;
+
       // Show level announcement
       const announcement = document.getElementById('levelAnnouncement');
       announcement.textContent = `NIVEAU ${currentLevel}`;
@@ -812,6 +817,12 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
 
     // Use the helper function
     async function resetNiveau() {
+      // Check for game over condition
+      if (getPoints() < 200) {
+        // Game over
+        gameOver();
+        return;
+      }
       resetOrNextLevel(false);
     }
 
@@ -844,7 +855,28 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       setOrientationsXYZ([0, 1, 0], camera);
     }
 
-
+    // Add new game over function
+    function gameOver() {
+      // Stop animation
+      cancelAnimationFrame(objCycleAnimation);
+      
+      // Show game over announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = 'GAME OVER';
+      announcement.classList.add('visible');
+      
+      // Stop all audio
+      pauseBackgroundMusic();
+      
+      // Disable controls
+      isChestInteractionLocked = true;
+      binAriel = false;
+      
+      // Optional: Allow restart after a few seconds
+      setTimeout(() => {
+          location.reload(); // Reload the page to restart game
+      }, 5000);
+    }
 
     function handleKeyUp(event) {
       delete keysPressed[event.code];
