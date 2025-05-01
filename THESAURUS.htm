@@ -28,6 +28,17 @@
   <script type="text/javascript" src="js/audio.js"></script>
   <script type="text/javascript" src="js/spawn_room.js"></script>
 
+  <style>
+    #levelDisplay {
+      position: absolute;
+      top: 50px; /* Position it below the timer */
+      right: 20px;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      font-size: 1.2em;
+      z-index: 1000;
+    }
+  </style>
 
   <script type="text/javascript">
 
@@ -56,12 +67,13 @@
     var nbReciever = 2;
 
     var binAriel = false;
-    //=====================================================
+    let showAllObjectsInAerial = false; // Add new global variable
+
     let isMouseLocked = false;
     let lastMouseX = 0;
     let lastMouseY = 0;
     const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
-    //=====================================================
+
 
     var tabImages = [
       "images/Transparent.gif",
@@ -90,10 +102,7 @@
     var tabOrientationJoueur;
     var largeurJeux = 31;
 
-
     var vueAerienne = false;
-
-
 
     var startTime = createDate();
     var timerLength = 60;
@@ -103,6 +112,7 @@
     setPoint(300);
 
     let currentLevel = 1;
+    const MAX_LEVELS = 10;
 
     async function demarrer() {
 
@@ -117,11 +127,25 @@
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
       resetCamera(objScene3D.camera, objScene3D);
-      animer();
 
       // Initialize and start background music
       initAudio();
       playBackgroundMusic(); // Start background music when game loads
+
+      // Show initial level announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = `NIVEAU ${currentLevel}`;
+      announcement.classList.add('visible');
+
+      // Remove the announcement after 3 seconds
+      setTimeout(() => {
+        announcement.classList.remove('visible');
+      }, 3000);
+
+      // Initialize level display
+      updateLevelDisplay();
+
+      animer();
     }
 
     // Un cycle d'animation
@@ -148,9 +172,10 @@
       currentSec = nextSecond(time, startTime);
       showTime();
 
+      // Deduct points when in aerial view
       if (binAriel) {
         if (lastSec != currentSec) {
-          updatePoint(false, 10);
+          updatePoint(false, 10); // Deduct 10 points every second
           lastSec = currentSec;
         }
       }
@@ -159,7 +184,6 @@
       startTime = time;
 
       if (timeOut()) {
-        // console.log('Reset game elements (not full scene)');
         await resetNiveau();
         updatePoint(false, 200);
       }
@@ -312,8 +336,8 @@
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
       tabObjets3D.push(obj3DCiel);
 
-// creer mur interne spwan
-var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
+      // creer mur interne spwan
+      var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurSpawn);
       //tabObjets3D.transformations = creerTransformations();
       OBJ3D_MURS_SPAWN = tabObjets3D.length - 1;
@@ -324,8 +348,8 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       //tabObjets3D.transformations = creerTransformations();
       OBJ3D_MURS_INTERNES = tabObjets3D.length - 1;
 
-      
-      
+
+
 
       // Mettre les objets 3D sur la scène
       objScene3D.tabObjets3D = tabObjets3D;
@@ -354,11 +378,22 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
 
       for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
-        var vertex = objScene3D.tabObjets3D[i].vertex;
-        var couleurs = objScene3D.tabObjets3D[i].couleurs;
-        var texels = objScene3D.tabObjets3D[i].texels;
-        var maillage = objScene3D.tabObjets3D[i].maillage;
-        var transformations = objScene3D.tabObjets3D[i].transformations;
+        const obj = objScene3D.tabObjets3D[i];
+
+        // Skip objects in aerial view unless they're floor/walls or cheat is active
+        if (binAriel && !showAllObjectsInAerial) {
+          const isFloor = i === OBJ3D_SOL;
+          const isWall = i === OBJ3D_MURS || i === OBJ3D_MURS_INTERNES;
+          if (!isFloor && !isWall) {
+            continue;
+          }
+        }
+
+        var vertex = obj.vertex;
+        var couleurs = obj.couleurs;
+        var texels = obj.texels;
+        var maillage = obj.maillage;
+        var transformations = obj.transformations;
 
         // Matrice du modèle
         var matModeleVue = mat4.create();
@@ -529,6 +564,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
         // Draw the player arrow
         objgl.drawArrays(objgl.TRIANGLES, 0, joueur.nbrVertex);
       }
+
     }
     //=====================================================
     function initMouseControls(canvas) {
@@ -586,6 +622,12 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
 
       var camera = objScene3D.camera;
 
+      // Handle cheat code (CTRL+SHIFT+SPACE)
+      if (event.code === "Space" && event.ctrlKey && event.shiftKey && binAriel) {
+        showAllObjectsInAerial = !showAllObjectsInAerial;
+        return;
+      }
+
       // Add chest interaction with lock check
       if (event.code === "KeyE" && isNearTresor(camera) && !isChestInteractionLocked) {
         isChestInteractionLocked = true; // Lock interaction
@@ -595,7 +637,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       }
 
       // Handle aerial view toggle
-      if (event.code === "PageUp" && !binAriel) {
+      if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
         tabPosJoueur = getPositionsCameraXYZ(camera);
@@ -605,6 +647,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
+        showAllObjectsInAerial = false; // Reset cheat when entering aerial view
 
         // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
@@ -625,51 +668,50 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       console.log(points);
       // Handle wall removal
       if (event.code === "Space") {
-        if (points >= 50) {
+        var posX = Math.floor(getPositionCameraX(camera));
+        var posZ = Math.floor(getPositionCameraZ(camera));
+        var cibleX = Math.floor(getCibleCameraX(camera));
+        var cibleZ = Math.floor(getCibleCameraZ(camera));
 
+        var dirX = cibleX - posX;
+        var dirZ = cibleZ - posZ;
+
+        var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+        var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+
+        var gridX = posX + dirGridX;
+        var gridZ = posZ + dirGridZ;
+
+        if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && points >= 50) {
+          // Remove the wall from tabMurs
+          tabMurs[gridX][gridZ] = 0;
+
+          // Recreate the internal walls
+          var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+
+          // Replace the old internal walls object in the scene
+          objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
           updatePoint(false, 50);
-          var posX = Math.floor(getPositionCameraX(camera));
-          var posZ = Math.floor(getPositionCameraZ(camera));
-          var cibleX = Math.floor(getCibleCameraX(camera));
-          var cibleZ = Math.floor(getCibleCameraZ(camera));
-
-          var dirX = cibleX - posX;
-          var dirZ = cibleZ - posZ;
-
-          var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-          var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-
-          var gridX = posX + dirGridX;
-          var gridZ = posZ + dirGridZ;
-
-          if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
-            // Remove the wall from tabMurs
-            tabMurs[gridX][gridZ] = 0;
-
-            // Recreate the internal walls
-            var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
-
-            // Replace the old internal walls object in the scene
-            objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
-          }
         }
+
       }
     }
 
     function handleChestInteraction(camera) {
       if (isNearTresor(camera)) {
-        playMysteryBoxMusic();
+        // Calculate bonus points based on remaining time
+        const remainingSeconds = getSecondsLeft();
+        const bonusPoints = 10 * remainingSeconds;
 
-        // Wait for mystery box sound to finish
+        pauseTimer();
+        playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
           playNewRoundMusic();
-
-          // Wait for new round music to finish before unlocking
           newRoundMusic.onended = () => {
-            isChestInteractionLocked = false; // Unlock interaction
+            isChestInteractionLocked = false;
           };
-
           prochainNiveau();
+          updatePoint(true, bonusPoints); // Add bonus points
         };
       }
     }
@@ -718,6 +760,15 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
     }
 
     function resetOrNextLevel(isNextLevel) {
+      // Check if player has completed all levels
+      if (isNextLevel && currentLevel >= MAX_LEVELS) {
+        gameComplete();
+        return;
+      }
+
+      if (isTimerPaused()) {
+        resumeTimer();
+      }
       console.log(isNextLevel ? "Prochain niveau" : "reset niveau");
 
 
@@ -798,6 +849,12 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
         currentLevel = 1;
       }
 
+      // Update level display
+      updateLevelDisplay();
+
+      // Reset interaction lock
+      isChestInteractionLocked = false;
+
       // Show level announcement
       const announcement = document.getElementById('levelAnnouncement');
       announcement.textContent = `NIVEAU ${currentLevel}`;
@@ -812,8 +869,49 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       }, 3000); // 3 seconds to match CSS animation duration
     }
 
+    // Add this function to update the level display
+    function updateLevelDisplay() {
+      const levelDisplay = document.getElementById('levelDisplay');
+      levelDisplay.textContent = `Niveau ${currentLevel}`;
+    }
+
+    // Add new game complete function
+    function gameComplete() {
+      // Stop animation
+      cancelAnimationFrame(objCycleAnimation);
+
+      // Show completion announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = 'CONGRATULATIONS';
+      announcement.classList.add('visible');
+
+      // Stop all audio
+      pauseBackgroundMusic();
+
+      // Disable controls
+      isChestInteractionLocked = true;
+      binAriel = false;
+
+      // Show final score
+      const finalScore = getPoints();
+      setTimeout(() => {
+        announcement.textContent = `FINAL SCORE: ${finalScore}`;
+      }, 3000);
+
+      // Restart game after delay
+      setTimeout(() => {
+        location.reload();
+      }, 8000);
+    }
+
     // Use the helper function
     async function resetNiveau() {
+      // Check for game over condition
+      if (getPoints() < 200) {
+        // Game over
+        gameOver();
+        return;
+      }
       resetOrNextLevel(false);
     }
 
@@ -846,7 +944,28 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       setOrientationsXYZ([0, 1, 0], camera);
     }
 
+    // Add new game over function
+    function gameOver() {
+      // Stop animation
+      cancelAnimationFrame(objCycleAnimation);
 
+      // Show game over announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = 'GAME OVER';
+      announcement.classList.add('visible');
+
+      // Stop all audio
+      pauseBackgroundMusic();
+
+      // Disable controls
+      isChestInteractionLocked = true;
+      binAriel = false;
+
+      // Optional: Allow restart after a few seconds
+      setTimeout(() => {
+        location.reload(); // Reload the page to restart game
+      }, 5000);
+    }
 
     function handleKeyUp(event) {
       delete keysPressed[event.code];
@@ -879,7 +998,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
         Math.pow(cameraZ - tresorZ, 2)
       );
 
-      return distance < 2; // Show prompt within 2 units of treasure
+      return distance < 1; // Reduced from 2 to 1 unit radius
     }
 
     document.addEventListener('keydown', handleKeyDown);
@@ -892,6 +1011,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
 <body onload="demarrer()">
   <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
   <div id="timer"></div>
+  <div id="levelDisplay">Level 1</div>
   <div id="points"></div>
   <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
   <div id="levelAnnouncement">Niveau 1</div>
