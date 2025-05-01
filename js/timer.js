@@ -93,9 +93,14 @@ function timeOut() {
 
 function getSecondsLeft() {
     const timerElement = document.getElementById('timer');
-    const timeText = timerElement.textContent;
-    const seconds = parseInt(timeText.split(':')[1]);
-    return seconds;
+    if (timerElement) {
+        const timeText = timerElement.textContent.trim(); 
+        const seconds = parseInt(timeText, 10); 
+        if (!isNaN(seconds)) {
+            return seconds;
+        }
+    }
+    return 0; 
 }
 
 function isTimerPaused() {

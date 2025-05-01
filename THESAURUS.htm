@@ -698,7 +698,7 @@
         // Calculate bonus points based on remaining time
         const remainingSeconds = getSecondsLeft();
         const bonusPoints = 10 * remainingSeconds;
-
+        console.log(remainingSeconds);
         pauseTimer();
         playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
