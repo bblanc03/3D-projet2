@@ -812,7 +812,13 @@
         announcement.classList.remove('visible');
       }, 3000); // 3 seconds to match CSS animation duration
 
-      nbrOuvreursMurs = 4;
+      if (isNextLevel) {
+        if (currentLevel%2 ==1) {
+          nbrOuvreursMurs--
+        }
+        nbrOuvreursMursUtilises = nbrOuvreursMurs;
+      }
+      //nbrOuvreursMurs = 4;
       showWallTries();
     }
 
