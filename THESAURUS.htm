@@ -125,14 +125,25 @@
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
       resetCamera(objScene3D.camera, objScene3D);
-      animer();
 
       // Initialize and start background music
       initAudio();
       playBackgroundMusic(); // Start background music when game loads
 
+      // Show initial level announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = `NIVEAU ${currentLevel}`;
+      announcement.classList.add('visible');
+
+      // Remove the announcement after 3 seconds
+      setTimeout(() => {
+        announcement.classList.remove('visible');
+      }, 3000);
+
       // Initialize level display
       updateLevelDisplay();
+
+      animer();
     }
 
     // Un cycle d'animation
