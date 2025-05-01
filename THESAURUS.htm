@@ -57,12 +57,12 @@
 
     var binAriel = false;
     let showAllObjectsInAerial = false; // Add new global variable
-    //=====================================================
+
     let isMouseLocked = false;
     let lastMouseX = 0;
     let lastMouseY = 0;
     const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
-    //=====================================================
+
 
     var tabImages = [
       "images/Transparent.gif",
@@ -89,10 +89,7 @@
     var tabOrientationJoueur;
     var largeurJeux = 31;
 
-
     var vueAerienne = false;
-
-
 
     var startTime = createDate();
     var timerLength = 60;
@@ -102,6 +99,7 @@
     setPoint(300);
 
     let currentLevel = 1;
+    const MAX_LEVELS = 10;
 
     async function demarrer() {
 
@@ -735,6 +733,12 @@
     }
 
     function resetOrNextLevel(isNextLevel) {
+      // Check if player has completed all levels
+      if (isNextLevel && currentLevel >= MAX_LEVELS) {
+        gameComplete();
+        return;
+      }
+
       if (isTimerPaused()) {
         resumeTimer();
       }
@@ -833,6 +837,35 @@
       setTimeout(() => {
         announcement.classList.remove('visible');
       }, 3000); // 3 seconds to match CSS animation duration
+    }
+
+    // Add new game complete function
+    function gameComplete() {
+      // Stop animation
+      cancelAnimationFrame(objCycleAnimation);
+
+      // Show completion announcement
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = 'CONGRATULATIONS';
+      announcement.classList.add('visible');
+
+      // Stop all audio
+      pauseBackgroundMusic();
+
+      // Disable controls
+      isChestInteractionLocked = true;
+      binAriel = false;
+
+      // Show final score
+      const finalScore = getPoints();
+      setTimeout(() => {
+        announcement.textContent = `FINAL SCORE: ${finalScore}`;
+      }, 3000);
+
+      // Restart game after delay
+      setTimeout(() => {
+        location.reload();
+      }, 8000);
     }
 
     // Use the helper function
