@@ -28,6 +28,17 @@
   <script type="text/javascript" src="js/audio.js"></script>
   <script type="text/javascript" src="js/spawn_room.js"></script>
 
+  <style>
+    #levelDisplay {
+      position: absolute;
+      top: 50px; /* Position it below the timer */
+      right: 20px;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      font-size: 1.2em;
+      z-index: 1000;
+    }
+  </style>
 
   <script type="text/javascript">
 
@@ -119,6 +130,9 @@
       // Initialize and start background music
       initAudio();
       playBackgroundMusic(); // Start background music when game loads
+
+      // Initialize level display
+      updateLevelDisplay();
     }
 
     // Un cycle d'animation
@@ -822,6 +836,9 @@
         currentLevel = 1;
       }
 
+      // Update level display
+      updateLevelDisplay();
+
       // Reset interaction lock
       isChestInteractionLocked = false;
 
@@ -837,6 +854,12 @@
       setTimeout(() => {
         announcement.classList.remove('visible');
       }, 3000); // 3 seconds to match CSS animation duration
+    }
+
+    // Add this function to update the level display
+    function updateLevelDisplay() {
+      const levelDisplay = document.getElementById('levelDisplay');
+      levelDisplay.textContent = `Niveau ${currentLevel}`;
     }
 
     // Add new game complete function
@@ -975,6 +998,7 @@
 <body onload="demarrer()">
   <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
   <div id="timer"></div>
+  <div id="levelDisplay">Level 1</div>
   <div id="points"></div>
   <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
   <div id="levelAnnouncement">Niveau 1</div>
