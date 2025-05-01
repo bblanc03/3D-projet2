@@ -15,6 +15,7 @@ function resetReciever(){
     coordsReciever = null;
     lastReciever = null;
     
+
 }
 
 //verification des spawn receveurs

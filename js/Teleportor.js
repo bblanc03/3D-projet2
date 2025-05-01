@@ -7,8 +7,9 @@ function getTabTeleports() {
     return tabTeleports;
 }
 
-function resetTeleports() {
-    console.log("reset done");
+
+function resetTeleport(){
+
     tabTeleports = [];
     lastTeleportor = null;
     coordsTeleport = null;
