@@ -70,6 +70,7 @@
       "images/teleporter.jpg",
       "images/reciever.jpg",
       "images/sky.jpg",
+      "images/tresure_texture.jpg"
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
@@ -78,6 +79,7 @@
     var TEX_TELEPORTEUR = 3;
     var TEX_RECIEVER = 4;
     var TEX_CIEL = 5;
+    var TEX_TRESOR = 6;
 
 
     var tabMapOriginal = getTabMurs().map(row => [...row]);
@@ -281,7 +283,7 @@
       tabObjets3D.push(obj3DMurs);
 
       // Creer le tresor
-      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
+      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESOR);
       tabObjets3D.push(obj3DTresor);
 
 
@@ -743,7 +745,7 @@ var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       positionFleches = [];
 
       // Create a new treasure
-      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRANSPARENT);
+      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRESOR);
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
