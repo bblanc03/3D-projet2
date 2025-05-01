@@ -145,7 +145,7 @@ canvas{
     color: white;
     font-family: 'Courier New', monospace;
     font-size: 2em;
-    background-color: rgba(0, 0, 0, 0.6);
+    
     padding: 6px 12px;
     border-radius: 8px;
     z-index: 100;
