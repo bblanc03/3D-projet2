@@ -56,6 +56,7 @@
     var nbReciever = 2;
 
     var binAriel = false;
+    let showAllObjectsInAerial = false; // Add new global variable
     //=====================================================
     let isMouseLocked = false;
     let lastMouseX = 0;
@@ -352,11 +353,22 @@
       objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
 
       for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
-        var vertex = objScene3D.tabObjets3D[i].vertex;
-        var couleurs = objScene3D.tabObjets3D[i].couleurs;
-        var texels = objScene3D.tabObjets3D[i].texels;
-        var maillage = objScene3D.tabObjets3D[i].maillage;
-        var transformations = objScene3D.tabObjets3D[i].transformations;
+        const obj = objScene3D.tabObjets3D[i];
+
+        // Skip objects in aerial view unless they're floor/walls or cheat is active
+        if (binAriel && !showAllObjectsInAerial) {
+          const isFloor = i === OBJ3D_SOL;
+          const isWall = i === OBJ3D_MURS || i === OBJ3D_MURS_INTERNES;
+          if (!isFloor && !isWall) {
+            continue;
+          }
+        }
+
+        var vertex = obj.vertex;
+        var couleurs = obj.couleurs;
+        var texels = obj.texels;
+        var maillage = obj.maillage;
+        var transformations = obj.transformations;
 
         // Matrice du modèle
         var matModeleVue = mat4.create();
@@ -585,6 +597,12 @@
 
       var camera = objScene3D.camera;
 
+      // Handle cheat code (CTRL+SHIFT+SPACE)
+      if (event.code === "Space" && event.ctrlKey && event.shiftKey && binAriel) {
+        showAllObjectsInAerial = !showAllObjectsInAerial;
+        return;
+      }
+
       // Add chest interaction with lock check
       if (event.code === "KeyE" && isNearTresor(camera) && !isChestInteractionLocked) {
         isChestInteractionLocked = true; // Lock interaction
@@ -604,6 +622,7 @@
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
+        showAllObjectsInAerial = false; // Reset cheat when entering aerial view
 
         // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
