@@ -711,8 +711,8 @@
       });
 
       // Add internal walls back to the scene
-      objScene3D.tabObjets3D.push(objMursInternes);
-      OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
+      // objScene3D.tabObjets3D.push(objMursInternes);
+      // OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
 
       // Reset arrow positions
       positionFleches = [];
@@ -796,7 +796,7 @@
       if (isNextLevel) {
         currentLevel++;
       } else {
-        currentLevel = 1;
+        currentLevel = currentLevel;
       }
 
       // Show level announcement
@@ -816,6 +816,9 @@
         if (currentLevel%2 ==1) {
           nbrOuvreursMurs--
         }
+        nbrOuvreursMursUtilises = nbrOuvreursMurs;
+      }
+      else {
         nbrOuvreursMursUtilises = nbrOuvreursMurs;
       }
       //nbrOuvreursMurs = 4;
