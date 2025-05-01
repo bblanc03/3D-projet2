@@ -23,7 +23,6 @@
   <script type="text/javascript" src="js/Teleportor.js"></script>
   <script type="text/javascript" src="js/Reciever.js"></script>
   <script type="text/javascript" src="js/Transportation.js"></script>
-  <script type="text/javascript" src="js/MouseControls.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>
   <script type="text/javascript" src="js/audio.js"></script>
   <script type="text/javascript" src="js/spawn_room.js"></script>
@@ -51,7 +50,7 @@
 
     var nbrFleches = 18;
     var nbTeleporteur = 10; // Number of teleporters in the game
-    var nbReciever = 2;
+    var nbReciever = 10;
 
     var binAriel = false;
     let showAllObjectsInAerial = false; // Add new global variable
@@ -178,6 +177,9 @@
 
       if (timeOut()) {
         await resetNiveau();
+        demarrer();
+        setTimerMax(timerLength);
+        resetSeconds();
         updatePoint(false, 200);
       }
       showWallTries();
@@ -313,13 +315,11 @@
       }
 
 
-      // creer teleporteurs
       for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         tabObjets3D.push(obj3DTeleporteurs);
       }
 
-      // creer recievers
       for (let i = 0; i < nbReciever; i++) {
         var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
         tabObjets3D.push(obj3DRecievers);
@@ -630,8 +630,8 @@
       }
 
       // Handle aerial view toggle
-
       if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
+
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
         tabPosJoueur = getPositionsCameraXYZ(camera);
@@ -641,9 +641,6 @@
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
-
-        showAllObjectsInAerial = false; // Reset cheat when entering aerial view
-
 
         // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
@@ -690,12 +687,14 @@
           objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
           updatePoint(false, 50);
           }
+
         }
       }
     }
 
     function handleChestInteraction(camera) {
       if (isNearTresor(camera)) {
+
 
         // Calculate bonus points based on remaining time
         const remainingSeconds = getSecondsLeft();
@@ -710,6 +709,7 @@
           };
           prochainNiveau();
           updatePoint(true, bonusPoints); // Add bonus points
+
         };
       }
     }
@@ -798,16 +798,17 @@
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-      resetTeleport();
+      resetTeleports();
       resetReciever();
 
-      // creer teleporteurs
+      //creer teleporteurs
+
       for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         objScene3D.tabObjets3D.push(obj3DTeleporteurs);
       }
 
-      // creer recievers
+
       for (let i = 0; i < nbReciever; i++) {
         var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
         objScene3D.tabObjets3D.push(obj3DRecievers);
@@ -1022,6 +1023,7 @@
   </script>
 </head>
 
+
 <body class="background" onload="demarrer()">
   <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
   <div id="canvasContainer">
@@ -1032,6 +1034,7 @@
     <div id="wallTries"></div>
     <div id="levelDisplay">Level 1</div>
   </div>
+
 
 
 </body>

@@ -3,15 +3,19 @@ let tabCoordsTeleports = null
 tabCoordsTeleports = getTabTeleports();
 let coordsReciever = null;
 let tabReceveurs = [];
+var RAYON_CENTRE_EXCLUSION = 5;
 
 function getTabReceveurs(){
     return tabReceveurs;
 }
 
 function resetReciever(){
+    console.log("reset done");
     tabReceveurs = [];
     coordsReciever = null;
     lastReciever = null;
+    
+
 }
 
 //verification des spawn receveurs
@@ -60,28 +64,24 @@ function creerObj3DReciever(objgl, intNoTexture) {
 
 // final test
 function creerVertexReciever(objgl, fltLargeur, fltProfondeur) {
-    var tabVertex = [
-    ];
+    var tabVertex = [];
+    const HEIGHT = 0.02; // Increased height for visibility
+    const BASE_Y = 0; // Base height from ground
 
     coordsReciever = validRecieverLocation()
     tabReceveurs.push(coordsReciever);
-    tabVertex.push(coordsReciever.x); // bottom front left -- 0
-    tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.z);
 
-    tabVertex.push(coordsReciever.x + 1); // bottom front right -- 1
-    tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.z);
+    // Bottom face vertices
+    tabVertex.push(coordsReciever.x);        tabVertex.push(BASE_Y);        tabVertex.push(coordsReciever.z);        // bottom front left -- 0
+    tabVertex.push(coordsReciever.x + 1);    tabVertex.push(BASE_Y);        tabVertex.push(coordsReciever.z);        // bottom front right -- 1
+    tabVertex.push(coordsReciever.x);        tabVertex.push(BASE_Y);        tabVertex.push(coordsReciever.z + 1);    // bottom back left -- 2
+    tabVertex.push(coordsReciever.x + 1);    tabVertex.push(BASE_Y);        tabVertex.push(coordsReciever.z + 1);    // bottom back right -- 3
 
-    tabVertex.push(coordsReciever.x); // bottom back left -- 4
-    tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.z + 1);
-
-    tabVertex.push(coordsReciever.x + 1); // bottom back right -- 5
-    tabVertex.push(0.02);
-    tabVertex.push(coordsReciever.z + 1);
-
-
+    // Top face vertices
+    tabVertex.push(coordsReciever.x);        tabVertex.push(BASE_Y + HEIGHT);    tabVertex.push(coordsReciever.z);        // top front left -- 4
+    tabVertex.push(coordsReciever.x + 1);    tabVertex.push(BASE_Y + HEIGHT);    tabVertex.push(coordsReciever.z);        // top front right -- 5
+    tabVertex.push(coordsReciever.x);        tabVertex.push(BASE_Y + HEIGHT);    tabVertex.push(coordsReciever.z + 1);    // top back left -- 6
+    tabVertex.push(coordsReciever.x + 1);    tabVertex.push(BASE_Y + HEIGHT);    tabVertex.push(coordsReciever.z + 1);    // top back right -- 7
 
     var objReciever = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objReciever);
@@ -89,12 +89,20 @@ function creerVertexReciever(objgl, fltLargeur, fltProfondeur) {
     return objReciever;
 }
 
-
-
 function creerCouleursReciever(objgl, tabCouleur) {
-    tabCouleurs = [];
-    for (var i = 0; i < 4; i++)
-        tabCouleurs = tabCouleurs.concat(tabCouleur);
+    var tabCouleurs = [];
+    const blackColor = [0.0, 0.0, 0.0, 1.0];  // Black for sides
+    const whiteColor = [1.0, 1.0, 1.0, 1.0];  // White for textured top
+
+    // Bottom face (black)
+    for (let i = 0; i < 4; i++) {
+        tabCouleurs = tabCouleurs.concat(blackColor);
+    }
+
+    // Top face (white for texture)
+    for (let i = 0; i < 4; i++) {
+        tabCouleurs = tabCouleurs.concat(whiteColor);
+    }
 
     var objCouleursReciever = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objCouleursReciever);
@@ -105,22 +113,25 @@ function creerCouleursReciever(objgl, tabCouleur) {
 
 function creerTexelsReciever(objgl, fltLargeur, fltProfondeur, intNoTexture) {
     var tabTexels = [];
-    tabTexels.push(0.0)
-    tabTexels.push(0.0)
-    tabTexels.push(fltLargeur)
-    tabTexels.push(0.0)
-    tabTexels.push(0.0)
-    tabTexels.push(fltProfondeur)
-    tabTexels.push(fltLargeur)
-    tabTexels.push(fltProfondeur)
+    
+    // Bottom face (no texture)
+    tabTexels.push(0.0); tabTexels.push(0.0);  // vertex 0
+    tabTexels.push(0.0); tabTexels.push(0.0);  // vertex 1
+    tabTexels.push(0.0); tabTexels.push(0.0);  // vertex 2
+    tabTexels.push(0.0); tabTexels.push(0.0);  // vertex 3
 
-
+    // Top face (with texture)
+    tabTexels.push(0.0); tabTexels.push(0.0);  // vertex 4 - top left
+    tabTexels.push(1.0); tabTexels.push(0.0);  // vertex 5 - top right
+    tabTexels.push(0.0); tabTexels.push(1.0);  // vertex 6 - bottom left
+    tabTexels.push(1.0); tabTexels.push(1.0);  // vertex 7 - bottom right
 
     var objTexelsReciever = objgl.createBuffer();
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsReciever);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
 
-    objTexelsReciever.intNoTexture = intNoTexture; objTexelsReciever.pcCouleurTexel = 1.0;
+    objTexelsReciever.intNoTexture = intNoTexture;
+    objTexelsReciever.pcCouleurTexel = 1.0;
 
     return objTexelsReciever;
 }
@@ -128,23 +139,38 @@ function creerTexelsReciever(objgl, fltLargeur, fltProfondeur, intNoTexture) {
 function creerMaillageReciever(objgl) {
     var tabMaillage = [];
 
-    tabMaillage.push(0);
-    tabMaillage.push(1);
-    tabMaillage.push(3);
-    tabMaillage.push(0);
-    tabMaillage.push(2);
-    tabMaillage.push(3);
+    // Bottom face
+    tabMaillage.push(0); tabMaillage.push(1); tabMaillage.push(2);
+    tabMaillage.push(1); tabMaillage.push(3); tabMaillage.push(2);
 
+    // Top face
+    tabMaillage.push(4); tabMaillage.push(5); tabMaillage.push(6);
+    tabMaillage.push(5); tabMaillage.push(7); tabMaillage.push(6);
 
+    // Front face
+    tabMaillage.push(0); tabMaillage.push(1); tabMaillage.push(4);
+    tabMaillage.push(1); tabMaillage.push(5); tabMaillage.push(4);
+
+    // Back face
+    tabMaillage.push(2); tabMaillage.push(3); tabMaillage.push(6);
+    tabMaillage.push(3); tabMaillage.push(7); tabMaillage.push(6);
+
+    // Left face
+    tabMaillage.push(0); tabMaillage.push(2); tabMaillage.push(4);
+    tabMaillage.push(2); tabMaillage.push(6); tabMaillage.push(4);
+
+    // Right face
+    tabMaillage.push(1); tabMaillage.push(3); tabMaillage.push(5);
+    tabMaillage.push(3); tabMaillage.push(7); tabMaillage.push(5);
 
     var objMaillageReciever = objgl.createBuffer();
     objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, objMaillageReciever);
     objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
-    // Le nombre de triangles
-    objMaillageReciever.intNbTriangles = 2;
-    // Le nombre de droites
+    objMaillageReciever.intNbTriangles = 12;  // 2 triangles per face * 6 faces
     objMaillageReciever.intNbDroites = 0;
 
     return objMaillageReciever;
 }
+
+
