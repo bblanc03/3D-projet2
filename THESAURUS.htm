@@ -659,7 +659,7 @@
         const remainingSeconds = getSecondsLeft();
         const bonusPoints = 10 * remainingSeconds;
 
-
+        pauseTimer();
         playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
           playNewRoundMusic();
@@ -716,6 +716,9 @@
     }
 
     function resetOrNextLevel(isNextLevel) {
+      if (isTimerPaused()) {
+        resumeTimer();
+      }
       console.log(isNextLevel ? "Prochain niveau" : "reset niveau");
 
 
