@@ -75,7 +75,7 @@ function showTime() {
     
     if (intTimerMax - secounds > 0) {
         let secs = intTimerMax - secounds;
-        document.getElementById("timer").innerHTML = "Time: " + secs;
+        document.getElementById("timer").innerHTML = secs + "s";
     } else {
         document.getElementById("timer").innerHTML = 0;
     }

@@ -87,6 +87,10 @@
     var tabOrientationJoueur;
     var largeurJeux = 31;
 
+
+    var nbrOuvreursMurs = 4;
+    var nbrOuvreursMursUtilises = nbrOuvreursMurs;
+
     var vueAerienne = false;
 
     var startTime = createDate();
@@ -116,6 +120,8 @@
       // Initialize and start background music
       initAudio();
       playBackgroundMusic(); // Start background music when game loads
+      showWallTries();
+
 
       // Show initial level announcement
       const announcement = document.getElementById('levelAnnouncement');
@@ -172,7 +178,7 @@
         await resetNiveau();
         updatePoint(false, 200);
       }
-
+      showWallTries();
       animationFleche();
     }
 
@@ -622,6 +628,7 @@
       }
 
       // Handle aerial view toggle
+
       if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
@@ -632,7 +639,9 @@
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
+
         showAllObjectsInAerial = false; // Reset cheat when entering aerial view
+
 
         // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
@@ -667,23 +676,25 @@
         var gridX = posX + dirGridX;
         var gridZ = posZ + dirGridZ;
 
-        if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && points >= 50) {
-          // Remove the wall from tabMurs
-          tabMurs[gridX][gridZ] = 0;
-
-          // Recreate the internal walls
-          var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+        if (nbrOuvreursMursUtilises > 0) {
+          
+          if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
+            tabMurs[gridX][gridZ] = 0;
+            nbrOuvreursMursUtilises--;
+            showWallTries();
+            var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
 
           // Replace the old internal walls object in the scene
           objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
           updatePoint(false, 50);
+          }
         }
-
       }
     }
 
     function handleChestInteraction(camera) {
       if (isNearTresor(camera)) {
+
         // Calculate bonus points based on remaining time
         const remainingSeconds = getSecondsLeft();
         const bonusPoints = 10 * remainingSeconds;
@@ -852,6 +863,18 @@
       setTimeout(() => {
         announcement.classList.remove('visible');
       }, 3000); // 3 seconds to match CSS animation duration
+
+      if (isNextLevel) {
+        if (currentLevel%2 ==1) {
+          nbrOuvreursMurs--
+        }
+        nbrOuvreursMursUtilises = nbrOuvreursMurs;
+      }
+      else {
+        nbrOuvreursMursUtilises = nbrOuvreursMurs;
+      }
+      //nbrOuvreursMurs = 4;
+      showWallTries();
     }
 
     // Add this function to update the level display
@@ -990,16 +1013,25 @@
     document.addEventListener('keyup', handleKeyUp);
 
 
+    function showWallTries() {
+      document.getElementById("wallTries").innerHTML = nbrOuvreursMursUtilises + "/"+ nbrOuvreursMurs+ " murs ouvereurs";
+    }
+
   </script>
 </head>
 
-<body onload="demarrer()">
+<body class="background" onload="demarrer()">
   <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
-  <div id="timer"></div>
-  <div id="levelDisplay">Level 1</div>
-  <div id="points"></div>
-  <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
-  <div id="levelAnnouncement">Niveau 1</div>
+  <div id="canvasContainer">
+    <div id="timer"></div>
+    <div id="points"></div>
+    <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
+    <div id="levelAnnouncement">Niveau 1</div>
+    <div id="wallTries"></div>
+    <div id="levelDisplay">Level 1</div>
+    <div id="levelAnnouncement">Niveau 1</div>
+  </div>
+
 
 </body>
 
