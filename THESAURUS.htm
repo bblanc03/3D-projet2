@@ -105,12 +105,11 @@
     const MAX_LEVELS = 10;
 
     async function demarrer() {
-
       var objCanvas = document.getElementById("monCanvas");
       objCanvas.focus();
-      objgl = initWebGL(objCanvas); // Initialise le contexte WebGL
+      objgl = initWebGL(objCanvas);
       objProgShaders = initShaders(objgl);
-      objScene3D = await initScene3D(objgl); // Créer la scène
+      objScene3D = await initScene3D(objgl);
 
       initMouseControls(objCanvas);
 
@@ -120,19 +119,11 @@
 
       // Initialize and start background music
       initAudio();
-      playBackgroundMusic(); // Start background music when game loads
+      playBackgroundMusic();
       showWallTries();
 
-
-      // Show initial level announcement
-      const announcement = document.getElementById('levelAnnouncement');
-      announcement.textContent = `NIVEAU ${currentLevel}`;
-      announcement.classList.add('visible');
-
-      // Remove the announcement after 3 seconds
-      setTimeout(() => {
-        announcement.classList.remove('visible');
-      }, 3000);
+      // Reset level at game start
+      resetOrNextLevel(false);
 
       // Initialize level display
       updateLevelDisplay();
@@ -164,11 +155,23 @@
       currentSec = nextSecond(time, startTime);
       showTime();
 
-      // Deduct points when in aerial view
+      // Deduct points when in aerial view and force exit if points reach 0
       if (binAriel) {
         if (lastSec != currentSec) {
           updatePoint(false, 10); // Deduct 10 points every second
           lastSec = currentSec;
+          
+          // Force exit aerial view if points reach 0
+          if (getPoints() <= 0) {
+            // Reset to ground view
+            const camera = objScene3D.camera;
+            setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+            setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+            setOrientationX(0, camera);
+            updateHauteurCiel(2, obj3DCiel);
+            binAriel = false;
+            objScene3D.obj3DJoueur = null;
+          }
         }
       }
 
@@ -656,7 +659,6 @@
       }
 
       var points = getPoints();
-      console.log(points);
       // Handle wall removal
       if (event.code === "Space") {
         var posX = Math.floor(getPositionCameraX(camera));
@@ -675,7 +677,7 @@
 
         if (nbrOuvreursMursUtilises > 0) {
 
-          if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
+          if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && getPoints() >= 10) {
             tabMurs[gridX][gridZ] = 0;
             nbrOuvreursMursUtilises--;
             showWallTries();
@@ -697,7 +699,6 @@
         // Calculate bonus points based on remaining time
         const remainingSeconds = getSecondsLeft();
         const bonusPoints = 10 * remainingSeconds;
-        console.log(remainingSeconds);
         pauseTimer();
         playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
@@ -765,7 +766,6 @@
       if (isTimerPaused()) {
         resumeTimer();
       }
-      console.log(isNextLevel ? "Prochain niveau" : "reset niveau");
 
 
       // Create a deep copy of the original map
@@ -815,9 +815,6 @@
       var tresorZ = getPositionZ(obj3DTresor.transformations);
       var tresorX = getPositionX(obj3DTresor.transformations);
 
-      console.log("TresorZ : " + tresorZ);
-      console.log("TresorX : " + tresorX);
-
       // Reduce the number of arrows if it's the next levels
       if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
 
@@ -836,7 +833,6 @@
       resetSeconds();
       setTimerMax(timerLength);
 
-      console.log("Nombre de flèches : " + nbrFleches);
 
       // Show level announcement for both reset and next level
       if (isNextLevel) {
@@ -875,6 +871,14 @@
       }
       //nbrOuvreursMurs = 4;
       showWallTries();
+
+
+      console.log('=== Object Counts ===');
+      console.log('Arrows:', nbrFleches);
+      console.log('Teleporters:', nbTeleporteur);
+      console.log('Receivers:', nbReciever);
+      console.log('Treasure Chests: 1');
+      console.log('==================');
     }
 
     // Add this function to update the level display
@@ -920,7 +924,16 @@
         gameOver();
         return;
       }
+      
+      // Pass false for isNextLevel but maintain current level
+      const currentLevelBackup = currentLevel;
       resetOrNextLevel(false);
+      currentLevel = currentLevelBackup; // Restore the current level
+      
+      // Update level display to show correct level
+      const announcement = document.getElementById('levelAnnouncement');
+      announcement.textContent = `NIVEAU ${currentLevel}`;
+      updateLevelDisplay();
     }
 
     async function prochainNiveau() {
