@@ -105,6 +105,7 @@
     const MAX_LEVELS = 10;
 
     async function demarrer() {
+      console.log("haha")
       var objCanvas = document.getElementById("monCanvas");
       objCanvas.focus();
       objgl = initWebGL(objCanvas);
@@ -180,7 +181,6 @@
 
       if (timeOut()) {
         await resetNiveau();
-        demarrer();
         setTimerMax(timerLength);
         resetSeconds();
         updatePoint(false, 200);
@@ -702,10 +702,7 @@
         pauseTimer();
         playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
-          playNewRoundMusic();
-          newRoundMusic.onended = () => {
             isChestInteractionLocked = false;
-          };
           prochainNiveau();
           updatePoint(true, bonusPoints); // Add bonus points
 
