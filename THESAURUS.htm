@@ -622,6 +622,7 @@
       }
 
       // Handle aerial view toggle
+
       if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
@@ -632,7 +633,9 @@
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
+
         showAllObjectsInAerial = false; // Reset cheat when entering aerial view
+
 
         // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
@@ -677,13 +680,14 @@
           // Replace the old internal walls object in the scene
           objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
           updatePoint(false, 50);
+          }
         }
-
       }
     }
 
     function handleChestInteraction(camera) {
       if (isNearTresor(camera)) {
+
         // Calculate bonus points based on remaining time
         const remainingSeconds = getSecondsLeft();
         const bonusPoints = 10 * remainingSeconds;
@@ -993,13 +997,17 @@
   </script>
 </head>
 
-<body onload="demarrer()">
+<body class="background" onload="demarrer()">
   <canvas id="monCanvas" width="1920" height="1200" tabindex="1"></canvas>
-  <div id="timer"></div>
-  <div id="levelDisplay">Level 1</div>
-  <div id="points"></div>
-  <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
-  <div id="levelAnnouncement">Niveau 1</div>
+  <div id="canvasContainer">
+    <div id="timer"></div>
+    <div id="points"></div>
+    <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
+    <div id="levelAnnouncement">Niveau 1</div>
+    <div id="wallTries"></div>
+    <div id="levelDisplay">Level 1</div>
+  </div>
+
 
 </body>
 
