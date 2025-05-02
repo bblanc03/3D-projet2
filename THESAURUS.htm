@@ -80,6 +80,8 @@
     var TEX_TRESOR = 6;
 
 
+    var savedLevelObject = {};
+
     var tabMapOriginal = getTabMurs().map(row => [...row]);
     var tabPosJoueur;
     var tabCibleJoueur;
@@ -825,6 +827,9 @@
       startTime = createDate();
       resetSeconds();
       setTimerMax(timerLength);
+
+
+
 
       // Update level display
       updateLevelDisplay();
