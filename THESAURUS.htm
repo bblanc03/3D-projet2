@@ -296,30 +296,35 @@
       // Créer le sol
       var obj3DSol = creerObj3DSol(objgl, TEX_SOL);
       tabObjets3D.push(obj3DSol);
+      OBJ3D_SOL = tabObjets3D.length - 1;
 
       // Créer les murs
       var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
       tabObjets3D.push(obj3DMurs);
+      OBJ3D_MURS = tabObjets3D.length - 1;
 
       // Creer le tresor
       var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESOR);
       tabObjets3D.push(obj3DTresor);
+      OBJ3D_TRESOR = tabObjets3D.length - 1;
 
+      // Get treasure position before creating arrows
+      var tresorZ = getPositionZ(obj3DTresor.transformations);
+      var tresorX = getPositionX(obj3DTresor.transformations);
 
-      // Creer les fleches
-      tresorZ = getPositionZ(tabObjets3D[OBJ3D_TRESOR].transformations);
-      tresorX = getPositionX(tabObjets3D[OBJ3D_TRESOR].transformations);
+      // Creer les fleches after we have treasure position
       for (let i = 0; i < nbrFleches; i++) {
         var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         tabObjets3D.push(obj3DFleche);
       }
 
-
+      // Creer les teleporteurs
       for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         tabObjets3D.push(obj3DTeleporteurs);
       }
 
+      // Creer les receveurs
       for (let i = 0; i < nbReciever; i++) {
         var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
         tabObjets3D.push(obj3DRecievers);
@@ -329,30 +334,22 @@
       var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
       tabObjets3D.push(obj3DCiel);
 
-      // creer mur interne spwan
+      // creer mur interne spawn
       var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurSpawn);
-      //tabObjets3D.transformations = creerTransformations();
       OBJ3D_MURS_SPAWN = tabObjets3D.length - 1;
 
-
+      // creer murs internes
       var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
       tabObjets3D.push(obj3DMurInterne);
-      //tabObjets3D.transformations = creerTransformations();
       OBJ3D_MURS_INTERNES = tabObjets3D.length - 1;
-
-
-
 
       // Mettre les objets 3D sur la scène
       objScene3D.tabObjets3D = tabObjets3D;
 
       // La caméra
       var camera = creerCamera();
-      const fltX = getCibleCameraX(camera) - getPositionCameraX(camera);
-      const fltZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
       resetCamera(camera, objScene3D);
-
       objScene3D.camera = camera;
 
       return objScene3D;
@@ -798,8 +795,6 @@
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-      resetTeleports();
-      resetReciever();
 
       //creer teleporteurs
 
