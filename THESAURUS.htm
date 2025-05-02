@@ -69,6 +69,7 @@
       "images/teleporter.jpg",
       "images/reciever.jpg",
       "images/sky.jpg",
+      "images/tresure_texture.jpg"
     ];
     var TEX_TRANSPARENT = 0;
     var TEX_SOL = 1;
@@ -77,6 +78,7 @@
     var TEX_TELEPORTEUR = 3;
     var TEX_RECIEVER = 4;
     var TEX_CIEL = 5;
+    var TEX_TRESURE = 6;
 
 
     var tabMapOriginal = getTabMurs().map(row => [...row]);
@@ -292,7 +294,7 @@
       tabObjets3D.push(obj3DMurs);
 
       // Creer le tresor
-      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRANSPARENT);
+      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESURE);
       tabObjets3D.push(obj3DTresor);
 
 
