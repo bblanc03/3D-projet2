@@ -145,15 +145,15 @@
       objCycleAnimation = requestAnimationFrame(animer);
 
       const now = performance.now();
-      const deltaTime = (now - lastFrameTime) / 1000.0; // in seconds
+      const deltaTime = (now - lastFrameTime) / 1000.0;
       lastFrameTime = now;
 
       updateMovement(deltaTime);
-      updateInteractionPrompt(); // Add this line
-
+      updateInteractionPrompt();
       effacerCanevas(objgl);
       mettreAjourAnimation();
       dessiner(objgl, objProgShaders, objScene3D);
+
     }
 
 
@@ -351,6 +351,9 @@
       var camera = creerCamera();
       resetCamera(camera, objScene3D);
       objScene3D.camera = camera;
+
+      // Assign tabObjets3D only once it's fully populated
+      objScene3D.tabObjets3D = tabObjets3D;
 
       return objScene3D;
     }
@@ -560,7 +563,7 @@
     function initMouseControls(canvas) {
       canvas.onclick = () => {
         canvas.requestPointerLock();
-        canvas.focus(); // Ensure canvas is focused for key events
+        canvas.focus();
       };
 
       document.onpointerlockchange = () => {
@@ -570,13 +573,12 @@
       document.onmousemove = (e) => {
         if (!isMouseLocked || binAriel) return;
 
-        const deltaX = e.movementX * 0.1;
-        const deltaY = e.movementY * 0.1;
+        const sensitivity = 0.002; // smooth sensitivity
+        cameraYaw += e.movementX * sensitivity * 180 / Math.PI;
+        cameraPitch -= e.movementY * sensitivity * 180 / Math.PI;
 
-        cameraYaw += deltaX;
-        cameraPitch -= deltaY;
-
-        cameraPitch = Math.max(-89, Math.min(89, cameraPitch));
+        // Clamp pitch to prevent flipping
+        cameraPitch = Math.max(-85, Math.min(85, cameraPitch));
 
         updateCameraDirection();
       };
@@ -585,16 +587,15 @@
 
     function updateCameraDirection() {
       const camera = objScene3D.camera;
+      const yaw = cameraYaw * Math.PI / 180;
+      const pitch = cameraPitch * Math.PI / 180;
 
-      const radYaw = cameraYaw * Math.PI / 180;
-      const radPitch = cameraPitch * Math.PI / 180;
-
-      const dirX = Math.cos(radPitch) * Math.sin(radYaw);
-      const dirY = Math.sin(radPitch);
-      const dirZ = -Math.cos(radPitch) * Math.cos(radYaw);
+      const x = Math.cos(pitch) * Math.sin(yaw);
+      const y = Math.sin(pitch);
+      const z = -Math.cos(pitch) * Math.cos(yaw);
 
       const pos = getPositionsCameraXYZ(camera);
-      setCiblesCameraXYZ([pos[0] + dirX, pos[1] + dirY, pos[2] + dirZ], camera);
+      setCiblesCameraXYZ([pos[0] + x, pos[1] + y, pos[2] + z], camera);
     }
 
     //=====================================================
@@ -673,16 +674,16 @@
         var gridZ = posZ + dirGridZ;
 
         if (nbrOuvreursMursUtilises > 0) {
-          
+
           if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1) {
             tabMurs[gridX][gridZ] = 0;
             nbrOuvreursMursUtilises--;
             showWallTries();
             var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
 
-          // Replace the old internal walls object in the scene
-          objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
-          updatePoint(false, 50);
+            // Replace the old internal walls object in the scene
+            objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
+            updatePoint(false, 50);
           }
 
         }
@@ -795,18 +796,19 @@
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
+      // Reset teleporters array before creating new ones
+      resetTeleport();
 
       //creer teleporteurs
-
       for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         objScene3D.tabObjets3D.push(obj3DTeleporteurs);
       }
 
-
+      //creer receveurs
       for (let i = 0; i < nbReciever; i++) {
-        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
-        objScene3D.tabObjets3D.push(obj3DRecievers);
+        var obj3DReciever = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+        objScene3D.tabObjets3D.push(obj3DReciever);
       }
 
       // Update treasure coordinates
@@ -863,7 +865,7 @@
       }, 3000); // 3 seconds to match CSS animation duration
 
       if (isNextLevel) {
-        if (currentLevel%2 ==1) {
+        if (currentLevel % 2 == 1) {
           nbrOuvreursMurs--
         }
         nbrOuvreursMursUtilises = nbrOuvreursMurs;
@@ -926,19 +928,25 @@
     }
 
     function collisionTeleporteur(camera) {
-      let cameraX = Math.floor(getPositionCameraX(camera));
-      let cameraZ = Math.floor(getPositionCameraZ(camera));
-      let positionJoueur = { x: cameraX, z: cameraZ }
-      let tabTeleporteurs = getTabTeleports();
-      let tabReceveurs = getTabReceveurs();
-      const randomIndex = Math.floor(Math.random() * tabReceveurs.length);
+      const cameraX = Math.floor(getPositionCameraX(camera));
+      const cameraZ = Math.floor(getPositionCameraZ(camera));
 
-      for (let teleporter of tabTeleporteurs) {
-        if (teleporter.x === positionJoueur.x && teleporter.z === positionJoueur.z) {
-          setPositionsCameraXYZ([(tabReceveurs[randomIndex].x) + 0.5, 0.5, (tabReceveurs[randomIndex].z) + 0.5], camera);
+      const tabTeleporteurs = getTabTeleports();
+      const tabReceveurs = getTabReceveurs();
+
+      // Use a map for O(1) lookup
+      for (let i = 0; i < tabTeleporteurs.length; i++) {
+        const t = tabTeleporteurs[i];
+        if (t.x === cameraX && t.z === cameraZ) {
+          const r = tabReceveurs[Math.floor(Math.random() * tabReceveurs.length)];
+          setPositionsCameraXYZ([r.x + 0.5, 0.5, r.z + 0.5], camera);
+          return true;
         }
       }
+
+      return false;
     }
+
 
     function resetCamera(camera, objScene3D) {
       const centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
@@ -1012,7 +1020,7 @@
 
 
     function showWallTries() {
-      document.getElementById("wallTries").innerHTML = nbrOuvreursMursUtilises + "/"+ nbrOuvreursMurs+ " murs ouvereurs";
+      document.getElementById("wallTries").innerHTML = nbrOuvreursMursUtilises + "/" + nbrOuvreursMurs + " murs ouvereurs";
     }
 
   </script>
