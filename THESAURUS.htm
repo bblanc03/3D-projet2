@@ -49,8 +49,8 @@
     let isChestInteractionLocked = false;
 
     var nbrFleches = 18;
-    var nbTeleporteur = 10; // Number of teleporters in the game
-    var nbReciever = 10;
+    var nbTeleporteur = 0; // Number of teleporters in the game
+    var nbReciever = 0;
 
     var binAriel = false;
     let showAllObjectsInAerial = false; // Add new global variable
@@ -105,7 +105,6 @@
     const MAX_LEVELS = 10;
 
     async function demarrer() {
-      console.log("haha")
       var objCanvas = document.getElementById("monCanvas");
       objCanvas.focus();
       objgl = initWebGL(objCanvas);
@@ -161,7 +160,7 @@
         if (lastSec != currentSec) {
           updatePoint(false, 10); // Deduct 10 points every second
           lastSec = currentSec;
-          
+
           // Force exit aerial view if points reach 0
           if (getPoints() <= 0) {
             // Reset to ground view
@@ -319,18 +318,6 @@
       for (let i = 0; i < nbrFleches; i++) {
         var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         tabObjets3D.push(obj3DFleche);
-      }
-
-      // Creer les teleporteurs
-      for (let i = 0; i < nbTeleporteur; i++) {
-        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-        tabObjets3D.push(obj3DTeleporteurs);
-      }
-
-      // Creer les receveurs
-      for (let i = 0; i < nbReciever; i++) {
-        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
-        tabObjets3D.push(obj3DRecievers);
       }
 
       // Créer le ciel
@@ -702,7 +689,7 @@
         pauseTimer();
         playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
-            isChestInteractionLocked = false;
+          isChestInteractionLocked = false;
           prochainNiveau();
           updatePoint(true, bonusPoints); // Add bonus points
 
@@ -793,6 +780,14 @@
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
+      // Show level announcement for both reset and next level
+      if (isNextLevel) {
+        currentLevel++;
+      }
+
+      nbTeleporteur = Math.floor(currentLevel / 2);
+      nbReciever = nbTeleporteur;
+
       // Reset teleporters array before creating new ones
       resetTeleport();
 
@@ -807,6 +802,7 @@
         var obj3DReciever = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
         objScene3D.tabObjets3D.push(obj3DReciever);
       }
+      
 
       // Update treasure coordinates
       var tresorZ = getPositionZ(obj3DTresor.transformations);
@@ -829,14 +825,6 @@
       startTime = createDate();
       resetSeconds();
       setTimerMax(timerLength);
-
-
-      // Show level announcement for both reset and next level
-      if (isNextLevel) {
-        currentLevel++;
-      } else {
-        currentLevel = 1;
-      }
 
       // Update level display
       updateLevelDisplay();
@@ -866,7 +854,7 @@
       else {
         nbrOuvreursMursUtilises = nbrOuvreursMurs;
       }
-      //nbrOuvreursMurs = 4;
+
       showWallTries();
 
 
@@ -921,12 +909,12 @@
         gameOver();
         return;
       }
-      
+
       // Pass false for isNextLevel but maintain current level
       const currentLevelBackup = currentLevel;
       resetOrNextLevel(false);
       currentLevel = currentLevelBackup; // Restore the current level
-      
+
       // Update level display to show correct level
       const announcement = document.getElementById('levelAnnouncement');
       announcement.textContent = `NIVEAU ${currentLevel}`;
