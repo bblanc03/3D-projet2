@@ -939,6 +939,17 @@
         return;
       }
 
+      // If in aerial view, reset to ground view
+      if (binAriel) {
+        const camera = objScene3D.camera;
+        setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+        setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+        setOrientationX(0, camera);
+        updateHauteurCiel(2, obj3DCiel);
+        binAriel = false;
+        objScene3D.obj3DJoueur = null;
+      }
+
       // Pass false for isNextLevel but maintain current level
       const currentLevelBackup = currentLevel;
       resetOrNextLevel(false);
