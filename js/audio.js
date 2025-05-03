@@ -2,6 +2,7 @@ let mysteryBoxMusic;
 let newRoundMusic;
 let backgroundMusic;
 let footstepSound;
+let portalSound;
 let isWalking = false;
 let footstepTimeout;
 let footstepPlaying = false;
@@ -22,6 +23,10 @@ function initAudio() {
     footstepSound = new Audio('./audios/footsteps.mp3');
     footstepSound.loop = false;
     footstepSound.volume = 0.7;
+
+    portalSound = new Audio('./audios/teleporter.mp3');
+    portalSound.loop = false;
+    portalSound.volume = 0.5;
 }
 
 function playMysteryBoxMusic() {
@@ -125,5 +130,13 @@ function handleChestInteraction(camera) {
             playNewRoundMusic();
             prochainNiveau();
         };
+    }
+}
+
+function playPortalSound() {
+    if (portalSound) {
+        portalSound.currentTime = 0;
+        portalSound.play()
+            .catch(e => console.log("Portal audio playback failed:", e));
     }
 }

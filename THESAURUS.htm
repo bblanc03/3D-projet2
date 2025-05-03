@@ -97,7 +97,7 @@
     var vueAerienne = false;
 
     var startTime = createDate();
-    var timerLength = 10;
+    var timerLength = 60;
     setTimerMax(timerLength);
     var lastSec = 0;
 
@@ -852,9 +852,6 @@
       resetSeconds();
       setTimerMax(timerLength);
 
-
-
-
       // Update level display
       updateLevelDisplay();
 
@@ -921,7 +918,7 @@
       // Show final score
       const finalScore = getPoints();
       setTimeout(() => {
-        announcement.textContent = `FINAL SCORE: ${finalScore}`;
+        announcement.textContent = `Score final : ${finalScore}`;
       }, 3000);
 
       // Restart game after delay
@@ -978,6 +975,7 @@
         if (t.x === cameraX && t.z === cameraZ) {
           const r = tabReceveurs[Math.floor(Math.random() * tabReceveurs.length)];
           setPositionsCameraXYZ([r.x + 0.5, 0.5, r.z + 0.5], camera);
+          playPortalSound(); // Play the portal sound when teleporting
           return true;
         }
       }
