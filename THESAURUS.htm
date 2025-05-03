@@ -115,6 +115,30 @@
 
       initMouseControls(objCanvas);
 
+      // Set canvas size based on window size while maintaining aspect ratio
+      function resizeCanvas() {
+        const aspectRatio = 1600 / 800; // Your original canvas dimensions
+        const windowWidth = window.innerWidth * 0.9;
+        const windowHeight = window.innerHeight * 0.9;
+
+        if (windowWidth / windowHeight > aspectRatio) {
+          objCanvas.height = windowHeight;
+          objCanvas.width = windowHeight * aspectRatio;
+        } else {
+          objCanvas.width = windowWidth;
+          objCanvas.height = windowWidth / aspectRatio;
+        }
+
+        // Update WebGL viewport
+        objgl.viewport(0, 0, objCanvas.width, objCanvas.height);
+      }
+
+      // Call resize on start
+      resizeCanvas();
+
+      // Add event listener for window resize
+      window.addEventListener('resize', resizeCanvas);
+
       effacerCanevas(objgl);
       dessiner(objgl, objProgShaders, objScene3D);
       resetCamera(objScene3D.camera, objScene3D);

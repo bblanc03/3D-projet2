@@ -96,14 +96,15 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /* background-color: black; Optional: Set a background color */
+    width: 100vw;
     overflow: hidden;
-    /* Prevent scrollbars */
-
 }
 
 canvas {
     border: 7px solid;
+    width: 70vw; /* Canvas will take 90% of viewport width */
+    height: 70vh; /* Canvas will take 90% of viewport height */
+    object-fit: contain; /* Maintains aspect ratio */
 }
 
 .background {
@@ -111,7 +112,8 @@ canvas {
     display: flex;
     align-items: center;
     justify-content: center;
-
+    width: 100%;
+    height: 100%;
 }
 
 .background:before {
@@ -169,13 +171,6 @@ canvas {
     z-index: 100;
     pointer-events: none;
 }
-
-
-canvas {
-    display: block;
-}
-
-
 
 #levelDisplay {
     position: absolute;
