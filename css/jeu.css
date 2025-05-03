@@ -87,8 +87,6 @@
     }
 }
 
-
-
 body {
     margin: 0;
     padding: 0;
@@ -184,4 +182,40 @@ canvas {
     border-radius: 8px;
     z-index: 100;
     pointer-events: none;
+}
+
+#gameOverScreen {
+    position: fixed;
+    width: 70%;
+    height: 70%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.game-over-content {
+    text-align: center;
+    color: white;
+    font-family: 'Courier New', monospace;
+}
+
+.game-over-content h1 {
+    font-size: 4em;
+    color: #ff0000;
+    margin-bottom: 20px;
+}
+
+.game-over-content p {
+    font-size: 2em;
+    margin: 10px 0;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.blink {
+    animation: blink 2s linear infinite;
 }

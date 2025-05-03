@@ -26,6 +26,7 @@
   <script type="text/javascript" src="js/Ciel.js"></script>
   <script type="text/javascript" src="js/audio.js"></script>
   <script type="text/javascript" src="js/spawn_room.js"></script>
+  <script type="text/javascript" src="js/gameOver.js"></script>
   <script type="text/javascript">
 
     var objgl = null;
@@ -97,7 +98,7 @@
     var vueAerienne = false;
 
     var startTime = createDate();
-    var timerLength = 60;
+    var timerLength = 10;
     setTimerMax(timerLength);
     var lastSec = 0;
 
@@ -999,11 +1000,6 @@
       // Stop animation
       cancelAnimationFrame(objCycleAnimation);
 
-      // Show game over announcement
-      const announcement = document.getElementById('levelAnnouncement');
-      announcement.textContent = 'GAME OVER';
-      announcement.classList.add('visible');
-
       // Stop all audio
       pauseBackgroundMusic();
 
@@ -1011,10 +1007,8 @@
       isChestInteractionLocked = true;
       binAriel = false;
 
-      // Optional: Allow restart after a few seconds
-      setTimeout(() => {
-        location.reload(); // Reload the page to restart game
-      }, 5000);
+      // Show game over screen
+      showGameOver();
     }
 
     function handleKeyUp(event) {
