@@ -1,17 +1,27 @@
 let isGameOver = false;
 let gameOverMusic;
 
-function playGameOverMusic() {
-    gameOverMusic = new Audio('game-over.mp3');
-    gameOverMusic.play();
-}
-
 function showGameOver() {
-    
     isGameOver = true;
     
-    // Play game over music
-    playGameOverMusic();
+    // Stop all other audio
+    pauseBackgroundMusic();  // Stop background music
+    pauseNewRoundMusic(); 
+    stopWalking();          // Stop footsteps
+    if (mysteryBoxMusic) {  // Stop mystery box music
+        mysteryBoxMusic.pause();
+        mysteryBoxMusic.currentTime = 0;
+    }
+    if (portalSound) {      // Stop portal sound
+        portalSound.pause();
+        portalSound.currentTime = 0;
+    }
+    
+    // Initialize and play game over music
+    gameOverMusic = new Audio('./audios/gameover.mp3');
+    gameOverMusic.volume = 0.8;
+    gameOverMusic.play()
+        .catch(e => console.log("Game over audio playback failed:", e));
     
     // Create game over container
     const gameOverScreen = document.createElement('div');
@@ -20,7 +30,7 @@ function showGameOver() {
         <div class="game-over-content">
             <h1>GAME OVER</h1>
             <p>Score Final: ${getPoints()}</p>
-            <p class="blink">Appuyez sur ESPACE pour retourner au menu principal</p>
+            <p class="blink">Appuyez sur ESPACE pour recommencer</p>
         </div>
     `;
     document.body.appendChild(gameOverScreen);
@@ -31,7 +41,6 @@ function showGameOver() {
 
 function handleGameOverKeypress(event) {
     if (isGameOver && event.code === 'Space') {
-        // Stop game over music if it's still playing
         if (gameOverMusic) {
             gameOverMusic.pause();
             gameOverMusic.currentTime = 0;

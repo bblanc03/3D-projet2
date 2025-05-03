@@ -52,6 +52,12 @@ function playNewRoundMusic() {
     }
 }
 
+function pauseNewRoundMusic() {
+    if (newRoundMusic) {
+        newRoundMusic.pause();
+    }
+}
+
 function pauseMysteryBoxMusic() {
     if (mysteryBoxMusic) {
         mysteryBoxMusic.pause();
