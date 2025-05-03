@@ -61,6 +61,8 @@
     let lastMouseY = 0;
     const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
 
+    let animatingWalls = [];  // Store walls that are currently animating
+    const WALL_ANIMATION_DURATION = 1000; // Animation duration in milliseconds
 
     var tabImages = [
       "images/Transparent.gif",
@@ -313,6 +315,10 @@
         .forEach(obj3D => {
           setPositionY(obj3D.baseY + hoverOffset, obj3D.transformations);
         });
+    }
+
+    function animationMur() {
+      
     }
 
     async function initScene3D(objgl) {
