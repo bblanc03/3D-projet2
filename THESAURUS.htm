@@ -100,7 +100,7 @@
     var vueAerienne = false;
 
     var startTime = createDate();
-    var timerLength = 10;
+    var timerLength = 60;
     setTimerMax(timerLength);
     var lastSec = 0;
 
@@ -317,9 +317,41 @@
         });
     }
 
-    function animationMur() {
-      
+    function animationMur(gridZ, gridX) {
+      console.log("Animating wall down at:", gridZ, gridX);
+    
+      const wallsObj = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
+      console.log(wallsObj);
+      const wallIndex = gridZ * largeurJeux + gridX;
+    
+      const transform = wallsObj.transformations;
+
+      console.log(tabMurs[gridZ][gridX]);
+      //console.log(transform);
+
+      const duration = 1000; // ms
+      const startTime = performance.now();
+      const startY = getPositionY(transform);
+      const endY = -1.5; // Target position below floor
+    
+      function animate() {
+        const now = performance.now();
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1); // Clamp between 0 and 1
+        const currentY = startY + (endY - startY) * t;
+    
+        setPositionY(currentY, transform);
+    
+        if (t < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+    
+      animate();
     }
+    
+    
+    
 
     async function initScene3D(objgl) {
       var objScene3D = new Object();
@@ -696,16 +728,17 @@
         var gridZ = posZ + dirGridZ;
 
         if (nbrOuvreursMursUtilises > 0) {
-
           if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && getPoints() >= 10) {
-            tabMurs[gridX][gridZ] = 0;
-            nbrOuvreursMursUtilises--;
-            showWallTries();
-            var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+            animationMur(gridZ, gridX);
+            //tabMurs[gridX][gridZ] = 0;
+            //nbrOuvreursMursUtilises--;
+            //showWallTries();
+            //var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
 
             // Replace the old internal walls object in the scene
-            objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
-            updatePoint(false, 50);
+            //objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
+            //updatePoint(false, 50);
+
           }
 
         }
