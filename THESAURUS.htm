@@ -23,6 +23,7 @@
   <script type="text/javascript" src="js/Teleportor.js"></script>
   <script type="text/javascript" src="js/Reciever.js"></script>
   <script type="text/javascript" src="js/Transportation.js"></script>
+  <script type="text/javascript" src="js/MouseControls.js"></script>
   <script type="text/javascript" src="js/Ciel.js"></script>
   <script type="text/javascript" src="js/audio.js"></script>
   <script type="text/javascript" src="js/spawn_room.js"></script>
@@ -78,6 +79,10 @@
 
     var TEX_TELEPORTEUR = 3;
     var TEX_RECIEVER = 4;
+    
+    var TEX_CIEL = 5;
+    var TEX_TRESURE = 6;
+
     var TEX_CIEL = 5; 
     var TEX_TRESOR = 6;
 
@@ -91,10 +96,6 @@
     var tabCibleJoueurInitial;
     var tabOrientationJoueur;
     var largeurJeux = 31;
-
-
-    var nbrOuvreursMurs = 4;
-    var nbrOuvreursMursUtilises = nbrOuvreursMurs;
 
     var vueAerienne = false;
 
@@ -147,6 +148,20 @@
 
       // Initialize and start background music
       initAudio();
+      //playBackgroundMusic(); // Start background music when game loads
+
+      // Show initial level announcement
+      //const announcement = document.getElementById('levelAnnouncement');
+      //announcement.textContent = `NIVEAU ${currentLevel}`;
+      //announcement.classList.add('visible');
+
+      // Remove the announcement after 3 seconds
+      /*
+      setTimeout(() => {
+        announcement.classList.remove('visible');
+      }, 3000);
+      */
+
       playBackgroundMusic();
       showWallTries();
 
@@ -208,11 +223,12 @@
 
       if (timeOut()) {
         await resetNiveau();
+
         setTimerMax(timerLength);
         resetSeconds();
         updatePoint(false, 200);
       }
-      showWallTries();
+
       animationFleche();
     }
 
@@ -382,7 +398,7 @@
       OBJ3D_MURS = tabObjets3D.length - 1;
 
       // Creer le tresor
-      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESOR);
+      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESURE);
       tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = tabObjets3D.length - 1;
 
@@ -394,6 +410,19 @@
       for (let i = 0; i < nbrFleches; i++) {
         var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
         tabObjets3D.push(obj3DFleche);
+      }
+
+
+      // creer teleporteurs
+      for (let i = 0; i < nbTeleporteur; i++) {
+        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
+        tabObjets3D.push(obj3DTeleporteurs);
+      }
+
+      // creer recievers
+      for (let i = 0; i < nbReciever; i++) {
+        var obj3DRecievers = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
+        tabObjets3D.push(obj3DRecievers);
       }
 
       // Créer le ciel
@@ -694,8 +723,8 @@
       }
 
       // Handle aerial view toggle
-      if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
 
+      if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
         tabPosJoueurInitial = getPositionsCameraXYZ(camera);
         tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
         tabPosJoueur = getPositionsCameraXYZ(camera);
@@ -705,6 +734,9 @@
         setCiblesCameraXYZ([15, 0, 15], camera);
         updateHauteurCiel(-2, obj3DCiel);
         binAriel = true;
+
+        showAllObjectsInAerial = false; // Reset cheat when entering aerial view
+
 
         // Create player arrow and store it in the scene
         obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
@@ -724,6 +756,7 @@
       var points = getPoints();
       // Handle wall removal
       if (event.code === "Space") {
+
         // Add check for isWallAnimating
         if (!isWallAnimating) {
           var posX = Math.floor(getPositionCameraX(camera));
@@ -744,25 +777,25 @@
             if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && getPoints() >= 10) {
               animationMur(gridZ, gridX);
             }
+
           }
         }
       }
-    }
+    
 
     function handleChestInteraction(camera) {
       if (isNearTresor(camera)) {
 
-
         // Calculate bonus points based on remaining time
         const remainingSeconds = getSecondsLeft();
         const bonusPoints = 10 * remainingSeconds;
+
         pauseTimer();
         playMysteryBoxMusic();
         mysteryBoxMusic.onended = () => {
           isChestInteractionLocked = false;
           prochainNiveau();
           updatePoint(true, bonusPoints); // Add bonus points
-
         };
       }
     }
@@ -846,9 +879,15 @@
       positionFleches = [];
 
       // Create a new treasure
-      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRESOR);
+      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRESURE);
       objScene3D.tabObjets3D.push(obj3DTresor);
       OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
+
+
+      //resetTeleport();
+      //resetReciever();
+
+      // creer teleporteurs
 
       // Show level announcement for both reset and next level
       if (isNextLevel) {
@@ -862,12 +901,13 @@
       resetTeleport();
 
       //creer teleporteurs
+
       for (let i = 0; i < nbTeleporteur; i++) {
         var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
         objScene3D.tabObjets3D.push(obj3DTeleporteurs);
       }
 
-      //creer receveurs
+
       for (let i = 0; i < nbReciever; i++) {
         var obj3DReciever = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
         objScene3D.tabObjets3D.push(obj3DReciever);
@@ -915,6 +955,7 @@
         announcement.classList.remove('visible');
       }, 3000); // 3 seconds to match CSS animation duration
 
+
       if (isNextLevel) {
         if (currentLevel % 2 == 1) {
           nbrOuvreursMurs--
@@ -934,6 +975,7 @@
       console.log('Receivers:', nbReciever);
       console.log('Treasure Chests: 1');
       console.log('==================');
+
     }
 
     // Add this function to update the level display
@@ -1092,13 +1134,14 @@
     document.addEventListener('keyup', handleKeyUp);
 
 
+
     function showWallTries() {
       document.getElementById("wallTries").innerHTML = nbrOuvreursMursUtilises + "/" + nbrOuvreursMurs + " murs ouvereurs";
     }
 
+
   </script>
 </head>
-
 
 <body class="background" onload="demarrer()">
   <canvas id="monCanvas" width="1600" height="800" tabindex="1"></canvas>
@@ -1110,7 +1153,6 @@
     <div id="wallTries"></div>
     <div id="levelDisplay">Level 1</div>
   </div>
-
 
 
 </body>
