@@ -61,8 +61,7 @@
     let lastMouseY = 0;
     const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
 
-    let animatingWalls = [];  // Store walls that are currently animating
-    const WALL_ANIMATION_DURATION = 1000; // Animation duration in milliseconds
+    let isWallAnimating = false;
 
     var tabImages = [
       "images/Transparent.gif",
@@ -318,41 +317,53 @@
     }
 
     function animationMur(gridZ, gridX) {
-      console.log("Animating wall down at:", gridZ, gridX);
-    
-      const wallsObj = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
-      console.log(wallsObj);
-      const wallIndex = gridZ * largeurJeux + gridX;
-    
-      const transform = wallsObj.transformations;
-
-      console.log(tabMurs[gridZ][gridX]);
-      //console.log(transform);
-
-      const duration = 1000; // ms
+      // Set animation flag
+      isWallAnimating = true;
+      
+      // First, mark this wall as being destroyed
+      tabMurs[gridX][gridZ] = 3; // Use value 3 to mark as "being destroyed"
+      
+      // Create a new wall object specifically for this wall to animate
+      const wallX = gridX + 0.5;
+      const wallZ = gridZ + 0.5;
+      
+      const wallObj = createAnimatedWall(objgl, wallX, wallZ, TEX_MUR);
+      objScene3D.tabObjets3D.push(wallObj);
+      const wallIndex = objScene3D.tabObjets3D.length - 1;
+      
+      var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+      objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
+      
       const startTime = performance.now();
-      const startY = getPositionY(transform);
-      const endY = -1.5; // Target position below floor
-    
-      function animate() {
-        const now = performance.now();
-        const elapsed = now - startTime;
-        const t = Math.min(elapsed / duration, 1); // Clamp between 0 and 1
-        const currentY = startY + (endY - startY) * t;
-    
-        setPositionY(currentY, transform);
-    
-        if (t < 1) {
-          requestAnimationFrame(animate);
-        }
+      const animationDuration = 1000; // Animation duration in milliseconds
+      
+      function animate(currentTime) {
+          const elapsed = currentTime - startTime;
+          const progress = Math.min(elapsed / animationDuration, 1);
+          
+          const easedProgress = 1 - Math.pow(1 - progress, 3);
+          const newHeight = 1.0 * (1 - easedProgress);
+          
+          setEchelleY(newHeight, objScene3D.tabObjets3D[wallIndex].transformations);
+          
+          if (progress < 1) {
+              requestAnimationFrame(animate);
+          } else {
+              // Animation complete - cleanup
+              objScene3D.tabObjets3D.splice(wallIndex, 1);
+              tabMurs[gridX][gridZ] = 0;
+              nbrOuvreursMursUtilises--;
+              showWallTries();
+              updatePoint(false, 50);
+              // Reset animation flag when complete
+              isWallAnimating = false;
+          }
       }
-    
-      animate();
+      
+      requestAnimationFrame(animate);
     }
-    
-    
-    
 
+  
     async function initScene3D(objgl) {
       var objScene3D = new Object();
       var tabObjets3D = new Array();
@@ -713,34 +724,27 @@
       var points = getPoints();
       // Handle wall removal
       if (event.code === "Space") {
-        var posX = Math.floor(getPositionCameraX(camera));
-        var posZ = Math.floor(getPositionCameraZ(camera));
-        var cibleX = Math.floor(getCibleCameraX(camera));
-        var cibleZ = Math.floor(getCibleCameraZ(camera));
+        // Add check for isWallAnimating
+        if (!isWallAnimating) {
+          var posX = Math.floor(getPositionCameraX(camera));
+          var posZ = Math.floor(getPositionCameraZ(camera));
+          var cibleX = Math.floor(getCibleCameraX(camera));
+          var cibleZ = Math.floor(getCibleCameraZ(camera));
 
-        var dirX = cibleX - posX;
-        var dirZ = cibleZ - posZ;
+          var dirX = cibleX - posX;
+          var dirZ = cibleZ - posZ;
 
-        var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-        var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+          var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+          var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
 
-        var gridX = posX + dirGridX;
-        var gridZ = posZ + dirGridZ;
+          var gridX = posX + dirGridX;
+          var gridZ = posZ + dirGridZ;
 
-        if (nbrOuvreursMursUtilises > 0) {
-          if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && getPoints() >= 10) {
-            animationMur(gridZ, gridX);
-            //tabMurs[gridX][gridZ] = 0;
-            //nbrOuvreursMursUtilises--;
-            //showWallTries();
-            //var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
-
-            // Replace the old internal walls object in the scene
-            //objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
-            //updatePoint(false, 50);
-
+          if (nbrOuvreursMursUtilises > 0) {
+            if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && getPoints() >= 10) {
+              animationMur(gridZ, gridX);
+            }
           }
-
         }
       }
     }
