@@ -303,3 +303,156 @@ function getTabMap() {
 }
 
 
+  // Helper function to create a single animated wall
+  function createAnimatedWall(objgl, x, z, textureMur) {
+    const wall = new Object();
+    
+    // Create vertices for a simple wall (1x1x1 cube centered at x,z)
+    const vertices = objgl.createBuffer();
+    objgl.bindBuffer(objgl.ARRAY_BUFFER, vertices);
+    
+    const wallVertices = [
+        // Front face
+        x - 0.5, 0.0, z - 0.5,
+        x + 0.5, 0.0, z - 0.5,
+        x + 0.5, 1.0, z - 0.5,
+        x - 0.5, 1.0, z - 0.5,
+        
+        // Back face
+        x - 0.5, 0.0, z + 0.5,
+        x + 0.5, 0.0, z + 0.5,
+        x + 0.5, 1.0, z + 0.5,
+        x - 0.5, 1.0, z + 0.5,
+        
+        // Left face
+        x - 0.5, 0.0, z - 0.5,
+        x - 0.5, 0.0, z + 0.5,
+        x - 0.5, 1.0, z + 0.5,
+        x - 0.5, 1.0, z - 0.5,
+        
+        // Right face
+        x + 0.5, 0.0, z - 0.5,
+        x + 0.5, 0.0, z + 0.5,
+        x + 0.5, 1.0, z + 0.5,
+        x + 0.5, 1.0, z - 0.5,
+        
+        // Top face
+        x - 0.5, 1.0, z - 0.5,
+        x + 0.5, 1.0, z - 0.5,
+        x + 0.5, 1.0, z + 0.5,
+        x - 0.5, 1.0, z + 0.5,
+        
+        // Bottom face
+        x - 0.5, 0.0, z - 0.5,
+        x + 0.5, 0.0, z - 0.5,
+        x + 0.5, 0.0, z + 0.5,
+        x - 0.5, 0.0, z + 0.5
+    ];
+    
+    objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(wallVertices), objgl.STATIC_DRAW);
+    
+    // Create colors for the wall
+    const colors = objgl.createBuffer();
+    objgl.bindBuffer(objgl.ARRAY_BUFFER, colors);
+    
+    const wallColors = [];
+    // 24 vertices, each with RGBA (1,1,1,1)
+    for (let i = 0; i < 24; i++) {
+        wallColors.push(1.0, 1.0, 1.0, 1.0);
+    }
+    
+    objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(wallColors), objgl.STATIC_DRAW);
+    
+    // Create texture coordinates
+    const texCoords = objgl.createBuffer();
+    objgl.bindBuffer(objgl.ARRAY_BUFFER, texCoords);
+    
+    const wallTexCoords = [
+        // For each face (6 faces with 4 vertices each)
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        0.0, 0.0,
+        
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0,
+        0.0, 0.0
+    ];
+    
+    objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(wallTexCoords), objgl.STATIC_DRAW);
+    
+    // Create indices for the wall faces
+    const indices = objgl.createBuffer();
+    objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, indices);
+    
+    const wallIndices = [
+        // Front face
+        0, 1, 2,
+        0, 2, 3,
+        
+        // Back face
+        4, 5, 6,
+        4, 6, 7,
+        
+        // Left face
+        8, 9, 10,
+        8, 10, 11,
+        
+        // Right face
+        12, 13, 14,
+        12, 14, 15,
+        
+        // Top face
+        16, 17, 18,
+        16, 18, 19,
+        
+        // Bottom face
+        20, 21, 22,
+        20, 22, 23
+    ];
+    
+    objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(wallIndices), objgl.STATIC_DRAW);
+    
+    // Set properties for the wall object
+    wall.vertex = vertices;
+    wall.vertex.typeDessin = objgl.TRIANGLES;
+    wall.vertex.nbVertex = 24;
+    
+    wall.couleurs = colors;
+    
+    texCoords.intNoTexture = textureMur;
+    texCoords.pcCouleurTexel = 1.0;
+    wall.texels = texCoords;
+    
+    wall.maillage = indices;
+    wall.maillage.intNbTriangles = 12; // 2 triangles per face, 6 faces
+    wall.maillage.intNbDroites = 0;
+    
+    // Set transformations
+    wall.transformations = creerTransformations();
+    setPositionsXYZ([0, 0, 0], wall.transformations);
+    setEchellesXYZ([1.0, 1.0, 1.0], wall.transformations);
+    
+    return wall;
+}

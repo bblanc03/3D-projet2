@@ -87,8 +87,6 @@
     }
 }
 
-
-
 body {
     margin: 0;
     padding: 0;
@@ -96,14 +94,15 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    /* background-color: black; Optional: Set a background color */
+    width: 100vw;
     overflow: hidden;
-    /* Prevent scrollbars */
-
 }
 
 canvas {
     border: 7px solid;
+    width: 70vw; /* Canvas will take 90% of viewport width */
+    height: 70vh; /* Canvas will take 90% of viewport height */
+    object-fit: contain; /* Maintains aspect ratio */
 }
 
 .background {
@@ -111,7 +110,8 @@ canvas {
     display: flex;
     align-items: center;
     justify-content: center;
-
+    width: 100%;
+    height: 100%;
 }
 
 .background:before {
@@ -170,13 +170,6 @@ canvas {
     pointer-events: none;
 }
 
-
-canvas {
-    display: block;
-}
-
-
-
 #levelDisplay {
     position: absolute;
     top: 85%;
@@ -189,4 +182,40 @@ canvas {
     border-radius: 8px;
     z-index: 100;
     pointer-events: none;
+}
+
+#gameOverScreen {
+    position: fixed;
+    width: 70%;
+    height: 70%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.game-over-content {
+    text-align: center;
+    color: white;
+    font-family: 'Courier New', monospace;
+}
+
+.game-over-content h1 {
+    font-size: 4em;
+    color: #ff0000;
+    margin-bottom: 20px;
+}
+
+.game-over-content p {
+    font-size: 2em;
+    margin: 10px 0;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.blink {
+    animation: blink 2s linear infinite;
 }
