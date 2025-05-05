@@ -178,3 +178,8 @@ function stopMenuMusic() {
         menuMusic.currentTime = 0;
     }
 }
+
+function playDoorCloseSound() {
+    const audio = new Audio('./audio/sliding.mp3'); // Replace with the actual path to your sound file
+    audio.play();
+}

@@ -284,6 +284,7 @@ function animateSpawnDoorUp() {
             requestAnimationFrame(animate);
         } else {
             console.log("Spawn door animation complete.");
+            playDoorCloseSound(); // Play the door-closing sound
         }
     }
 
