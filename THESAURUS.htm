@@ -852,11 +852,14 @@
 
       // Show level announcement for both reset and next level
       if (isNextLevel) {
-        currentLevel++;
-      }
-
-      nbTeleporteur = Math.floor(currentLevel / 2);
-      nbReciever = nbTeleporteur;
+          currentLevel++;
+         if(currentLevel%2==0){
+            nbReciever++;
+            nbTeleporteur++;
+          } else{
+            nbReciever++;
+          }
+        }
 
       // Reset teleporters array before creating new ones
       resetTeleport();
