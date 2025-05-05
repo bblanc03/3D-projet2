@@ -1,31 +1,32 @@
 
 
 
-let nbTrianglesSpawn = 6;
+let nbTrianglesDoor = 6;
 
 
-function creerObj3DMursSpawn(objgl, intNoTexture) {
+function creerObj3DMursDoor(objgl, intNoTexture) {
     var obj3DMurs = new Object();
     obj3DMurs.fltProfondeur = 1;
     obj3DMurs.fltLargeur = 1;
     obj3DMurs.fltHauteur = 2;
 
-    obj3DMurs.vertex = creerVertexSpawn(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
-    obj3DMurs.couleurs = creerCouleursSpawn(objgl, [1, 1, 1, 1]);
-    obj3DMurs.texels = creerTexelsSpawn(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
-    obj3DMurs.maillage = creerMaillageMursSpawn(objgl);
+    obj3DMurs.vertex = creerVertexSpawnDoor(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur);
+    obj3DMurs.couleurs = creerCouleursSpawnDoor(objgl, [1, 1, 1, 1]);
+    obj3DMurs.texels = creerTexelsSpawnDoor(objgl, obj3DMurs.fltLargeur, obj3DMurs.fltProfondeur, obj3DMurs.fltHauteur, intNoTexture);
+    obj3DMurs.maillage = creerMaillageMursSpawnDoor(objgl);
 
     obj3DMurs.transformations = creerTransformations();
     return obj3DMurs;
 }
 
-function creerVertexSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur) {
+function creerVertexSpawnDoor(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     let tabVertex = [
     ];
-    nbTrianglesSpawn = 0;
+    nbTrianglesDoor = 0;
     for (let x = 0; x < tabMurs.length; x++) {
         for (let y = 0; y < tabMurs[x].length; y++) {
-            if (tabMurs[x][y] == 2 ) {
+            if (tabMurs[x][y] == 4) {
+                /*
                 //left side----------------------------------------------------
                 tabVertex.push(x); // bottom left-side left -- 0
                 tabVertex.push(0);
@@ -76,7 +77,7 @@ function creerVertexSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur) {
                 tabVertex.push(x + 1); //  top right-side right -- 11
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y + 1);
-
+                */
                 //front-----------------------------------------------------------------------                
                 tabVertex.push(x); // top left-side left -- 12
                 tabVertex.push(0);
@@ -94,7 +95,7 @@ function creerVertexSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur) {
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y + 1);
 
-
+/*
                 //back-----------------------------------------------------------------------                
                 tabVertex.push(x +1); // top left-side left -- 16
                 tabVertex.push(0);
@@ -111,14 +112,15 @@ function creerVertexSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur) {
                 tabVertex.push(x + 1); //  top right-side right -- 19
                 tabVertex.push(fltHauteur);
                 tabVertex.push(y);
+                */
 
-                nbTrianglesSpawn += 24;
+                nbTrianglesDoor +=2;
             }
         }
 
 
     }
-    //console.log(nbTrianglesSpawn);
+    //console.log(nbTrianglesDoor);
 
 
     var objMurs = objgl.createBuffer();
@@ -127,7 +129,7 @@ function creerVertexSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur) {
     return objMurs;
 }
 
-function creerCouleursSpawn(objgl, tabCouleur) {
+function creerCouleursSpawnDoor(objgl, tabCouleur) {
     tabCouleurs = [];
     for (var i = 0; i < 4; i++)
         tabCouleurs = tabCouleurs.concat(tabCouleur);
@@ -139,7 +141,7 @@ function creerCouleursSpawn(objgl, tabCouleur) {
     return objCouleursMurs;
 }
 
-function creerTexelsSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
+function creerTexelsSpawnDoor(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTexture) {
     let tabTexels = [
 
 
@@ -160,11 +162,11 @@ function creerTexelsSpawn(objgl, fltLargeur, fltProfondeur, fltHauteur, intNoTex
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
 
-    objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 1.0;
+    objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 0.5;
     return objTexelsMurs;
 }
 
-function creerMaillageMursSpawn(objgl) {
+function creerMaillageMursSpawnDoor(objgl) {
     var tabMaillage =
         [ // Les 2 triangles du gauche
 
@@ -199,7 +201,7 @@ function creerMaillageMursSpawn(objgl) {
             tabMaillage.push(1 + ecart);
             tabMaillage.push(2 + ecart);
             tabMaillage.push(3 + ecart);
-
+/*
             //left side
 
             tabMaillage.push(4 + ecart);
@@ -232,7 +234,7 @@ function creerMaillageMursSpawn(objgl) {
              tabMaillage.push(17 + ecart);
              tabMaillage.push(18 + ecart);
              tabMaillage.push(19 + ecart);
-
+*/
             /*
                         tabMaillage.push(0 + ecart);
                         tabMaillage.push(2 + ecart);
@@ -259,10 +261,9 @@ function creerMaillageMursSpawn(objgl) {
     objgl.bufferData(objgl.ELEMENT_ARRAY_BUFFER, new Uint16Array(tabMaillage), objgl.STATIC_DRAW);
 
     // Le nombre de triangles
-    objMaillageMurs.intNbTriangles = nbTrianglesSpawn;
+    objMaillageMurs.intNbTriangles = nbTrianglesDoor;
     // Le nombre de droites
     objMaillageMurs.intNbDroites = 0;
     return objMaillageMurs;
 }
-
 
