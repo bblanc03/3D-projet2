@@ -1,492 +1,599 @@
 <html xmlns="http://www.w3.org/199/xhtml" lang="fr" xml:lang="fr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Thesaurus</title>
 
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Thesaurus</title>
+    <link rel="stylesheet" href="css/jeu.css" />
 
-  <link rel="stylesheet" href="css/jeu.css">
+    <script type="text/javascript" src="js/WebGl.js"></script>
+    <script type="text/javascript" src="js/ShaderCouleursTextures.js"></script>
+    <script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
+    <script type="text/javascript" src="js/Transformations.js"></script>
+    <script type="text/javascript" src="js/Camera.js"></script>
+    <script type="text/javascript" src="js/Sol.js"></script>
+    <script type="text/javascript" src="js/Murs.js"></script>
+    <script type="text/javascript" src="js/murs_internes.js"></script>
+    <script type="text/javascript" src="js/Textures.js"></script>
+    <script type="text/javascript" src="js/timer.js"></script>
+    <script type="text/javascript" src="js/points.js"></script>
+    <script type="text/javascript" src="js/tresor.js"></script>
+    <script type="text/javascript" src="js/fleche.js"></script>
+    <script type="text/javascript" src="js/Joueur.js"></script>
+    <script type="text/javascript" src="js/Teleportor.js"></script>
+    <script type="text/javascript" src="js/Reciever.js"></script>
+    <script type="text/javascript" src="js/Transportation.js"></script>
+    <script type="text/javascript" src="js/Ciel.js"></script>
+    <script type="text/javascript" src="js/audio.js"></script>
+    <script type="text/javascript" src="js/spawn_room.js"></script>
+    <script type="text/javascript" src="js/spawn_door.js"></script>
+    <script type="text/javascript" src="js/gameOver.js"></script>
+    <script type="text/javascript">
+      var objgl = null;
+      var objProgShaders = null;
+      var objScene3D = null;
+      var objCycleAnimation = null;
 
-  <script type="text/javascript" src="js/WebGl.js"></script>
-  <script type="text/javascript" src="js/ShaderCouleursTextures.js"></script>
-  <script type="text/javascript" src="js/glMatrix-0.9.5.min.js"></script>
-  <script type="text/javascript" src="js/Transformations.js"></script>
-  <script type="text/javascript" src="js/Camera.js"></script>
-  <script type="text/javascript" src="js/Sol.js"></script>
-  <script type="text/javascript" src="js/Murs.js"></script>
-  <script type="text/javascript" src="js/murs_internes.js"></script>
-  <script type="text/javascript" src="js/Textures.js"></script>
-  <script type="text/javascript" src="js/timer.js"></script>
-  <script type="text/javascript" src="js/points.js"></script>
-  <script type="text/javascript" src="js/tresor.js"></script>
-  <script type="text/javascript" src="js/fleche.js"></script>
-  <script type="text/javascript" src="js/Joueur.js"></script>
-  <script type="text/javascript" src="js/Teleportor.js"></script>
-  <script type="text/javascript" src="js/Reciever.js"></script>
-  <script type="text/javascript" src="js/Transportation.js"></script>
-  <script type="text/javascript" src="js/Ciel.js"></script>
-  <script type="text/javascript" src="js/audio.js"></script>
-  <script type="text/javascript" src="js/spawn_room.js"></script>
-  <script type="text/javascript" src="js/gameOver.js"></script>
-  <script type="text/javascript">
+      var OBJ3D_SOL = 0;
+      var OBJ3D_MURS = 1;
+      var OBJ3D_TRESOR = 2;
+      var OBJ3D_FLECHE = 3;
+      var OBJ3D_MURS_INTERNES = null;
+      var OBJ3D_MURS_INTERNES_DOOR = null;
+      var OBJ3D_MURS_SPAWN = null;
 
-    var objgl = null;
-    var objProgShaders = null;
-    var objScene3D = null;
-    var objCycleAnimation = null;
+      let keysPressed = {};
+      let movementSpeed = 2.5; // units per second
+      let lastFrameTime = performance.now();
+      let cameraYaw = 0; // left-right (horizontal)
+      let cameraPitch = 0; // up-down (vertical
 
-    var OBJ3D_SOL = 0;
-    var OBJ3D_MURS = 1;
-    var OBJ3D_TRESOR = 2;
-    var OBJ3D_FLECHE = 3;
-    var OBJ3D_MURS_INTERNES = null;
-    var OBJ3D_MURS_SPAWN = null;
+      let isChestInteractionLocked = false;
 
-    let keysPressed = {};
-    let movementSpeed = 2.5; // units per second
-    let lastFrameTime = performance.now();
-    let cameraYaw = 0;   // left-right (horizontal)
-    let cameraPitch = 0; // up-down (vertical
+      var nbrFleches = 18;
+      var nbTeleporteur = 0; // Number of teleporters in the game
+      var nbReciever = 0;
 
-    let isChestInteractionLocked = false;
+      var binAriel = false;
+      let showAllObjectsInAerial = false; // Add new global variable
 
-    var nbrFleches = 18;
-    var nbTeleporteur = 0; // Number of teleporters in the game
-    var nbReciever = 0;
+      let isMouseLocked = false;
+      let lastMouseX = 0;
+      let lastMouseY = 0;
+      const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
 
-    var binAriel = false;
-    let showAllObjectsInAerial = false; // Add new global variable
+      let isWallAnimating = false;
 
-    let isMouseLocked = false;
-    let lastMouseX = 0;
-    let lastMouseY = 0;
-    const MOUSE_SENSITIVITY = 0.2; // Adjust this value to change mouse sensitivity
+      var tabImages = [
+        "images/Transparent.gif",
+        "images/new_floor.png",
+        "images/new_wall.png",
+        "images/teleporter.jpg",
+        "images/reciever.jpg",
+        "images/sky.jpg",
+        "images/tresure_texture.jpg",
+      ];
+      var TEX_TRANSPARENT = 0;
+      var TEX_SOL = 1;
+      var TEX_MUR = 2;
 
-    let isWallAnimating = false;
+      var TEX_TELEPORTEUR = 3;
+      var TEX_RECIEVER = 4;
+      var TEX_CIEL = 5;
+      var TEX_TRESOR = 6;
 
-    var tabImages = [
-      "images/Transparent.gif",
-      "images/new_floor.png",
-      "images/new_wall.png",
-      "images/teleporter.jpg",
-      "images/reciever.jpg",
-      "images/sky.jpg",
-      "images/tresure_texture.jpg"
-    ];
-    var TEX_TRANSPARENT = 0;
-    var TEX_SOL = 1;
-    var TEX_MUR = 2;
+      var savedLevelObject = {};
 
-    var TEX_TELEPORTEUR = 3;
-    var TEX_RECIEVER = 4;
-    var TEX_CIEL = 5; 
-    var TEX_TRESOR = 6;
+      var tabMapOriginal = getTabMurs().map((row) => [...row]);
+      var tabPosJoueur;
+      var tabCibleJoueur;
+      var tabPosJoueurInitial;
+      var tabCibleJoueurInitial;
+      var tabOrientationJoueur;
+      var largeurJeux = 31;
+      var outsideSpawnRoom = false;
 
+      var nbrOuvreursMurs = 4;
+      var nbrOuvreursMursUtilises = nbrOuvreursMurs;
 
-    var savedLevelObject = {};
+      var vueAerienne = false;
 
-    var tabMapOriginal = getTabMurs().map(row => [...row]);
-    var tabPosJoueur;
-    var tabCibleJoueur;
-    var tabPosJoueurInitial;
-    var tabCibleJoueurInitial;
-    var tabOrientationJoueur;
-    var largeurJeux = 31;
+      var startTime = createDate();
+      var timerLength = 60;
+      setTimerMax(timerLength);
+      var lastSec = 0;
 
+      setPoint(300);
 
-    var nbrOuvreursMurs = 4;
-    var nbrOuvreursMursUtilises = nbrOuvreursMurs;
+      let currentLevel = 1;
+      const MAX_LEVELS = 10;
 
-    var vueAerienne = false;
+      async function demarrer() {
+        var objCanvas = document.getElementById("monCanvas");
+        objCanvas.focus();
+        objgl = initWebGL(objCanvas);
+        objProgShaders = initShaders(objgl);
+        objScene3D = await initScene3D(objgl);
 
-    var startTime = createDate();
-    var timerLength = 60;
-    setTimerMax(timerLength);
-    var lastSec = 0;
+        initMouseControls(objCanvas);
 
-    setPoint(300);
+        // Set canvas size based on window size while maintaining aspect ratio
+        function resizeCanvas() {
+          const aspectRatio = 1600 / 800; // Your original canvas dimensions
+          const windowWidth = window.innerWidth * 0.9;
+          const windowHeight = window.innerHeight * 0.9;
 
-    let currentLevel = 1;
-    const MAX_LEVELS = 10;
+          if (windowWidth / windowHeight > aspectRatio) {
+            objCanvas.height = windowHeight;
+            objCanvas.width = windowHeight * aspectRatio;
+          } else {
+            objCanvas.width = windowWidth;
+            objCanvas.height = windowWidth / aspectRatio;
+          }
 
-    async function demarrer() {
-      var objCanvas = document.getElementById("monCanvas");
-      objCanvas.focus();
-      objgl = initWebGL(objCanvas);
-      objProgShaders = initShaders(objgl);
-      objScene3D = await initScene3D(objgl);
-
-      initMouseControls(objCanvas);
-
-      // Set canvas size based on window size while maintaining aspect ratio
-      function resizeCanvas() {
-        const aspectRatio = 1600 / 800; // Your original canvas dimensions
-        const windowWidth = window.innerWidth * 0.9;
-        const windowHeight = window.innerHeight * 0.9;
-
-        if (windowWidth / windowHeight > aspectRatio) {
-          objCanvas.height = windowHeight;
-          objCanvas.width = windowHeight * aspectRatio;
-        } else {
-          objCanvas.width = windowWidth;
-          objCanvas.height = windowWidth / aspectRatio;
+          // Update WebGL viewport
+          objgl.viewport(0, 0, objCanvas.width, objCanvas.height);
         }
 
-        // Update WebGL viewport
-        objgl.viewport(0, 0, objCanvas.width, objCanvas.height);
+        // Call resize on start
+        resizeCanvas();
+
+        // Add event listener for window resize
+        window.addEventListener("resize", resizeCanvas);
+
+        effacerCanevas(objgl);
+        dessiner(objgl, objProgShaders, objScene3D);
+        resetCamera(objScene3D.camera, objScene3D);
+
+        // Initialize and start background music
+        initAudio();
+        playBackgroundMusic();
+        showWallTries();
+
+        // Reset level at game start
+        resetOrNextLevel(false);
+
+        // Initialize level display
+        updateLevelDisplay();
+
+        animer();
       }
 
-      // Call resize on start
-      resizeCanvas();
+      // Un cycle d'animation
+      function animer() {
+        objCycleAnimation = requestAnimationFrame(animer);
 
-      // Add event listener for window resize
-      window.addEventListener('resize', resizeCanvas);
+        const now = performance.now();
+        const deltaTime = (now - lastFrameTime) / 1000.0;
+        lastFrameTime = now;
 
-      effacerCanevas(objgl);
-      dessiner(objgl, objProgShaders, objScene3D);
-      resetCamera(objScene3D.camera, objScene3D);
+        updateMovement(deltaTime);
+        updateInteractionPrompt();
+        effacerCanevas(objgl);
+        mettreAjourAnimation();
+        dessiner(objgl, objProgShaders, objScene3D);
+      }
 
-      // Initialize and start background music
-      initAudio();
-      playBackgroundMusic();
-      showWallTries();
+      // Pour mettre à jour l'animation
+      async function mettreAjourAnimation() {
+        var time = createDate();
+        currentSec = nextSecond(time, startTime);
+        showTime();
 
-      // Reset level at game start
-      resetOrNextLevel(false);
+        if (
+          getPositionCameraX(objScene3D.camera) < 11.9 &&
+          outsideSpawnRoom == false
+        ) {
+          outsideSpawnRoom = true;
+        }
 
-      // Initialize level display
-      updateLevelDisplay();
+        // Deduct points when in aerial view and force exit if points reach 0
+        if (binAriel) {
+          if (lastSec != currentSec) {
+            updatePoint(false, 10); // Deduct 10 points every second
+            lastSec = currentSec;
 
-      animer();
-    }
-
-    // Un cycle d'animation
-    function animer() {
-      objCycleAnimation = requestAnimationFrame(animer);
-
-      const now = performance.now();
-      const deltaTime = (now - lastFrameTime) / 1000.0;
-      lastFrameTime = now;
-
-      updateMovement(deltaTime);
-      updateInteractionPrompt();
-      effacerCanevas(objgl);
-      mettreAjourAnimation();
-      dessiner(objgl, objProgShaders, objScene3D);
-
-    }
-
-
-
-    // Pour mettre à jour l'animation
-    async function mettreAjourAnimation() {
-      var time = createDate();
-      currentSec = nextSecond(time, startTime);
-      showTime();
-
-      // Deduct points when in aerial view and force exit if points reach 0
-      if (binAriel) {
-        if (lastSec != currentSec) {
-          updatePoint(false, 10); // Deduct 10 points every second
-          lastSec = currentSec;
-
-          // Force exit aerial view if points reach 0
-          if (getPoints() <= 0) {
-            // Reset to ground view
-            const camera = objScene3D.camera;
-            setPositionsCameraXYZ(tabPosJoueurInitial, camera);
-            setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
-            setOrientationX(0, camera);
-            updateHauteurCiel(2, obj3DCiel);
-            binAriel = false;
-            objScene3D.obj3DJoueur = null;
+            // Force exit aerial view if points reach 0
+            if (getPoints() <= 0) {
+              // Reset to ground view
+              const camera = objScene3D.camera;
+              setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+              setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+              setOrientationX(0, camera);
+              updateHauteurCiel(2, obj3DCiel);
+              binAriel = false;
+              objScene3D.obj3DJoueur = null;
+            }
           }
         }
+
+        showPoints();
+        startTime = time;
+
+        if (timeOut()) {
+          await resetNiveau();
+          setTimerMax(timerLength);
+          resetSeconds();
+          updatePoint(false, 200);
+        }
+        showWallTries();
+        animationFleche();
       }
 
-      showPoints();
-      startTime = time;
+      function updateMovement(deltaTime) {
+        const camera = objScene3D.camera;
+        if (binAriel) return;
 
-      if (timeOut()) {
-        await resetNiveau();
-        setTimerMax(timerLength);
-        resetSeconds();
-        updatePoint(false, 200);
+        const speed = movementSpeed;
+        const distance = speed * deltaTime;
+
+        const dirX = getCibleCameraX(camera) - getPositionCameraX(camera);
+        const dirZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
+        const length = Math.sqrt(dirX * dirX + dirZ * dirZ);
+        if (length === 0) return;
+
+        const forwardX = dirX / length;
+        const forwardZ = dirZ / length;
+
+        const rightX = -forwardZ;
+        const rightZ = forwardX;
+
+        let moveX = 0;
+        let moveZ = 0;
+
+        if (keysPressed["KeyW"]) {
+          moveX += forwardX;
+          moveZ += forwardZ;
+        }
+        if (keysPressed["KeyS"]) {
+          moveX -= forwardX;
+          moveZ -= forwardZ;
+        }
+        if (keysPressed["KeyD"]) {
+          moveX += rightX;
+          moveZ += rightZ;
+        }
+        if (keysPressed["KeyA"]) {
+          moveX -= rightX;
+          moveZ -= rightZ;
+        }
+
+        // Store current position
+        const oldX = getPositionCameraX(camera);
+        const oldZ = getPositionCameraZ(camera);
+
+        // Try moving on X axis only
+        const newXOnly = oldX + moveX * distance;
+        setPositionCameraX(newXOnly, camera);
+        setPositionCameraZ(oldZ, camera);
+        const canMoveX = !cameraDansMur(camera);
+
+        // Try moving on Z axis only
+        setPositionCameraX(oldX, camera);
+        const newZOnly = oldZ + moveZ * distance;
+        setPositionCameraZ(newZOnly, camera);
+        const canMoveZ = !cameraDansMur(camera);
+
+        // Reset position
+        setPositionCameraX(oldX, camera);
+        setPositionCameraZ(oldZ, camera);
+
+        // Apply movement based on what's possible
+        const finalX = canMoveX ? newXOnly : oldX;
+        const finalZ = canMoveZ ? newZOnly : oldZ;
+
+        setPositionCameraX(finalX, camera);
+        setPositionCameraZ(finalZ, camera);
+
+        // Update camera target
+        if (canMoveX || canMoveZ) {
+          const targetDeltaX = finalX - oldX;
+          const targetDeltaZ = finalZ - oldZ;
+          setCibleCameraX(getCibleCameraX(camera) + targetDeltaX, camera);
+          setCibleCameraZ(getCibleCameraZ(camera) + targetDeltaZ, camera);
+        }
+
+        if (collisionTeleporteur(camera)) {
+          console.log("teleport!");
+        }
+
+        // Check if any movement keys are pressed
+        if (
+          keysPressed["KeyW"] ||
+          keysPressed["KeyS"] ||
+          keysPressed["KeyA"] ||
+          keysPressed["KeyD"]
+        ) {
+          startWalking();
+        } else {
+          stopWalking();
+        }
       }
-      showWallTries();
-      animationFleche();
-    }
 
-    function updateMovement(deltaTime) {
-      const camera = objScene3D.camera;
-      if (binAriel) return;
+      function animationFleche() {
+        // Animation de hovering
+        const hoverAmplitude = 0.1; // Maximum height of amplitude
+        const hoverVitesse = 3; // Speed of hovering
+        const hoverOffset =
+          Math.sin((Date.now() / 1000) * hoverVitesse) * hoverAmplitude;
 
-      const speed = movementSpeed;
-      const distance = speed * deltaTime;
-
-      const dirX = getCibleCameraX(camera) - getPositionCameraX(camera);
-      const dirZ = getCibleCameraZ(camera) - getPositionCameraZ(camera);
-      const length = Math.sqrt(dirX * dirX + dirZ * dirZ);
-      if (length === 0) return;
-
-      const forwardX = dirX / length;
-      const forwardZ = dirZ / length;
-
-      const rightX = -forwardZ;
-      const rightZ = forwardX;
-
-      let moveX = 0;
-      let moveZ = 0;
-
-      if (keysPressed["KeyW"]) {
-        moveX += forwardX;
-        moveZ += forwardZ;
-      }
-      if (keysPressed["KeyS"]) {
-        moveX -= forwardX;
-        moveZ -= forwardZ;
-      }
-      if (keysPressed["KeyD"]) {
-        moveX += rightX;
-        moveZ += rightZ;
-      }
-      if (keysPressed["KeyA"]) {
-        moveX -= rightX;
-        moveZ -= rightZ;
+        // Update only arrow objects
+        objScene3D.tabObjets3D
+          .filter((obj3D) => obj3D.baseY !== undefined) // Filter arrows
+          .forEach((obj3D) => {
+            setPositionY(obj3D.baseY + hoverOffset, obj3D.transformations);
+          });
       }
 
-      // Store current position
-      const oldX = getPositionCameraX(camera);
-      const oldZ = getPositionCameraZ(camera);
+      function animationMur(gridZ, gridX) {
+        // Set animation flag
+        isWallAnimating = true;
 
-      // Try moving on X axis only
-      const newXOnly = oldX + moveX * distance;
-      setPositionCameraX(newXOnly, camera);
-      setPositionCameraZ(oldZ, camera);
-      const canMoveX = !cameraDansMur(camera);
+        // First, mark this wall as being destroyed
+        tabMurs[gridX][gridZ] = 3; // Use value 3 to mark as "being destroyed"
 
-      // Try moving on Z axis only
-      setPositionCameraX(oldX, camera);
-      const newZOnly = oldZ + moveZ * distance;
-      setPositionCameraZ(newZOnly, camera);
-      const canMoveZ = !cameraDansMur(camera);
+        // Create a new wall object specifically for this wall to animate
+        const wallX = gridX + 0.5;
+        const wallZ = gridZ + 0.5;
 
-      // Reset position
-      setPositionCameraX(oldX, camera);
-      setPositionCameraZ(oldZ, camera);
+        const wallObj = createAnimatedWall(objgl, wallX, wallZ, TEX_MUR);
+        objScene3D.tabObjets3D.push(wallObj);
+        const wallIndex = objScene3D.tabObjets3D.length - 1;
 
-      // Apply movement based on what's possible
-      const finalX = canMoveX ? newXOnly : oldX;
-      const finalZ = canMoveZ ? newZOnly : oldZ;
+        var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+        objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
 
-      setPositionCameraX(finalX, camera);
-      setPositionCameraZ(finalZ, camera);
+        const startTime = performance.now();
+        const animationDuration = 1000; // Animation duration in milliseconds
 
-      // Update camera target
-      if (canMoveX || canMoveZ) {
-        const targetDeltaX = (finalX - oldX);
-        const targetDeltaZ = (finalZ - oldZ);
-        setCibleCameraX(getCibleCameraX(camera) + targetDeltaX, camera);
-        setCibleCameraZ(getCibleCameraZ(camera) + targetDeltaZ, camera);
-      }
-
-      if (collisionTeleporteur(camera)) {
-        console.log("teleport!");
-      }
-
-      // Check if any movement keys are pressed
-      if (keysPressed["KeyW"] || keysPressed["KeyS"] ||
-        keysPressed["KeyA"] || keysPressed["KeyD"]) {
-        startWalking();
-      } else {
-        stopWalking();
-      }
-    }
-
-    function animationFleche() {
-      // Animation de hovering
-      const hoverAmplitude = 0.1; // Maximum height of amplitude
-      const hoverVitesse = 3; // Speed of hovering
-      const hoverOffset = Math.sin(Date.now() / 1000 * hoverVitesse) * hoverAmplitude;
-
-      // Update only arrow objects
-      objScene3D.tabObjets3D
-        .filter(obj3D => obj3D.baseY !== undefined) // Filter arrows
-        .forEach(obj3D => {
-          setPositionY(obj3D.baseY + hoverOffset, obj3D.transformations);
-        });
-    }
-
-    function animationMur(gridZ, gridX) {
-      // Set animation flag
-      isWallAnimating = true;
-      
-      // First, mark this wall as being destroyed
-      tabMurs[gridX][gridZ] = 3; // Use value 3 to mark as "being destroyed"
-      
-      // Create a new wall object specifically for this wall to animate
-      const wallX = gridX + 0.5;
-      const wallZ = gridZ + 0.5;
-      
-      const wallObj = createAnimatedWall(objgl, wallX, wallZ, TEX_MUR);
-      objScene3D.tabObjets3D.push(wallObj);
-      const wallIndex = objScene3D.tabObjets3D.length - 1;
-      
-      var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
-      objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES] = obj3DMursInternes;
-      
-      const startTime = performance.now();
-      const animationDuration = 1000; // Animation duration in milliseconds
-      
-      function animate(currentTime) {
+        function animate(currentTime) {
           const elapsed = currentTime - startTime;
           const progress = Math.min(elapsed / animationDuration, 1);
-          
+
           const easedProgress = 1 - Math.pow(1 - progress, 3);
           const newHeight = 1.0 * (1 - easedProgress);
-          
-          setEchelleY(newHeight, objScene3D.tabObjets3D[wallIndex].transformations);
-          
+
+          setEchelleY(
+            newHeight,
+            objScene3D.tabObjets3D[wallIndex].transformations
+          );
+
           if (progress < 1) {
-              requestAnimationFrame(animate);
+            requestAnimationFrame(animate);
           } else {
-              // Animation complete - cleanup
-              objScene3D.tabObjets3D.splice(wallIndex, 1);
-              tabMurs[gridX][gridZ] = 0;
-              nbrOuvreursMursUtilises--;
-              showWallTries();
-              updatePoint(false, 50);
-              // Reset animation flag when complete
-              isWallAnimating = false;
-          }
-      }
-      
-      requestAnimationFrame(animate);
-    }
-
-  
-    async function initScene3D(objgl) {
-      var objScene3D = new Object();
-      var tabObjets3D = new Array();
-
-      // Mettre les textures dans la scène
-      objScene3D.textures = await creerTextures(objgl, tabImages);
-
-      // Créer le sol
-      var obj3DSol = creerObj3DSol(objgl, TEX_SOL);
-      tabObjets3D.push(obj3DSol);
-      OBJ3D_SOL = tabObjets3D.length - 1;
-
-      // Créer les murs
-      var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
-      tabObjets3D.push(obj3DMurs);
-      OBJ3D_MURS = tabObjets3D.length - 1;
-
-      // Creer le tresor
-      var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESOR);
-      tabObjets3D.push(obj3DTresor);
-      OBJ3D_TRESOR = tabObjets3D.length - 1;
-
-      // Get treasure position before creating arrows
-      var tresorZ = getPositionZ(obj3DTresor.transformations);
-      var tresorX = getPositionX(obj3DTresor.transformations);
-
-      // Creer les fleches after we have treasure position
-      for (let i = 0; i < nbrFleches; i++) {
-        var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
-        tabObjets3D.push(obj3DFleche);
-      }
-
-      // Créer le ciel
-      var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
-      tabObjets3D.push(obj3DCiel);
-
-      // creer mur interne spawn
-      var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
-      tabObjets3D.push(obj3DMurSpawn);
-      OBJ3D_MURS_SPAWN = tabObjets3D.length - 1;
-
-      // creer murs internes
-      var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
-      tabObjets3D.push(obj3DMurInterne);
-      OBJ3D_MURS_INTERNES = tabObjets3D.length - 1;
-
-      // Mettre les objets 3D sur la scène
-      objScene3D.tabObjets3D = tabObjets3D;
-
-      // La caméra
-      var camera = creerCamera();
-      resetCamera(camera, objScene3D);
-      objScene3D.camera = camera;
-
-      // Assign tabObjets3D only once it's fully populated
-      objScene3D.tabObjets3D = tabObjets3D;
-
-      return objScene3D;
-    }
-
-    function dessiner(objgl, objProgShaders, objScene3D) {
-      // La vue
-      objgl.viewport(0, 0, objgl.drawingBufferWidth, objgl.drawingBufferHeight);
-
-      // Matrice de projection
-      var matProjection = mat4.create();
-      var fltRapportCanevas = objgl.drawingBufferWidth / objgl.drawingBufferHeight;
-      mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);
-
-      // Relier la matrice aux shaders
-      objgl.uniformMatrix4fv(objProgShaders.matProjection, false, matProjection);
-
-      for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
-        const obj = objScene3D.tabObjets3D[i];
-
-        // Skip objects in aerial view unless they're floor/walls or cheat is active
-        if (binAriel && !showAllObjectsInAerial) {
-          const isFloor = i === OBJ3D_SOL;
-          const isWall = i === OBJ3D_MURS || i === OBJ3D_MURS_INTERNES;
-          if (!isFloor && !isWall) {
-            continue;
+            // Animation complete - cleanup
+            objScene3D.tabObjets3D.splice(wallIndex, 1);
+            tabMurs[gridX][gridZ] = 0;
+            nbrOuvreursMursUtilises--;
+            showWallTries();
+            updatePoint(false, 50);
+            // Reset animation flag when complete
+            isWallAnimating = false;
           }
         }
 
-        var vertex = obj.vertex;
-        var couleurs = obj.couleurs;
-        var texels = obj.texels;
-        var maillage = obj.maillage;
-        var transformations = obj.transformations;
+        requestAnimationFrame(animate);
+      }
 
-        // Matrice du modèle
-        var matModeleVue = mat4.create();
-        mat4.identity(matModeleVue);
+      async function initScene3D(objgl) {
+        var objScene3D = new Object();
+        var tabObjets3D = new Array();
 
-        // Placer la caméra sur la scène
-        mat4.lookAt(
-          getPositionsCameraXYZ(objScene3D.camera),
-          getCiblesCameraXYZ(objScene3D.camera),
-          getOrientationsXYZ(objScene3D.camera),
-          matModeleVue
+        // Mettre les textures dans la scène
+        objScene3D.textures = await creerTextures(objgl, tabImages);
+
+        // Créer le sol
+        var obj3DSol = creerObj3DSol(objgl, TEX_SOL);
+        tabObjets3D.push(obj3DSol);
+        OBJ3D_SOL = tabObjets3D.length - 1;
+
+        // Créer les murs
+        var obj3DMurs = creerObj3DMurs(objgl, obj3DSol, TEX_MUR);
+        tabObjets3D.push(obj3DMurs);
+        OBJ3D_MURS = tabObjets3D.length - 1;
+
+        // Creer le tresor
+        var obj3DTresor = creerobj3DTresor(objgl, obj3DMurs, TEX_TRESOR);
+        tabObjets3D.push(obj3DTresor);
+        OBJ3D_TRESOR = tabObjets3D.length - 1;
+
+        // Get treasure position before creating arrows
+        var tresorZ = getPositionZ(obj3DTresor.transformations);
+        var tresorX = getPositionX(obj3DTresor.transformations);
+
+        // Creer les fleches after we have treasure position
+        for (let i = 0; i < nbrFleches; i++) {
+          var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
+          tabObjets3D.push(obj3DFleche);
+        }
+
+        // Créer le ciel
+        var obj3DCiel = creerObj3DCiel(objgl, obj3DMurs, TEX_CIEL);
+        tabObjets3D.push(obj3DCiel);
+
+        // creer mur interne spawn
+        var obj3DMurSpawn = creerObj3DMursSpawn(objgl, TEX_MUR);
+        tabObjets3D.push(obj3DMurSpawn);
+        OBJ3D_MURS_SPAWN = tabObjets3D.length - 1;
+
+        // creer murs internes
+        var obj3DMurInterne = creerObj3DMursInternes(objgl, TEX_MUR);
+        tabObjets3D.push(obj3DMurInterne);
+        OBJ3D_MURS_INTERNES = tabObjets3D.length - 1;
+
+        // creer spawn room door
+        var obj3DMurInterneDoor = creerObj3DMursDoor(objgl, TEX_MUR);
+        tabObjets3D.push(obj3DMurInterneDoor);
+        OBJ3D_MURS_INTERNES_DOOR = tabObjets3D.length - 1;
+
+        // Mettre les objets 3D sur la scène
+        objScene3D.tabObjets3D = tabObjets3D;
+
+        // La caméra
+        var camera = creerCamera();
+        resetCamera(camera, objScene3D);
+        objScene3D.camera = camera;
+
+        // Assign tabObjets3D only once it's fully populated
+        objScene3D.tabObjets3D = tabObjets3D;
+
+        return objScene3D;
+      }
+
+      function dessiner(objgl, objProgShaders, objScene3D) {
+        // La vue
+        objgl.viewport(
+          0,
+          0,
+          objgl.drawingBufferWidth,
+          objgl.drawingBufferHeight
         );
 
-        // Appliquer les transformations sur le modèle
-        mat4.translate(matModeleVue, getPositionsXYZ(transformations));
-        mat4.scale(matModeleVue, getEchellesXYZ(transformations));
-        mat4.rotateX(matModeleVue, (getAngleX(transformations) * Math.PI) / 180);
-        mat4.rotateY(matModeleVue, (getAngleY(transformations) * Math.PI) / 180);
-        mat4.rotateZ(matModeleVue, (getAngleZ(transformations) * Math.PI) / 180);
+        // Matrice de projection
+        var matProjection = mat4.create();
+        var fltRapportCanevas =
+          objgl.drawingBufferWidth / objgl.drawingBufferHeight;
+        mat4.perspective(45, fltRapportCanevas, 0.01, 100, matProjection);
 
         // Relier la matrice aux shaders
-        objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
+        objgl.uniformMatrix4fv(
+          objProgShaders.matProjection,
+          false,
+          matProjection
+        );
 
-        if (maillage == null)
-          // Dessiner les sous-objets
-          for (var j = 0; j < vertex.length; j++) {
+        for (var i = 0; i < objScene3D.tabObjets3D.length; i++) {
+          const obj = objScene3D.tabObjets3D[i];
+
+          // Skip objects in aerial view unless they're floor/walls or cheat is active
+          if (binAriel && !showAllObjectsInAerial) {
+            const isFloor = i === OBJ3D_SOL;
+            const isWall =
+              i === OBJ3D_MURS ||
+              i === OBJ3D_MURS_INTERNES ||
+              i === OBJ3D_MURS_SPAWN ||
+              i === OBJ3D_MURS_INTERNES_DOOR;
+            if (!isFloor && !isWall) {
+              continue;
+            }
+          }
+
+          var vertex = obj.vertex;
+          var couleurs = obj.couleurs;
+          var texels = obj.texels;
+          var maillage = obj.maillage;
+          var transformations = obj.transformations;
+
+          // Matrice du modèle
+          var matModeleVue = mat4.create();
+          mat4.identity(matModeleVue);
+
+          // Placer la caméra sur la scène
+          mat4.lookAt(
+            getPositionsCameraXYZ(objScene3D.camera),
+            getCiblesCameraXYZ(objScene3D.camera),
+            getOrientationsXYZ(objScene3D.camera),
+            matModeleVue
+          );
+
+          // Appliquer les transformations sur le modèle
+          mat4.translate(matModeleVue, getPositionsXYZ(transformations));
+          mat4.scale(matModeleVue, getEchellesXYZ(transformations));
+          mat4.rotateX(
+            matModeleVue,
+            (getAngleX(transformations) * Math.PI) / 180
+          );
+          mat4.rotateY(
+            matModeleVue,
+            (getAngleY(transformations) * Math.PI) / 180
+          );
+          mat4.rotateZ(
+            matModeleVue,
+            (getAngleZ(transformations) * Math.PI) / 180
+          );
+
+          // Relier la matrice aux shaders
+          objgl.uniformMatrix4fv(
+            objProgShaders.matModeleVue,
+            false,
+            matModeleVue
+          );
+
+          if (maillage == null)
+            // Dessiner les sous-objets
+            for (var j = 0; j < vertex.length; j++) {
+              // Relier les vertex aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
+              objgl.vertexAttribPointer(
+                objProgShaders.posVertex,
+                3,
+                objgl.FLOAT,
+                false,
+                0,
+                0
+              );
+              var intNbVertex =
+                objgl.getBufferParameter(
+                  objgl.ARRAY_BUFFER,
+                  objgl.BUFFER_SIZE
+                ) /
+                4 /
+                3;
+
+              // Relier les couleurs aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
+              objgl.vertexAttribPointer(
+                objProgShaders.couleurVertex,
+                4,
+                objgl.FLOAT,
+                false,
+                0,
+                0
+              );
+
+              // Activer la texture
+              objgl.activeTexture(objgl.TEXTURE0 + texels[j].intNoTexture);
+              objgl.bindTexture(
+                objgl.TEXTURE_2D,
+                objScene3D.textures[texels[j].intNoTexture]
+              );
+
+              // Relier les texels aux shaders
+              objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
+              objgl.vertexAttribPointer(
+                objProgShaders.posTexel,
+                2,
+                objgl.FLOAT,
+                false,
+                0,
+                0
+              );
+
+              // Relier le no de texture et le taux de couleur aux shaders
+              objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
+              objgl.uniform1f(
+                objProgShaders.pcCouleurTexel,
+                texels[j].pcCouleurTexel
+              );
+
+              // Dessiner
+              objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
+            }
+          else {
+            // Dessiner le maillage
 
             // Relier les vertex aux shaders
-            objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex[j]);
-            objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
-            var intNbVertex = objgl.getBufferParameter(objgl.ARRAY_BUFFER, objgl.BUFFER_SIZE) / 4 / 3;
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
+            objgl.vertexAttribPointer(
+              objProgShaders.posVertex,
+              3,
+              objgl.FLOAT,
+              false,
+              0,
+              0
+            );
 
             // Relier les couleurs aux shaders
-            objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs[j]);
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
             objgl.vertexAttribPointer(
               objProgShaders.couleurVertex,
               4,
@@ -497,14 +604,14 @@
             );
 
             // Activer la texture
-            objgl.activeTexture(objgl.TEXTURE0 + texels[j].intNoTexture);
+            objgl.activeTexture(objgl.TEXTURE0 + texels.intNoTexture);
             objgl.bindTexture(
               objgl.TEXTURE_2D,
-              objScene3D.textures[texels[j].intNoTexture]
+              objScene3D.textures[texels.intNoTexture]
             );
 
             // Relier les texels aux shaders
-            objgl.bindBuffer(objgl.ARRAY_BUFFER, texels[j]);
+            objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
             objgl.vertexAttribPointer(
               objProgShaders.posTexel,
               2,
@@ -515,20 +622,78 @@
             );
 
             // Relier le no de texture et le taux de couleur aux shaders
-            objgl.uniform1i(objProgShaders.noTexture, texels[j].intNoTexture);
+            objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
             objgl.uniform1f(
               objProgShaders.pcCouleurTexel,
-              texels[j].pcCouleurTexel
+              texels.pcCouleurTexel
             );
 
-            // Dessiner
-            objgl.drawArrays(vertex[j].typeDessin, 0, intNbVertex);
-          }
-        else {
-          // Dessiner le maillage
+            // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
+            objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
 
-          // Relier les vertex aux shaders
-          objgl.bindBuffer(objgl.ARRAY_BUFFER, vertex);
+            // Dessiner les triangles
+            objgl.drawElements(
+              objgl.TRIANGLES,
+              maillage.intNbTriangles * 3,
+              objgl.UNSIGNED_SHORT,
+              0
+            );
+            // Dessiner les droites à la suite des triangles
+            objgl.drawElements(
+              objgl.LINES,
+              maillage.intNbDroites * 2,
+              objgl.UNSIGNED_SHORT,
+              maillage.intNbTriangles * 2 * 3
+            );
+          }
+        }
+
+        // Draw player arrow in aerial view - IMPROVED SECTION
+        if (binAriel && objScene3D.obj3DJoueur) {
+          // Use the stored player arrow object
+          const joueur = objScene3D.obj3DJoueur;
+
+          // Set up model-view matrix for player arrow
+          var matModeleVue = mat4.create();
+          mat4.identity(matModeleVue);
+
+          // Use aerial camera view
+          mat4.lookAt(
+            getPositionsCameraXYZ(objScene3D.camera),
+            getCiblesCameraXYZ(objScene3D.camera),
+            getOrientationsXYZ(objScene3D.camera),
+            matModeleVue
+          );
+
+          // Apply transformations
+          mat4.translate(matModeleVue, getPositionsXYZ(joueur.transformations));
+          mat4.scale(matModeleVue, getEchellesXYZ(joueur.transformations));
+          mat4.rotateX(
+            matModeleVue,
+            (getAngleX(joueur.transformations) * Math.PI) / 180
+          );
+          mat4.rotateY(
+            matModeleVue,
+            (getAngleY(joueur.transformations) * Math.PI) / 180
+          );
+          mat4.rotateZ(
+            matModeleVue,
+            (getAngleZ(joueur.transformations) * Math.PI) / 180
+          );
+
+          // Connect matrix to shaders
+          objgl.uniformMatrix4fv(
+            objProgShaders.matModeleVue,
+            false,
+            matModeleVue
+          );
+
+          // Set texture and color settings
+          objgl.uniform1i(objProgShaders.noTexture, 0);
+          objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
+
+          // Connect vertex data
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, joueur.vertex);
           objgl.vertexAttribPointer(
             objProgShaders.posVertex,
             3,
@@ -538,8 +703,8 @@
             0
           );
 
-          // Relier les couleurs aux shaders
-          objgl.bindBuffer(objgl.ARRAY_BUFFER, couleurs);
+          // Connect color data
+          objgl.bindBuffer(objgl.ARRAY_BUFFER, joueur.couleurs);
           objgl.vertexAttribPointer(
             objProgShaders.couleurVertex,
             4,
@@ -549,306 +714,342 @@
             0
           );
 
-          // Activer la texture
-          objgl.activeTexture(objgl.TEXTURE0 + texels.intNoTexture);
-          objgl.bindTexture(objgl.TEXTURE_2D, objScene3D.textures[texels.intNoTexture]);
-
-          // Relier les texels aux shaders
-          objgl.bindBuffer(objgl.ARRAY_BUFFER, texels);
-          objgl.vertexAttribPointer(objProgShaders.posTexel, 2, objgl.FLOAT, false, 0, 0);
-
-          // Relier le no de texture et le taux de couleur aux shaders
-          objgl.uniform1i(objProgShaders.noTexture, texels.intNoTexture);
-          objgl.uniform1f(objProgShaders.pcCouleurTexel, texels.pcCouleurTexel);
-
-          // Sélectionner le maillage qu'on va utiliser pour les triangles et les droites
-          objgl.bindBuffer(objgl.ELEMENT_ARRAY_BUFFER, maillage);
-
-          // Dessiner les triangles
-          objgl.drawElements(
-            objgl.TRIANGLES,
-            maillage.intNbTriangles * 3,
-            objgl.UNSIGNED_SHORT,
-            0
-          );
-          // Dessiner les droites à la suite des triangles
-          objgl.drawElements(
-            objgl.LINES,
-            maillage.intNbDroites * 2,
-            objgl.UNSIGNED_SHORT,
-            maillage.intNbTriangles * 2 * 3
-          );
+          // Draw the player arrow
+          objgl.drawArrays(objgl.TRIANGLES, 0, joueur.nbrVertex);
         }
       }
+      //=====================================================
+      function initMouseControls(canvas) {
+        canvas.onclick = () => {
+          canvas.requestPointerLock();
+          canvas.focus();
+        };
 
-      // Draw player arrow in aerial view - IMPROVED SECTION
-      if (binAriel && objScene3D.obj3DJoueur) {
-        // Use the stored player arrow object
-        const joueur = objScene3D.obj3DJoueur;
+        document.onpointerlockchange = () => {
+          isMouseLocked = document.pointerLockElement === canvas;
+        };
 
-        // Set up model-view matrix for player arrow
-        var matModeleVue = mat4.create();
-        mat4.identity(matModeleVue);
+        document.onmousemove = (e) => {
+          if (!isMouseLocked || binAriel) return;
 
-        // Use aerial camera view
-        mat4.lookAt(
-          getPositionsCameraXYZ(objScene3D.camera),
-          getCiblesCameraXYZ(objScene3D.camera),
-          getOrientationsXYZ(objScene3D.camera),
-          matModeleVue
-        );
+          const sensitivity = 0.002; // smooth sensitivity
+          cameraYaw += (e.movementX * sensitivity * 180) / Math.PI;
+          cameraPitch -= (e.movementY * sensitivity * 180) / Math.PI;
 
-        // Apply transformations
-        mat4.translate(matModeleVue, getPositionsXYZ(joueur.transformations));
-        mat4.scale(matModeleVue, getEchellesXYZ(joueur.transformations));
-        mat4.rotateX(matModeleVue, (getAngleX(joueur.transformations) * Math.PI) / 180);
-        mat4.rotateY(matModeleVue, (getAngleY(joueur.transformations) * Math.PI) / 180);
-        mat4.rotateZ(matModeleVue, (getAngleZ(joueur.transformations) * Math.PI) / 180);
+          // Clamp pitch to prevent flipping
+          cameraPitch = Math.max(-85, Math.min(85, cameraPitch));
 
-        // Connect matrix to shaders
-        objgl.uniformMatrix4fv(objProgShaders.matModeleVue, false, matModeleVue);
-
-        // Set texture and color settings
-        objgl.uniform1i(objProgShaders.noTexture, 0);
-        objgl.uniform1f(objProgShaders.pcCouleurTexel, 0.0);
-
-        // Connect vertex data
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, joueur.vertex);
-        objgl.vertexAttribPointer(objProgShaders.posVertex, 3, objgl.FLOAT, false, 0, 0);
-
-        // Connect color data
-        objgl.bindBuffer(objgl.ARRAY_BUFFER, joueur.couleurs);
-        objgl.vertexAttribPointer(objProgShaders.couleurVertex, 4, objgl.FLOAT, false, 0, 0);
-
-        // Draw the player arrow
-        objgl.drawArrays(objgl.TRIANGLES, 0, joueur.nbrVertex);
+          updateCameraDirection();
+        };
       }
 
-    }
-    //=====================================================
-    function initMouseControls(canvas) {
-      canvas.onclick = () => {
-        canvas.requestPointerLock();
-        canvas.focus();
-      };
+      function updateCameraDirection() {
+        const camera = objScene3D.camera;
+        const yaw = (cameraYaw * Math.PI) / 180;
+        const pitch = (cameraPitch * Math.PI) / 180;
 
-      document.onpointerlockchange = () => {
-        isMouseLocked = document.pointerLockElement === canvas;
-      };
+        const x = Math.cos(pitch) * Math.sin(yaw);
+        const y = Math.sin(pitch);
+        const z = -Math.cos(pitch) * Math.cos(yaw);
 
-      document.onmousemove = (e) => {
-        if (!isMouseLocked || binAriel) return;
-
-        const sensitivity = 0.002; // smooth sensitivity
-        cameraYaw += e.movementX * sensitivity * 180 / Math.PI;
-        cameraPitch -= e.movementY * sensitivity * 180 / Math.PI;
-
-        // Clamp pitch to prevent flipping
-        cameraPitch = Math.max(-85, Math.min(85, cameraPitch));
-
-        updateCameraDirection();
-      };
-    }
-
-
-    function updateCameraDirection() {
-      const camera = objScene3D.camera;
-      const yaw = cameraYaw * Math.PI / 180;
-      const pitch = cameraPitch * Math.PI / 180;
-
-      const x = Math.cos(pitch) * Math.sin(yaw);
-      const y = Math.sin(pitch);
-      const z = -Math.cos(pitch) * Math.cos(yaw);
-
-      const pos = getPositionsCameraXYZ(camera);
-      setCiblesCameraXYZ([pos[0] + x, pos[1] + y, pos[2] + z], camera);
-    }
-
-    //=====================================================
-
-    function effacerCanevas(objgl) {
-      // Met la couleur d'effacement au noir et complétement opaque
-      objgl.clearColor(0.0, 0.0, 0.0, 1.0);
-      // Efface les couleurs et le buffer de profondeur.
-      objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
-    }
-
-
-    function handleKeyDown(event) {
-      keysPressed[event.code] = true;
-
-      var camera = objScene3D.camera;
-
-      // Handle cheat code (CTRL+SHIFT+SPACE)
-      if (event.code === "Space" && event.ctrlKey && event.shiftKey && binAriel) {
-        showAllObjectsInAerial = !showAllObjectsInAerial;
-        return;
+        const pos = getPositionsCameraXYZ(camera);
+        setCiblesCameraXYZ([pos[0] + x, pos[1] + y, pos[2] + z], camera);
       }
 
-      // Add chest interaction with lock check
-      if (event.code === "KeyE" && isNearTresor(camera) && !isChestInteractionLocked) {
-        isChestInteractionLocked = true; // Lock interaction
-        // Hide prompt immediately when pressing E
-        document.getElementById('interactionPrompt').classList.remove('visible');
-        handleChestInteraction(camera);
+      //=====================================================
+
+      function effacerCanevas(objgl) {
+        // Met la couleur d'effacement au noir et complétement opaque
+        objgl.clearColor(0.0, 0.0, 0.0, 1.0);
+        // Efface les couleurs et le buffer de profondeur.
+        objgl.clear(objgl.COLOR_BUFFER_BIT | objgl.DEPTH_BUFFER_BIT);
       }
 
-      // Handle aerial view toggle
-      if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
+      function handleKeyDown(event) {
+        keysPressed[event.code] = true;
 
-        tabPosJoueurInitial = getPositionsCameraXYZ(camera);
-        tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
-        tabPosJoueur = getPositionsCameraXYZ(camera);
-        tabCibleJoueur = getCiblesCameraXYZ(camera);
-        setPositionsCameraXYZ([15, 40, 15], camera);
-        setOrientationX(-90, camera);
-        setCiblesCameraXYZ([15, 0, 15], camera);
-        updateHauteurCiel(-2, obj3DCiel);
-        binAriel = true;
+        var camera = objScene3D.camera;
 
-        // Create player arrow and store it in the scene
-        obj3DJoueur = creerObj3DJoueurFleche(objgl, tabPosJoueur, tabCibleJoueur);
-        objScene3D.obj3DJoueur = obj3DJoueur;
-      }
+        // Handle cheat code (CTRL+SHIFT+SPACE)
+        if (
+          event.code === "Space" &&
+          event.ctrlKey &&
+          event.shiftKey &&
+          binAriel
+        ) {
+          showAllObjectsInAerial = !showAllObjectsInAerial;
+          return;
+        }
 
-      // Handle back to ground view
-      if (event.code === "PageDown" && binAriel) {
-        setPositionsCameraXYZ(tabPosJoueurInitial, camera);
-        setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
-        setOrientationX(0, camera);
-        updateHauteurCiel(2, obj3DCiel);
-        binAriel = false;
-        objScene3D.obj3DJoueur = null;
-      }
+        // Add chest interaction with lock check
+        if (
+          event.code === "KeyE" &&
+          isNearTresor(camera) &&
+          !isChestInteractionLocked
+        ) {
+          isChestInteractionLocked = true; // Lock interaction
+          // Hide prompt immediately when pressing E
+          document
+            .getElementById("interactionPrompt")
+            .classList.remove("visible");
+          handleChestInteraction(camera);
+        }
 
-      var points = getPoints();
-      // Handle wall removal
-      if (event.code === "Space") {
-        // Add check for isWallAnimating
-        if (!isWallAnimating) {
-          var posX = Math.floor(getPositionCameraX(camera));
-          var posZ = Math.floor(getPositionCameraZ(camera));
-          var cibleX = Math.floor(getCibleCameraX(camera));
-          var cibleZ = Math.floor(getCibleCameraZ(camera));
+        // Handle aerial view toggle
+        if (event.code === "PageUp" && !binAriel && getPoints() >= 10) {
+          tabPosJoueurInitial = getPositionsCameraXYZ(camera);
+          tabCibleJoueurInitial = getCiblesCameraXYZ(camera);
+          tabPosJoueur = getPositionsCameraXYZ(camera);
+          tabCibleJoueur = getCiblesCameraXYZ(camera);
+          setPositionsCameraXYZ([15, 40, 15], camera);
+          setOrientationX(-90, camera);
+          setCiblesCameraXYZ([15, 0, 15], camera);
+          updateHauteurCiel(-2, obj3DCiel);
+          binAriel = true;
 
-          var dirX = cibleX - posX;
-          var dirZ = cibleZ - posZ;
+          // Create player arrow and store it in the scene
+          obj3DJoueur = creerObj3DJoueurFleche(
+            objgl,
+            tabPosJoueur,
+            tabCibleJoueur
+          );
+          objScene3D.obj3DJoueur = obj3DJoueur;
+        }
 
-          var dirGridX = Math.round(dirX / Math.max(Math.abs(dirX), Math.abs(dirZ)));
-          var dirGridZ = Math.round(dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ)));
+        // Handle back to ground view
+        if (event.code === "PageDown" && binAriel) {
+          setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+          setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+          setOrientationX(0, camera);
+          updateHauteurCiel(2, obj3DCiel);
+          binAriel = false;
+          objScene3D.obj3DJoueur = null;
+        }
 
-          var gridX = posX + dirGridX;
-          var gridZ = posZ + dirGridZ;
+        var points = getPoints();
+        // Handle wall removal
+        if (event.code === "Space") {
+          // Add check for isWallAnimating
+          if (!isWallAnimating) {
+            var posX = Math.floor(getPositionCameraX(camera));
+            var posZ = Math.floor(getPositionCameraZ(camera));
+            var cibleX = Math.floor(getCibleCameraX(camera));
+            var cibleZ = Math.floor(getCibleCameraZ(camera));
 
-          if (nbrOuvreursMursUtilises > 0) {
-            if (tabMurs[gridZ] && tabMurs[gridX] && tabMurs[gridX][gridZ] === 1 && getPoints() >= 10) {
-              animationMur(gridZ, gridX);
+            var dirX = cibleX - posX;
+            var dirZ = cibleZ - posZ;
+
+            var dirGridX = Math.round(
+              dirX / Math.max(Math.abs(dirX), Math.abs(dirZ))
+            );
+            var dirGridZ = Math.round(
+              dirZ / Math.max(Math.abs(dirX), Math.abs(dirZ))
+            );
+
+            var gridX = posX + dirGridX;
+            var gridZ = posZ + dirGridZ;
+
+            if (nbrOuvreursMursUtilises > 0) {
+              if (
+                tabMurs[gridZ] &&
+                tabMurs[gridX] &&
+                tabMurs[gridX][gridZ] === 1 &&
+                getPoints() >= 10
+              ) {
+                animationMur(gridZ, gridX);
+              }
             }
           }
         }
       }
-    }
 
-    function handleChestInteraction(camera) {
-      if (isNearTresor(camera)) {
-
-
-        // Calculate bonus points based on remaining time
-        const remainingSeconds = getSecondsLeft();
-        const bonusPoints = 10 * remainingSeconds;
-        pauseTimer();
-        playMysteryBoxMusic();
-        mysteryBoxMusic.onended = () => {
-          isChestInteractionLocked = false;
-          prochainNiveau();
-          updatePoint(true, bonusPoints); // Add bonus points
-
-        };
-      }
-    }
-
-    function cameraDansMur(camera) {
-      // Get the camera's current position
-      var cameraX = getPositionCameraX(camera);
-      var cameraZ = getPositionCameraZ(camera);
-
-      // Add buffer distance
-      const WALL_BUFFER = 0.1;
-
-      // Check grid positions around the camera (including buffer)
-      const positions = [
-        { x: Math.floor(cameraX - WALL_BUFFER), z: Math.floor(cameraZ - WALL_BUFFER) },
-        { x: Math.floor(cameraX - WALL_BUFFER), z: Math.floor(cameraZ + WALL_BUFFER) },
-        { x: Math.floor(cameraX + WALL_BUFFER), z: Math.floor(cameraZ - WALL_BUFFER) },
-        { x: Math.floor(cameraX + WALL_BUFFER), z: Math.floor(cameraZ + WALL_BUFFER) }
-      ];
-
-      // Check each position for walls
-      for (const pos of positions) {
-        // Check bounds
-        if (pos.z < 0 || pos.z >= tabMurs.length ||
-          pos.x < 0 || pos.x >= tabMurs[0].length) {
-          return true; // Out of bounds collision
-        }
-
-        // Check for wall
-        if (tabMurs[pos.x][pos.z] === 1 || tabMurs[pos.x][pos.z] === 2) {
-          return true; // Collision with inner wall
+      function handleChestInteraction(camera) {
+        if (isNearTresor(camera)) {
+          // Calculate bonus points based on remaining time
+          const remainingSeconds = getSecondsLeft();
+          const bonusPoints = 10 * remainingSeconds;
+          pauseTimer();
+          playMysteryBoxMusic();
+          mysteryBoxMusic.onended = () => {
+            isChestInteractionLocked = false;
+            prochainNiveau();
+            updatePoint(true, bonusPoints); // Add bonus points
+          };
         }
       }
 
-      return false; // No collision
-    }
+      function cameraDansMur(camera) {
+        // Get the camera's current position
+        var cameraX = getPositionCameraX(camera);
+        var cameraZ = getPositionCameraZ(camera);
 
-    function collisionTresor(camera) {
-      const cameraX = Math.floor(getPositionCameraX(camera));
-      const cameraZ = Math.floor(getPositionCameraZ(camera));
+        // Add buffer distance
+        const WALL_BUFFER = 0.1;
 
-      const tresorX = Math.floor(getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations));
-      const tresorZ = Math.floor(getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations));
+        // Check grid positions around the camera (including buffer)
+        const positions = [
+          {
+            x: Math.floor(cameraX - WALL_BUFFER),
+            z: Math.floor(cameraZ - WALL_BUFFER),
+          },
+          {
+            x: Math.floor(cameraX - WALL_BUFFER),
+            z: Math.floor(cameraZ + WALL_BUFFER),
+          },
+          {
+            x: Math.floor(cameraX + WALL_BUFFER),
+            z: Math.floor(cameraZ - WALL_BUFFER),
+          },
+          {
+            x: Math.floor(cameraX + WALL_BUFFER),
+            z: Math.floor(cameraZ + WALL_BUFFER),
+          },
+        ];
 
-      return cameraX === tresorX && cameraZ === tresorZ;
-    }
+        // Check each position for walls
+        for (const pos of positions) {
+          // Check bounds
+          if (
+            pos.z < 0 ||
+            pos.z >= tabMurs.length ||
+            pos.x < 0 ||
+            pos.x >= tabMurs[0].length
+          ) {
+            return true; // Out of bounds collision
+          }
 
-    function resetOrNextLevel(isNextLevel) {
-      // Check if player has completed all levels
-      if (isNextLevel && currentLevel >= MAX_LEVELS) {
-        gameComplete();
-        return;
+          // Check for wall
+          if (tabMurs[pos.x][pos.z] === 1 || tabMurs[pos.x][pos.z] === 2) {
+            // add tabMurs[pos.x][pos.z] === 4 for after player leaves spawn room
+            return true; // Collision with inner wall
+          } else if (outsideSpawnRoom) {
+            if (
+              tabMurs[pos.x][pos.z] === 1 ||
+              tabMurs[pos.x][pos.z] === 2 ||
+              tabMurs[pos.x][pos.z] === 4
+            ) {
+              return true; // Collision with inner wall
+            }
+          }
+        }
+
+        return false; // No collision
       }
 
-      if (isTimerPaused()) {
-        resumeTimer();
+      function collisionTresor(camera) {
+        const cameraX = Math.floor(getPositionCameraX(camera));
+        const cameraZ = Math.floor(getPositionCameraZ(camera));
+
+        const tresorX = Math.floor(
+          getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations)
+        );
+        const tresorZ = Math.floor(
+          getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations)
+        );
+
+        return cameraX === tresorX && cameraZ === tresorZ;
       }
 
+      function resetOrNextLevel(isNextLevel) {
+        // Check if player has completed all levels
+        if (isNextLevel && currentLevel >= MAX_LEVELS) {
+          gameComplete();
+          return;
+        }
 
-      // Create a deep copy of the original map
-      tabMurs = tabMapOriginal.map(row => [...row]);
+        if (isTimerPaused()) {
+          resumeTimer();
+        }
+        outsideSpawnRoom = false
 
-      // Save pointers for internal walls and sky
-      var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
-      var objMurSpawn = objScene3D.tabObjets3D[OBJ3D_MURS_SPAWN];
-      var objCiel = objScene3D.tabObjets3D.find(obj => obj === obj3DCiel);
+        // Create a deep copy of the original map
+        tabMurs = tabMapOriginal.map((row) => [...row]);
 
-      // Keep walls, ground, and sky
-      objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter((obj3D, index) => {
-        return index === OBJ3D_SOL || index === OBJ3D_MURS || obj3D === objCiel;
-      });
+        // Save pointers for internal walls and sky
+        var objMursInternes = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES];
+        var objMurSpawn = objScene3D.tabObjets3D[OBJ3D_MURS_SPAWN];
+        var objMurSpawnDoor = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES_DOOR];
+        var objCiel = objScene3D.tabObjets3D.find((obj) => obj === obj3DCiel);
 
-      // Recreate internal walls
-      var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
-      objScene3D.tabObjets3D.push(obj3DMursInternes);
-      OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
-      objScene3D.tabObjets3D.push(objMurSpawn);
-      OBJ3D_MURS_SPAWN = objScene3D.tabObjets3D.length - 1;
+        // Keep walls, ground, and sky
+        objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter(
+          (obj3D, index) => {
+            return (
+              index === OBJ3D_SOL || index === OBJ3D_MURS || obj3D === objCiel
+            );
+          }
+        );
 
-      // Reset arrow positions
-      positionFleches = [];
+        // Recreate internal walls
+        var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
+        objScene3D.tabObjets3D.push(obj3DMursInternes);
+        OBJ3D_MURS_INTERNES = objScene3D.tabObjets3D.length - 1;
+        objScene3D.tabObjets3D.push(objMurSpawn);
+        OBJ3D_MURS_SPAWN = objScene3D.tabObjets3D.length - 1;
 
-      // Create a new treasure
-      var obj3DTresor = creerobj3DTresor(objgl, objScene3D.tabObjets3D[OBJ3D_MURS], TEX_TRESOR);
-      objScene3D.tabObjets3D.push(obj3DTresor);
-      OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
+        objScene3D.tabObjets3D.push(objMurSpawnDoor);
+        OBJ3D_MURS_INTERNES_DOOR = objScene3D.tabObjets3D.length - 1;
+
+        // Reset arrow positions
+        positionFleches = [];
+
+        // Create a new treasure
+        var obj3DTresor = creerobj3DTresor(
+          objgl,
+          objScene3D.tabObjets3D[OBJ3D_MURS],
+          TEX_TRESOR
+        );
+        objScene3D.tabObjets3D.push(obj3DTresor);
+        OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
+
+        // Show level announcement for both reset and next level
+        if (isNextLevel) {
+          currentLevel++;
+        }
+
+        nbTeleporteur = Math.floor(currentLevel / 2);
+        nbReciever = nbTeleporteur;
+
+        // Reset teleporters array before creating new ones
+        resetTeleport();
+
+        //creer teleporteurs
+        for (let i = 0; i < nbTeleporteur; i++) {
+          var obj3DTeleporteurs = creerObj3DTeleporteur(
+            objgl,
+            TEX_TELEPORTEUR,
+            nbTeleporteur
+          );
+          objScene3D.tabObjets3D.push(obj3DTeleporteurs);
+        }
+
+        //creer receveurs
+        for (let i = 0; i < nbReciever; i++) {
+          var obj3DReciever = creerObj3DReciever(
+            objgl,
+            TEX_RECIEVER,
+            nbReciever
+          );
+          objScene3D.tabObjets3D.push(obj3DReciever);
+        }
+
+        // Update treasure coordinates
+        var tresorZ = getPositionZ(obj3DTresor.transformations);
+        var tresorX = getPositionX(obj3DTresor.transformations);
+
+        // Reduce the number of arrows if it's the next levels
+        if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
+
+
+        // Create new arrows
+        for (let i = 0; i < nbrFleches; i++) {
+          var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
+          objScene3D.tabObjets3D.push(obj3DFleche);
+        }
+
+        // Reset the camera
+        var camera = objScene3D.camera;
+        resetCamera(camera, objScene3D);
 
       // Show level announcement for both reset and next level
       if (isNextLevel) {
@@ -861,261 +1062,228 @@
           }
         }
 
-      // Reset teleporters array before creating new ones
-      resetTeleport();
 
-      //creer teleporteurs
-      for (let i = 0; i < nbTeleporteur; i++) {
-        var obj3DTeleporteurs = creerObj3DTeleporteur(objgl, TEX_TELEPORTEUR, nbTeleporteur);
-        objScene3D.tabObjets3D.push(obj3DTeleporteurs);
-      }
+        // Reset the timer
+        startTime = createDate();
+        resetSeconds();
+        setTimerMax(timerLength);
 
-      //creer receveurs
-      for (let i = 0; i < nbReciever; i++) {
-        var obj3DReciever = creerObj3DReciever(objgl, TEX_RECIEVER, nbReciever);
-        objScene3D.tabObjets3D.push(obj3DReciever);
-      }
-      
+        // Update level display
+        updateLevelDisplay();
 
-      // Update treasure coordinates
-      var tresorZ = getPositionZ(obj3DTresor.transformations);
-      var tresorX = getPositionX(obj3DTresor.transformations);
+        // Reset interaction lock
+        isChestInteractionLocked = false;
 
-      // Reduce the number of arrows if it's the next levels
-      if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
+        // Show level announcement
+        const announcement = document.getElementById("levelAnnouncement");
+        announcement.textContent = `NIVEAU ${currentLevel}`;
+        announcement.classList.add("visible");
 
-      // Create new arrows
-      for (let i = 0; i < nbrFleches; i++) {
-        var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
-        objScene3D.tabObjets3D.push(obj3DFleche);
-      }
+        // Play new round music for both reset and next level
+        playNewRoundMusic();
 
-      // Reset the camera
-      var camera = objScene3D.camera;
-      resetCamera(camera, objScene3D);
+        // Remove the visible class after animation completes
+        setTimeout(() => {
+          announcement.classList.remove("visible");
+        }, 3000); // 3 seconds to match CSS animation duration
 
-      // Reset the timer
-      startTime = createDate();
-      resetSeconds();
-      setTimerMax(timerLength);
-
-      // Update level display
-      updateLevelDisplay();
-
-      // Reset interaction lock
-      isChestInteractionLocked = false;
-
-      // Show level announcement
-      const announcement = document.getElementById('levelAnnouncement');
-      announcement.textContent = `NIVEAU ${currentLevel}`;
-      announcement.classList.add('visible');
-
-      // Play new round music for both reset and next level
-      playNewRoundMusic();
-
-      // Remove the visible class after animation completes
-      setTimeout(() => {
-        announcement.classList.remove('visible');
-      }, 3000); // 3 seconds to match CSS animation duration
-
-      if (isNextLevel) {
-        if (currentLevel % 2 == 1) {
-          nbrOuvreursMurs--
+        if (isNextLevel) {
+          if (currentLevel % 2 == 1) {
+            nbrOuvreursMurs--;
+          }
+          nbrOuvreursMursUtilises = nbrOuvreursMurs;
+        } else {
+          nbrOuvreursMursUtilises = nbrOuvreursMurs;
         }
-        nbrOuvreursMursUtilises = nbrOuvreursMurs;
-      }
-      else {
-        nbrOuvreursMursUtilises = nbrOuvreursMurs;
-      }
 
-      showWallTries();
+        showWallTries();
 
-
-      console.log('=== Object Counts ===');
-      console.log('Arrows:', nbrFleches);
-      console.log('Teleporters:', nbTeleporteur);
-      console.log('Receivers:', nbReciever);
-      console.log('Treasure Chests: 1');
-      console.log('==================');
-    }
-
-    // Add this function to update the level display
-    function updateLevelDisplay() {
-      const levelDisplay = document.getElementById('levelDisplay');
-      levelDisplay.textContent = `Niveau ${currentLevel}`;
-    }
-
-    // Add new game complete function
-    function gameComplete() {
-      // Stop animation
-      cancelAnimationFrame(objCycleAnimation);
-
-      // Show completion announcement
-      const announcement = document.getElementById('levelAnnouncement');
-      announcement.textContent = 'CONGRATULATIONS';
-      announcement.classList.add('visible');
-
-      // Stop all audio
-      pauseBackgroundMusic();
-
-      // Disable controls
-      isChestInteractionLocked = true;
-      binAriel = false;
-
-      // Show final score
-      const finalScore = getPoints();
-      setTimeout(() => {
-        announcement.textContent = `Score final : ${finalScore}`;
-      }, 3000);
-
-      // Restart game after delay
-      setTimeout(() => {
-        location.reload();
-      }, 8000);
-    }
-
-    // Use the helper function
-    async function resetNiveau() {
-      // Check for game over condition
-      if (getPoints() < 200) {
-        // Game over
-        gameOver();
-        return;
+        console.log("=== Object Counts ===");
+        console.log("Arrows:", nbrFleches);
+        console.log("Teleporters:", nbTeleporteur);
+        console.log("Receivers:", nbReciever);
+        console.log("Treasure Chests: 1");
+        console.log("==================");
       }
 
-      // If in aerial view, reset to ground view
-      if (binAriel) {
-        const camera = objScene3D.camera;
-        setPositionsCameraXYZ(tabPosJoueurInitial, camera);
-        setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
-        setOrientationX(0, camera);
-        updateHauteurCiel(2, obj3DCiel);
+      // Add this function to update the level display
+      function updateLevelDisplay() {
+        const levelDisplay = document.getElementById("levelDisplay");
+        levelDisplay.textContent = `Niveau ${currentLevel}`;
+      }
+
+      // Add new game complete function
+      function gameComplete() {
+        // Stop animation
+        cancelAnimationFrame(objCycleAnimation);
+
+        // Show completion announcement
+        const announcement = document.getElementById("levelAnnouncement");
+        announcement.textContent = "CONGRATULATIONS";
+        announcement.classList.add("visible");
+
+        // Stop all audio
+        pauseBackgroundMusic();
+
+        // Disable controls
+        isChestInteractionLocked = true;
         binAriel = false;
-        objScene3D.obj3DJoueur = null;
+
+        // Show final score
+        const finalScore = getPoints();
+        setTimeout(() => {
+          announcement.textContent = `Score final : ${finalScore}`;
+        }, 3000);
+
+        // Restart game after delay
+        setTimeout(() => {
+          location.reload();
+        }, 8000);
       }
 
-      // Pass false for isNextLevel but maintain current level
-      const currentLevelBackup = currentLevel;
-      resetOrNextLevel(false);
-      currentLevel = currentLevelBackup; // Restore the current level
+      // Use the helper function
+      async function resetNiveau() {
+        // Check for game over condition
+        if (getPoints() < 200) {
+          // Game over
+          gameOver();
+          return;
+        }
 
-      // Update level display to show correct level
-      const announcement = document.getElementById('levelAnnouncement');
-      announcement.textContent = `NIVEAU ${currentLevel}`;
-      updateLevelDisplay();
-    }
+        // If in aerial view, reset to ground view
+        if (binAriel) {
+          const camera = objScene3D.camera;
+          setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+          setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+          setOrientationX(0, camera);
+          updateHauteurCiel(2, obj3DCiel);
+          binAriel = false;
+          objScene3D.obj3DJoueur = null;
+        }
 
-    async function prochainNiveau() {
-      resetOrNextLevel(true);
-    }
+        // Pass false for isNextLevel but maintain current level
+        const currentLevelBackup = currentLevel;
+        resetOrNextLevel(false);
+        currentLevel = currentLevelBackup; // Restore the current level
 
-    function collisionTeleporteur(camera) {
-      const cameraX = Math.floor(getPositionCameraX(camera));
-      const cameraZ = Math.floor(getPositionCameraZ(camera));
+        // Update level display to show correct level
+        const announcement = document.getElementById("levelAnnouncement");
+        announcement.textContent = `NIVEAU ${currentLevel}`;
+        updateLevelDisplay();
+      }
 
-      const tabTeleporteurs = getTabTeleports();
-      const tabReceveurs = getTabReceveurs();
+      async function prochainNiveau() {
+        resetOrNextLevel(true);
+      }
 
-      // Use a map for O(1) lookup
-      for (let i = 0; i < tabTeleporteurs.length; i++) {
-        const t = tabTeleporteurs[i];
-        if (t.x === cameraX && t.z === cameraZ) {
-          const r = tabReceveurs[Math.floor(Math.random() * tabReceveurs.length)];
-          setPositionsCameraXYZ([r.x + 0.5, 0.5, r.z + 0.5], camera);
-          playPortalSound(); // Play the portal sound when teleporting
-          return true;
+      function collisionTeleporteur(camera) {
+        const cameraX = Math.floor(getPositionCameraX(camera));
+        const cameraZ = Math.floor(getPositionCameraZ(camera));
+
+        const tabTeleporteurs = getTabTeleports();
+        const tabReceveurs = getTabReceveurs();
+
+        // Use a map for O(1) lookup
+        for (let i = 0; i < tabTeleporteurs.length; i++) {
+          const t = tabTeleporteurs[i];
+          if (t.x === cameraX && t.z === cameraZ) {
+            const r =
+              tabReceveurs[Math.floor(Math.random() * tabReceveurs.length)];
+            setPositionsCameraXYZ([r.x + 0.5, 0.5, r.z + 0.5], camera);
+            playPortalSound(); // Play the portal sound when teleporting
+            return true;
+          }
+        }
+
+        return false;
+      }
+
+      function resetCamera(camera, objScene3D) {
+        const centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
+        const centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
+
+        // Reset camera position, target, and orientation
+        setPositionsCameraXYZ([centerX, 0.5, centerZ], camera);
+        setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera);
+        setOrientationsXYZ([0, 1, 0], camera);
+      }
+
+      // Add new game over function
+      function gameOver() {
+        // Stop animation
+        cancelAnimationFrame(objCycleAnimation);
+
+        // Stop all audio
+        pauseBackgroundMusic();
+
+        // Disable controls
+        isChestInteractionLocked = true;
+        binAriel = false;
+
+        // Show game over screen
+        showGameOver();
+      }
+
+      function handleKeyUp(event) {
+        delete keysPressed[event.code];
+
+        // If no movement keys are pressed, stop footsteps
+        if (
+          !keysPressed["KeyW"] &&
+          !keysPressed["KeyS"] &&
+          !keysPressed["KeyA"] &&
+          !keysPressed["KeyD"]
+        ) {
+          stopWalking();
         }
       }
 
-      return false;
-    }
-
-
-    function resetCamera(camera, objScene3D) {
-      const centerX = objScene3D.tabObjets3D[OBJ3D_MURS].fltLargeur / 2;
-      const centerZ = objScene3D.tabObjets3D[OBJ3D_MURS].fltProfondeur / 2;
-
-      // Reset camera position, target, and orientation
-      setPositionsCameraXYZ([centerX, 0.5, centerZ], camera);
-      setCiblesCameraXYZ([centerX, 0.5, centerZ - 1], camera);
-      setOrientationsXYZ([0, 1, 0], camera);
-    }
-
-    // Add new game over function
-    function gameOver() {
-      // Stop animation
-      cancelAnimationFrame(objCycleAnimation);
-
-      // Stop all audio
-      pauseBackgroundMusic();
-
-      // Disable controls
-      isChestInteractionLocked = true;
-      binAriel = false;
-
-      // Show game over screen
-      showGameOver();
-    }
-
-    function handleKeyUp(event) {
-      delete keysPressed[event.code];
-
-      // If no movement keys are pressed, stop footsteps
-      if (!keysPressed["KeyW"] && !keysPressed["KeyS"] &&
-        !keysPressed["KeyA"] && !keysPressed["KeyD"]) {
-        stopWalking();
+      function updateInteractionPrompt() {
+        const prompt = document.getElementById("interactionPrompt");
+        if (isNearTresor(objScene3D.camera) && !isChestInteractionLocked) {
+          prompt.classList.add("visible");
+        } else {
+          prompt.classList.remove("visible");
+        }
       }
-    }
 
-    function updateInteractionPrompt() {
-      const prompt = document.getElementById('interactionPrompt');
-      if (isNearTresor(objScene3D.camera) && !isChestInteractionLocked) {
-        prompt.classList.add('visible');
-      } else {
-        prompt.classList.remove('visible');
+      function isNearTresor(camera) {
+        const cameraX = getPositionCameraX(camera);
+        const cameraZ = getPositionCameraZ(camera);
+
+        const tresorX = getPositionX(
+          objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations
+        );
+        const tresorZ = getPositionZ(
+          objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations
+        );
+
+        const distance = Math.sqrt(
+          Math.pow(cameraX - tresorX, 2) + Math.pow(cameraZ - tresorZ, 2)
+        );
+
+        return distance < 1; // Reduced from 2 to 1 unit radius
       }
-    }
 
-    function isNearTresor(camera) {
-      const cameraX = getPositionCameraX(camera);
-      const cameraZ = getPositionCameraZ(camera);
+      document.addEventListener("keydown", handleKeyDown);
+      document.addEventListener("keyup", handleKeyUp);
 
-      const tresorX = getPositionX(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
-      const tresorZ = getPositionZ(objScene3D.tabObjets3D[OBJ3D_TRESOR].transformations);
+      function showWallTries() {
+        document.getElementById("wallTries").innerHTML =
+          nbrOuvreursMursUtilises + "/" + nbrOuvreursMurs + " murs ouvereurs";
+      }
+    </script>
+  </head>
 
-      const distance = Math.sqrt(
-        Math.pow(cameraX - tresorX, 2) +
-        Math.pow(cameraZ - tresorZ, 2)
-      );
-
-      return distance < 1; // Reduced from 2 to 1 unit radius
-    }
-
-    document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('keyup', handleKeyUp);
-
-
-    function showWallTries() {
-      document.getElementById("wallTries").innerHTML = nbrOuvreursMursUtilises + "/" + nbrOuvreursMurs + " murs ouvereurs";
-    }
-
-  </script>
-</head>
-
-
-<body class="background" onload="demarrer()">
-  <canvas id="monCanvas" width="1600" height="800" tabindex="1"></canvas>
-  <div id="canvasContainer">
-    <div id="timer"></div>
-    <div id="points"></div>
-    <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
-    <div id="levelAnnouncement">Niveau 1</div>
-    <div id="wallTries"></div>
-    <div id="levelDisplay">Level 1</div>
-  </div>
-
-
-
-</body>
-
+  <body class="background" onload="demarrer()">
+    <canvas id="monCanvas" width="1600" height="800" tabindex="1"></canvas>
+    <div id="canvasContainer">
+      <div id="timer"></div>
+      <div id="points"></div>
+      <div id="interactionPrompt">Appuyer sur 'E' pour ouvrir le trésor</div>
+      <div id="levelAnnouncement">Niveau 1</div>
+      <div id="wallTries"></div>
+      <div id="levelDisplay">Level 1</div>
+    </div>
+  </body>
 </html>
