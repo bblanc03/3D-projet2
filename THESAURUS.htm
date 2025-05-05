@@ -1008,15 +1008,16 @@
         objScene3D.tabObjets3D.push(obj3DTresor);
         OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-        // Show level announcement for both reset and next level
-        if (isNextLevel) {
+         // Show level announcement for both reset and next level
+         if (isNextLevel) {
           currentLevel++;
+         if(currentLevel%2==0){
+            nbReciever++;
+            nbTeleporteur++;
+          } else{
+            nbReciever++;
+          }
         }
-
-        nbTeleporteur = Math.floor(currentLevel / 2);
-        nbReciever = nbTeleporteur;
-
-        // Reset teleporters array before creating new ones
         resetTeleport();
 
         //creer teleporteurs
@@ -1056,18 +1057,6 @@
         // Reset the camera
         var camera = objScene3D.camera;
         resetCamera(camera, objScene3D);
-
-      // Show level announcement for both reset and next level
-      if (isNextLevel) {
-          currentLevel++;
-         if(currentLevel%2==0){
-            nbReciever++;
-            nbTeleporteur++;
-          } else{
-            nbReciever++;
-          }
-        }
-
 
         // Reset the timer
         startTime = createDate();
