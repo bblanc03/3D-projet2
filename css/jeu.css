@@ -115,7 +115,7 @@ canvas {
     justify-content: center;
     width: 100%;
     height: 100%;
-    padding: 20px; /* Add some padding around the canvas */
+    padding: 20px; 
     box-sizing: border-box;
 }
 

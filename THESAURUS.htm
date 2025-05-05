@@ -959,14 +959,14 @@
       function resetOrNextLevel(isNextLevel) {
         // Check if player has completed all levels
         if (isNextLevel && currentLevel >= MAX_LEVELS) {
-          gameComplete();
-          return;
+            gameComplete();
+            return;
         }
 
         if (isTimerPaused()) {
-          resumeTimer();
+            resumeTimer();
         }
-        outsideSpawnRoom = false
+        outsideSpawnRoom = false;
 
         // Create a deep copy of the original map
         tabMurs = tabMapOriginal.map((row) => [...row]);
@@ -979,11 +979,11 @@
 
         // Keep walls, ground, and sky
         objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter(
-          (obj3D, index) => {
-            return (
-              index === OBJ3D_SOL || index === OBJ3D_MURS || obj3D === objCiel
-            );
-          }
+            (obj3D, index) => {
+                return (
+                    index === OBJ3D_SOL || index === OBJ3D_MURS || obj3D === objCiel
+                );
+            }
         );
 
         // Recreate internal walls
@@ -1001,16 +1001,16 @@
 
         // Create a new treasure
         var obj3DTresor = creerobj3DTresor(
-          objgl,
-          objScene3D.tabObjets3D[OBJ3D_MURS],
-          TEX_TRESOR
+            objgl,
+            objScene3D.tabObjets3D[OBJ3D_MURS],
+            TEX_TRESOR
         );
         objScene3D.tabObjets3D.push(obj3DTresor);
         OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-        // Show level announcement for both reset and next level
+        // Increment level only once
         if (isNextLevel) {
-          currentLevel++;
+            currentLevel++;
         }
 
         nbTeleporteur = Math.floor(currentLevel / 2);
@@ -1019,24 +1019,24 @@
         // Reset teleporters array before creating new ones
         resetTeleport();
 
-        //creer teleporteurs
+        // Create teleporters
         for (let i = 0; i < nbTeleporteur; i++) {
-          var obj3DTeleporteurs = creerObj3DTeleporteur(
-            objgl,
-            TEX_TELEPORTEUR,
-            nbTeleporteur
-          );
-          objScene3D.tabObjets3D.push(obj3DTeleporteurs);
+            var obj3DTeleporteurs = creerObj3DTeleporteur(
+                objgl,
+                TEX_TELEPORTEUR,
+                nbTeleporteur
+            );
+            objScene3D.tabObjets3D.push(obj3DTeleporteurs);
         }
 
-        //creer receveurs
+        // Create receivers
         for (let i = 0; i < nbReciever; i++) {
-          var obj3DReciever = creerObj3DReciever(
-            objgl,
-            TEX_RECIEVER,
-            nbReciever
-          );
-          objScene3D.tabObjets3D.push(obj3DReciever);
+            var obj3DReciever = creerObj3DReciever(
+                objgl,
+                TEX_RECIEVER,
+                nbReciever
+            );
+            objScene3D.tabObjets3D.push(obj3DReciever);
         }
 
         // Update treasure coordinates
@@ -1046,28 +1046,15 @@
         // Reduce the number of arrows if it's the next levels
         if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
 
-
         // Create new arrows
         for (let i = 0; i < nbrFleches; i++) {
-          var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
-          objScene3D.tabObjets3D.push(obj3DFleche);
+            var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
+            objScene3D.tabObjets3D.push(obj3DFleche);
         }
 
         // Reset the camera
         var camera = objScene3D.camera;
         resetCamera(camera, objScene3D);
-
-      // Show level announcement for both reset and next level
-      if (isNextLevel) {
-          currentLevel++;
-         if(currentLevel%2==0){
-            nbReciever++;
-            nbTeleporteur++;
-          } else{
-            nbReciever++;
-          }
-        }
-
 
         // Reset the timer
         startTime = createDate();
@@ -1090,16 +1077,16 @@
 
         // Remove the visible class after animation completes
         setTimeout(() => {
-          announcement.classList.remove("visible");
+            announcement.classList.remove("visible");
         }, 3000); // 3 seconds to match CSS animation duration
 
         if (isNextLevel) {
-          if (currentLevel % 2 == 1) {
-            nbrOuvreursMurs--;
-          }
-          nbrOuvreursMursUtilises = nbrOuvreursMurs;
+            if (currentLevel % 2 == 1) {
+                nbrOuvreursMurs--;
+            }
+            nbrOuvreursMursUtilises = nbrOuvreursMurs;
         } else {
-          nbrOuvreursMursUtilises = nbrOuvreursMurs;
+            nbrOuvreursMursUtilises = nbrOuvreursMurs;
         }
 
         showWallTries();
