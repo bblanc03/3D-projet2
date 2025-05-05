@@ -85,6 +85,12 @@
       var TEX_TRESOR = 6;
 
       var savedLevelObject = {};
+      let savedLevelObjects = {
+        chest: null,
+        arrows: [],
+        teleporters: [],
+        receivers: []
+      };
 
       var tabMapOriginal = getTabMurs().map((row) => [...row]);
       var tabPosJoueur;
@@ -999,45 +1005,105 @@
         // Reset arrow positions
         positionFleches = [];
 
-        // Create a new treasure
-        var obj3DTresor = creerobj3DTresor(
-            objgl,
-            objScene3D.tabObjets3D[OBJ3D_MURS],
-            TEX_TRESOR
-        );
+        // Create or restore the treasure
+        let obj3DTresor;
+        if (isNextLevel || !savedLevelObjects.chest) {
+            obj3DTresor = creerobj3DTresor(
+                objgl,
+                objScene3D.tabObjets3D[OBJ3D_MURS],
+                TEX_TRESOR
+            );
+            savedLevelObjects.chest = getPositionsXYZ(obj3DTresor.transformations);
+        } else {
+            obj3DTresor = creerobj3DTresor(
+                objgl,
+                objScene3D.tabObjets3D[OBJ3D_MURS],
+                TEX_TRESOR
+            );
+            setPositionsXYZ(savedLevelObjects.chest, obj3DTresor.transformations);
+        }
         objScene3D.tabObjets3D.push(obj3DTresor);
         OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-         // Show level announcement for both reset and next level
-         if (isNextLevel) {
-          currentLevel++;
-         if(currentLevel%2==0){
-            nbReciever++;
-            nbTeleporteur++;
-          } else{
-            nbReciever++;
-          }
+        // Create or restore arrows
+        if (isNextLevel || savedLevelObjects.arrows.length === 0) {
+            savedLevelObjects.arrows = [];
+            for (let i = 0; i < nbrFleches; i++) {
+                const obj3DFleche = creerobj3DFleche(
+                    objgl,
+                    getPositionZ(obj3DTresor.transformations),
+                    getPositionX(obj3DTresor.transformations)
+                );
+                savedLevelObjects.arrows.push(
+                    getPositionsXYZ(obj3DFleche.transformations)
+                );
+                objScene3D.tabObjets3D.push(obj3DFleche);
+            }
+        } else {
+            savedLevelObjects.arrows.forEach((arrowPos) => {
+                const obj3DFleche = creerobj3DFleche(
+                    objgl,
+                    arrowPos[2],
+                    arrowPos[0]
+                );
+                setPositionsXYZ(arrowPos, obj3DFleche.transformations);
+                objScene3D.tabObjets3D.push(obj3DFleche);
+            });
         }
+
+        // Reset teleporters array before creating new ones
         resetTeleport();
 
-        // Create teleporters
-        for (let i = 0; i < nbTeleporteur; i++) {
-            var obj3DTeleporteurs = creerObj3DTeleporteur(
-                objgl,
-                TEX_TELEPORTEUR,
-                nbTeleporteur
-            );
-            objScene3D.tabObjets3D.push(obj3DTeleporteurs);
+        // Create or restore teleporters
+        if (isNextLevel || savedLevelObjects.teleporters.length === 0) {
+            savedLevelObjects.teleporters = [];
+            for (let i = 0; i < nbTeleporteur; i++) {
+                const obj3DTeleporteurs = creerObj3DTeleporteur(
+                    objgl,
+                    TEX_TELEPORTEUR,
+                    nbTeleporteur
+                );
+                savedLevelObjects.teleporters.push(
+                    getPositionsXYZ(obj3DTeleporteurs.transformations)
+                );
+                objScene3D.tabObjets3D.push(obj3DTeleporteurs);
+            }
+        } else {
+            savedLevelObjects.teleporters.forEach((teleporterPos) => {
+                const obj3DTeleporteurs = creerObj3DTeleporteur(
+                    objgl,
+                    TEX_TELEPORTEUR,
+                    nbTeleporteur
+                );
+                setPositionsXYZ(teleporterPos, obj3DTeleporteurs.transformations);
+                objScene3D.tabObjets3D.push(obj3DTeleporteurs);
+            });
         }
 
-        // Create receivers
-        for (let i = 0; i < nbReciever; i++) {
-            var obj3DReciever = creerObj3DReciever(
-                objgl,
-                TEX_RECIEVER,
-                nbReciever
-            );
-            objScene3D.tabObjets3D.push(obj3DReciever);
+        // Create or restore receivers
+        if (isNextLevel || savedLevelObjects.receivers.length === 0) {
+            savedLevelObjects.receivers = [];
+            for (let i = 0; i < nbReciever; i++) {
+                const obj3DReciever = creerObj3DReciever(
+                    objgl,
+                    TEX_RECIEVER,
+                    nbReciever
+                );
+                savedLevelObjects.receivers.push(
+                    getPositionsXYZ(obj3DReciever.transformations)
+                );
+                objScene3D.tabObjets3D.push(obj3DReciever);
+            }
+        } else {
+            savedLevelObjects.receivers.forEach((receiverPos) => {
+                const obj3DReciever = creerObj3DReciever(
+                    objgl,
+                    TEX_RECIEVER,
+                    nbReciever
+                );
+                setPositionsXYZ(receiverPos, obj3DReciever.transformations);
+                objScene3D.tabObjets3D.push(obj3DReciever);
+            });
         }
 
         // Update treasure coordinates
@@ -1046,12 +1112,6 @@
 
         // Reduce the number of arrows if it's the next levels
         if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
-
-        // Create new arrows
-        for (let i = 0; i < nbrFleches; i++) {
-            var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
-            objScene3D.tabObjets3D.push(obj3DFleche);
-        }
 
         // Reset the camera
         var camera = objScene3D.camera;
