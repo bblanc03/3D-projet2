@@ -1040,6 +1040,7 @@
         // Reduce the number of arrows if it's the next levels
         if (isNextLevel && nbrFleches > 0) nbrFleches -= 2;
 
+
         // Create new arrows
         for (let i = 0; i < nbrFleches; i++) {
           var obj3DFleche = creerobj3DFleche(objgl, tresorZ, tresorX);
@@ -1049,6 +1050,18 @@
         // Reset the camera
         var camera = objScene3D.camera;
         resetCamera(camera, objScene3D);
+
+      // Show level announcement for both reset and next level
+      if (isNextLevel) {
+          currentLevel++;
+         if(currentLevel%2==0){
+            nbReciever++;
+            nbTeleporteur++;
+          } else{
+            nbReciever++;
+          }
+        }
+
 
         // Reset the timer
         startTime = createDate();
