@@ -1,12 +1,10 @@
-/* Game interface elements */
+
 #interactionPrompt {
     display: none;
     position: fixed;
     top: 50%;
-    /* Changed from bottom to top */
     left: 50%;
     transform: translate(-50%, -50%);
-    /* Updated to center both vertically and horizontally */
     background-color: rgba(0, 0, 0, 0.8);
     color: rgb(255, 255, 255);
     padding: 10px 20px;
@@ -99,15 +97,15 @@ body {
 }
 
 canvas {
-    border: 7px solid #333; /* Keep your existing border width and style */
+    border: 7px solid #333; 
     width: 70vw;
     height: 70vh;
     object-fit: contain;
-    box-sizing: border-box; /* This ensures border is included in width/height calculations */
-    margin: auto; /* Center the canvas */
-    display: block; /* Prevent extra space below canvas */
-    position: relative; /* Add positioning context */
-    z-index: 1; /* Ensure canvas is above background but below UI elements */
+    box-sizing: border-box; 
+    margin: auto;
+    display: block; 
+    position: relative; 
+    z-index: 1; 
 }
 
 .background {
@@ -341,7 +339,6 @@ h2 {
     margin-bottom: 1.5rem;
 }
 
-/* Add these styles to your CSS file */
 .game-ui {
     transition: opacity 0.3s ease;
 }
@@ -349,4 +346,12 @@ h2 {
 .game-ui.hidden {
     opacity: 0;
     pointer-events: none;
+}
+
+#monCanvas {
+    display: none; 
+}
+
+#monCanvas.active {
+    display: block; 
 }

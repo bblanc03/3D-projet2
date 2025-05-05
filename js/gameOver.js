@@ -30,7 +30,7 @@ function showGameOver() {
         <div class="game-over-content">
             <h1>GAME OVER</h1>
             <p>Score Final: ${getPoints()}</p>
-            <p class="blink">Appuyez sur ESPACE pour recommencer</p>
+            <p class="blink">Appuyez sur ESPACE pour retourner au menu principal</p>
         </div>
     `;
     document.body.appendChild(gameOverScreen);

@@ -23,6 +23,8 @@ function initializeMenu() {
 function startGame() {
     // Hide menu
     document.getElementById('mainMenu').style.display = 'none';
+    // Show canvas
+    document.getElementById('monCanvas').classList.add('active');
     // Show game UI
     document.getElementById('canvasContainer').classList.remove('hidden');
     // Start the game

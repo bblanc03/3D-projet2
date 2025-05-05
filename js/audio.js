@@ -36,7 +36,7 @@ function initAudio() {
 }
 
 function initMenuMusic() {
-    menuMusic = new Audio('./audios/menu.mp3'); // Add your menu music file
+    menuMusic = new Audio('./audios/menu.mp3');
     menuMusic.loop = true;
     menuMusic.volume = 0.5;
 }
