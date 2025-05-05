@@ -1,6 +1,3 @@
-
-
-
 let nbTrianglesDoor = 6;
 
 
@@ -16,6 +13,7 @@ function creerObj3DMursDoor(objgl, intNoTexture) {
     obj3DMurs.maillage = creerMaillageMursSpawnDoor(objgl);
 
     obj3DMurs.transformations = creerTransformations();
+    //setPositionY(-1, obj3DMurs.transformations)
     return obj3DMurs;
 }
 
@@ -162,7 +160,7 @@ function creerTexelsSpawnDoor(objgl, fltLargeur, fltProfondeur, fltHauteur, intN
     objgl.bindBuffer(objgl.ARRAY_BUFFER, objTexelsMurs);
     objgl.bufferData(objgl.ARRAY_BUFFER, new Float32Array(tabTexels), objgl.STATIC_DRAW);
 
-    objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 0.5;
+    objTexelsMurs.intNoTexture = intNoTexture; objTexelsMurs.pcCouleurTexel = 1.0;
     return objTexelsMurs;
 }
 
@@ -265,5 +263,30 @@ function creerMaillageMursSpawnDoor(objgl) {
     // Le nombre de droites
     objMaillageMurs.intNbDroites = 0;
     return objMaillageMurs;
+}
+
+function animateSpawnDoorUp() {
+    const door = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES_DOOR];
+    const startTime = performance.now();
+    const animationDuration = 1000; // Animation duration in milliseconds
+
+    function animate(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / animationDuration, 1);
+
+        // Ease-out effect for smooth animation
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        const newHeight = easedProgress * 1.0; // Scale back to full height
+
+        setEchelleY(newHeight, door.transformations);
+
+        if (progress < 1) {
+            requestAnimationFrame(animate);
+        } else {
+            console.log("Spawn door animation complete.");
+        }
+    }
+
+    requestAnimationFrame(animate);
 }
 

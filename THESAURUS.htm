@@ -189,41 +189,48 @@
       currentSec = nextSecond(time, startTime);
       showTime();
 
-      if (
-        getPositionCameraX(objScene3D.camera) < 11.9 &&
-        outsideSpawnRoom == false
-      ) {
-        outsideSpawnRoom = true;
+      const camera = objScene3D.camera;
+
+      // Detect when the player exits the spawn room
+      if (getPositionCameraX(camera) < 11.9 && !outsideSpawnRoom) {
+          outsideSpawnRoom = true;
+
+          // Add spawn door walls to the scene
+          const obj3DMurInterneDoor = creerObj3DMursDoor(objgl, TEX_MUR);
+          objScene3D.tabObjets3D.push(obj3DMurInterneDoor);
+          OBJ3D_MURS_INTERNES_DOOR = objScene3D.tabObjets3D.length - 1;
+
+          animateSpawnDoorUp(); // Trigger the spawn door animation
       }
 
       // Deduct points when in aerial view and force exit if points reach 0
       if (binAriel) {
-        if (lastSec != currentSec) {
-          updatePoint(false, 10); // Deduct 10 points every second
-          lastSec = currentSec;
+          if (lastSec != currentSec) {
+              updatePoint(false, 10); // Deduct 10 points every second
+              lastSec = currentSec;
 
-          // Force exit aerial view if points reach 0
-          if (getPoints() <= 0) {
-            // Reset to ground view
-            const camera = objScene3D.camera;
-            setPositionsCameraXYZ(tabPosJoueurInitial, camera);
-            setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
-            setOrientationX(0, camera);
-            updateHauteurCiel(2, obj3DCiel);
-            binAriel = false;
-            objScene3D.obj3DJoueur = null;
+              // Force exit aerial view if points reach 0
+              if (getPoints() <= 0) {
+                  // Reset to ground view
+                  const camera = objScene3D.camera;
+                  setPositionsCameraXYZ(tabPosJoueurInitial, camera);
+                  setCiblesCameraXYZ(tabCibleJoueurInitial, camera);
+                  setOrientationX(0, camera);
+                  updateHauteurCiel(2, obj3DCiel);
+                  binAriel = false;
+                  objScene3D.obj3DJoueur = null;
+              }
           }
-        }
       }
 
       showPoints();
       startTime = time;
 
       if (timeOut()) {
-        await resetNiveau();
-        setTimerMax(timerLength);
-        resetSeconds();
-        updatePoint(false, 200);
+          await resetNiveau();
+          setTimerMax(timerLength);
+          resetSeconds();
+          updatePoint(false, 200);
       }
       showWallTries();
       animationFleche();
@@ -993,6 +1000,11 @@
         }
       );
 
+      // Remove spawn door walls from the scene initially
+      objScene3D.tabObjets3D = objScene3D.tabObjets3D.filter(
+        (obj3D, index) => index !== OBJ3D_MURS_INTERNES_DOOR
+      );
+
       // Recreate internal walls
       var obj3DMursInternes = creerObj3DMursInternes(objgl, TEX_MUR);
       objScene3D.tabObjets3D.push(obj3DMursInternes);
@@ -1000,8 +1012,8 @@
       objScene3D.tabObjets3D.push(objMurSpawn);
       OBJ3D_MURS_SPAWN = objScene3D.tabObjets3D.length - 1;
 
-      objScene3D.tabObjets3D.push(objMurSpawnDoor);
-      OBJ3D_MURS_INTERNES_DOOR = objScene3D.tabObjets3D.length - 1;
+      // objScene3D.tabObjets3D.push(objMurSpawnDoor);
+      // OBJ3D_MURS_INTERNES_DOOR = objScene3D.tabObjets3D.length - 1;
 
       // Reset arrow positions
       positionFleches = [];
