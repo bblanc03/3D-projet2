@@ -3,12 +3,17 @@ let isGameStarted = false;
 function initializeMenu() {
     // Get menu elements
     const mainMenu = document.getElementById('mainMenu');
+    
+    // Initialize and play menu music
+    initMenuMusic();
+    playMenuMusic();
 
     // Get buttons
     const startGameBtn = document.getElementById('startGame');
 
     // Add event listeners
     startGameBtn.addEventListener('click', async () => {
+        stopMenuMusic(); // Stop menu music when game starts
         startGame();
         isGameStarted = true;
         resetOrNextLevel(false); 

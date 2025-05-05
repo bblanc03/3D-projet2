@@ -4,6 +4,7 @@ let backgroundMusic;
 let footstepSound;
 let portalSound;
 let wallBuySound;  // Add new sound variable
+let menuMusic;  // Add menu music variable
 let isWalking = false;
 let footstepTimeout;
 let footstepPlaying = false;
@@ -32,6 +33,12 @@ function initAudio() {
     wallBuySound = new Audio('./audios/wallbuy.mp3');  // Add wall buy sound
     wallBuySound.loop = false;
     wallBuySound.volume = 0.8;
+}
+
+function initMenuMusic() {
+    menuMusic = new Audio('./audios/menu.mp3'); // Add your menu music file
+    menuMusic.loop = true;
+    menuMusic.volume = 0.5;
 }
 
 function playMysteryBoxMusic() {
@@ -158,5 +165,16 @@ function playWallBuySound() {
         wallBuySound.currentTime = 0;
         wallBuySound.play()
             .catch(e => console.log("Wall buy audio playback failed:", e));
+    }
+}
+
+function playMenuMusic() {
+    menuMusic?.play();
+}
+
+function stopMenuMusic() {
+    if (menuMusic) {
+        menuMusic.pause();
+        menuMusic.currentTime = 0;
     }
 }
