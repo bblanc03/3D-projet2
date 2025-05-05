@@ -268,8 +268,9 @@ function creerMaillageMursSpawnDoor(objgl) {
 function animateSpawnDoorUp() {
     const door = objScene3D.tabObjets3D[OBJ3D_MURS_INTERNES_DOOR];
     const startTime = performance.now();
-    const animationDuration = 1000; // Animation duration in milliseconds
+    const animationDuration = 3000; // Animation duration in milliseconds
 
+    playDoorCloseSound();
     function animate(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / animationDuration, 1);
@@ -281,11 +282,9 @@ function animateSpawnDoorUp() {
         setEchelleY(newHeight, door.transformations);
 
         if (progress < 1) {
+             // Play the door-closing sound
             requestAnimationFrame(animate);
-        } else {
-            console.log("Spawn door animation complete.");
-            playDoorCloseSound(); // Play the door-closing sound
-        }
+        } 
     }
 
     requestAnimationFrame(animate);

@@ -5,6 +5,7 @@ let footstepSound;
 let portalSound;
 let wallBuySound;  // Add new sound variable
 let menuMusic;  // Add menu music variable
+let doorCloseSound;  // Add door close sound variable
 let isWalking = false;
 let footstepTimeout;
 let footstepPlaying = false;
@@ -16,7 +17,7 @@ function initAudio() {
 
     newRoundMusic = new Audio('./audios/newround.mp3');
     newRoundMusic.loop = false;
-    newRoundMusic.volume = 0.5;
+    newRoundMusic.volume = 0.4; 
 
     backgroundMusic = new Audio('./audios/background.mp3');
     backgroundMusic.loop = true;  
@@ -30,9 +31,13 @@ function initAudio() {
     portalSound.loop = false;
     portalSound.volume = 0.8;
 
-    wallBuySound = new Audio('./audios/wallbuy.mp3');  // Add wall buy sound
+    wallBuySound = new Audio('./audios/wallbuy.mp3');  
     wallBuySound.loop = false;
     wallBuySound.volume = 0.8;
+
+    doorCloseSound = new Audio('./audios/sliding.mp3'); 
+    doorCloseSound.loop = false;
+    doorCloseSound.volume = 0.8;
 }
 
 function initMenuMusic() {
@@ -180,6 +185,9 @@ function stopMenuMusic() {
 }
 
 function playDoorCloseSound() {
-    const audio = new Audio('./audio/sliding.mp3'); // Replace with the actual path to your sound file
-    audio.play();
+    if (doorCloseSound) {
+        doorCloseSound.currentTime = 0;
+        doorCloseSound.play()
+            .catch(e => console.log("Door close audio playback failed:", e));
+    }
 }
