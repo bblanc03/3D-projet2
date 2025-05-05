@@ -1008,15 +1008,16 @@
         objScene3D.tabObjets3D.push(obj3DTresor);
         OBJ3D_TRESOR = objScene3D.tabObjets3D.length - 1;
 
-        // Increment level only once
-        if (isNextLevel) {
-            currentLevel++;
+         // Show level announcement for both reset and next level
+         if (isNextLevel) {
+          currentLevel++;
+         if(currentLevel%2==0){
+            nbReciever++;
+            nbTeleporteur++;
+          } else{
+            nbReciever++;
+          }
         }
-
-        nbTeleporteur = Math.floor(currentLevel / 2);
-        nbReciever = nbTeleporteur;
-
-        // Reset teleporters array before creating new ones
         resetTeleport();
 
         // Create teleporters
