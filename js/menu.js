@@ -3,23 +3,25 @@ let isGameStarted = false;
 function initializeMenu() {
     // Get menu elements
     const mainMenu = document.getElementById('mainMenu');
-    const canvas = document.querySelector('canvas');
-
-    // Hide canvas initially
-    canvas.style.display = 'none';
 
     // Get buttons
     const startGameBtn = document.getElementById('startGame');
 
     // Add event listeners
     startGameBtn.addEventListener('click', async () => {
-        mainMenu.style.display = 'none'; 
-        mainMenu.classList.add('hidden'); 
-        canvas.style.display = 'block';
-        await demarrer(); 
+        startGame();
         isGameStarted = true;
         resetOrNextLevel(false); 
     });
+}
+
+function startGame() {
+    // Hide menu
+    document.getElementById('mainMenu').style.display = 'none';
+    // Show game UI
+    document.getElementById('canvasContainer').classList.remove('hidden');
+    // Start the game
+    demarrer();
 }
 
 // Call this when the page loads

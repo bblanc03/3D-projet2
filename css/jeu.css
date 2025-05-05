@@ -340,3 +340,13 @@ h2 {
     color: white;
     margin-bottom: 1.5rem;
 }
+
+/* Add these styles to your CSS file */
+.game-ui {
+    transition: opacity 0.3s ease;
+}
+
+.game-ui.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
