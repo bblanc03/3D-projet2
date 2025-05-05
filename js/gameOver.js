@@ -19,7 +19,7 @@ function showGameOver() {
     
     // Initialize and play game over music
     gameOverMusic = new Audio('./audios/gameover.mp3');
-    gameOverMusic.volume = 0.8;
+    gameOverMusic.volume = 1;
     gameOverMusic.play()
         .catch(e => console.log("Game over audio playback failed:", e));
     

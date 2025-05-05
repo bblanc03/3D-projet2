@@ -3,6 +3,7 @@ let newRoundMusic;
 let backgroundMusic;
 let footstepSound;
 let portalSound;
+let wallBuySound;  // Add new sound variable
 let isWalking = false;
 let footstepTimeout;
 let footstepPlaying = false;
@@ -14,7 +15,7 @@ function initAudio() {
 
     newRoundMusic = new Audio('./audios/newround.mp3');
     newRoundMusic.loop = false;
-    newRoundMusic.volume = 0.8;
+    newRoundMusic.volume = 0.5;
 
     backgroundMusic = new Audio('./audios/background.mp3');
     backgroundMusic.loop = true;  
@@ -26,7 +27,11 @@ function initAudio() {
 
     portalSound = new Audio('./audios/teleporter.mp3');
     portalSound.loop = false;
-    portalSound.volume = 0.5;
+    portalSound.volume = 0.8;
+
+    wallBuySound = new Audio('./audios/wallbuy.mp3');  // Add wall buy sound
+    wallBuySound.loop = false;
+    wallBuySound.volume = 0.8;
 }
 
 function playMysteryBoxMusic() {
@@ -144,5 +149,14 @@ function playPortalSound() {
         portalSound.currentTime = 0;
         portalSound.play()
             .catch(e => console.log("Portal audio playback failed:", e));
+    }
+}
+
+// Add new function to play wall buy sound
+function playWallBuySound() {
+    if (wallBuySound) {
+        wallBuySound.currentTime = 0;
+        wallBuySound.play()
+            .catch(e => console.log("Wall buy audio playback failed:", e));
     }
 }

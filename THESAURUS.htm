@@ -27,6 +27,7 @@
   <script type="text/javascript" src="js/audio.js"></script>
   <script type="text/javascript" src="js/spawn_room.js"></script>
   <script type="text/javascript" src="js/gameOver.js"></script>
+  <script type="text/javascript" src="js/menu.js"></script>
   <script type="text/javascript">
 
     var objgl = null;
@@ -319,6 +320,9 @@
     function animationMur(gridZ, gridX) {
       // Set animation flag
       isWallAnimating = true;
+      
+      // Play wall buy sound
+      playWallBuySound();
       
       // First, mark this wall as being destroyed
       tabMurs[gridX][gridZ] = 3; // Use value 3 to mark as "being destroyed"
@@ -1103,7 +1107,7 @@
 </head>
 
 
-<body class="background" onload="demarrer()">
+<body class="background">
   <canvas id="monCanvas" width="1600" height="800" tabindex="1"></canvas>
   <div id="canvasContainer">
     <div id="timer"></div>
@@ -1114,8 +1118,12 @@
     <div id="levelDisplay">Level 1</div>
   </div>
 
-
-
+  <div id="mainMenu" class="menu-overlay">
+    <div class="menu-content">
+        <h1>THESAURUS</h1>
+        <button id="startGame">Start Game</button>
+    </div>
+  </div>
 </body>
 
 </html>
