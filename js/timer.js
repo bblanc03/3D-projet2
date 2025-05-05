@@ -71,16 +71,24 @@ function nextSecond(timer, timer2){
  * @param {*} timer2 previous time
  */
 function showTime() {
-    //nextSecond(timer, timer2);
+    const timeLeft = intTimerMax - secounds; // Changed from getSecondsLeft()
+    const maxTime = intTimerMax;
+    const percentage = (timeLeft / maxTime) * 100;
     
-    if (intTimerMax - secounds > 0) {
-        let secs = intTimerMax - secounds;
-        document.getElementById("timer").innerHTML = secs + "s";
+    // Update progress bar
+    const progressBar = document.querySelector('.timer-progress');
+    const timerText = document.querySelector('.timer-text');
+    
+    progressBar.style.width = `${percentage}%`;
+
+    // Change color based on time remaining
+    if (percentage <= 25) {
+        progressBar.style.background = '#ff4444'; // Red for last 25%
+    } else if (percentage <= 50) {
+        progressBar.style.background = '#ffaa00'; // Orange for last 50%
     } else {
-        document.getElementById("timer").innerHTML = 0;
+        progressBar.style.background = '#4CAF50'; // Green otherwise
     }
-
-
 }
 
 /**
@@ -92,17 +100,13 @@ function timeOut() {
 }
 
 function getSecondsLeft() {
-    const timerElement = document.getElementById('timer');
-    if (timerElement) {
-        const timeText = timerElement.textContent.trim(); 
-        const seconds = parseInt(timeText, 10); 
-        if (!isNaN(seconds)) {
-            return seconds;
-        }
-    }
-    return 0; 
+    return intTimerMax - secounds; // Simplified to use internal timer values
 }
 
 function isTimerPaused() {
     return isPaused;
+}
+
+function getTimerMax() {
+    return intTimerMax;
 }
